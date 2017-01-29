@@ -15,6 +15,8 @@ var cars           = [];                      // array of cars on the road
 // var stats          = Game.stats('fps');       // mr.doobs FPS counter
 var canvas         = Dom.get('canvas');       // our canvas...
 var ctx            = canvas.getContext('2d'); // ...and its drawing context
+var GAME_STATES    = ['intro', 'players', 'start', 'game', 'gameover'];
+var gameState      = 'intro';
 var background     = null;                    // our background image (loaded below)
 var sprites        = null;                    // our spritesheet (loaded below)
 var resolution     = null;                    // scaling factor to provide resolution independence (computed)
@@ -26,14 +28,14 @@ var lanes          = 3;                       // number of lanes
 var fieldOfView    = 100;                     // angle (degrees) for field of view
 var cameraHeight   = 1000;                    // z height of camera
 var cameraDepth    = null;                    // z distance camera is from screen (computed)
-var drawDistance   = 300;                     // number of segments to draw
+var drawDistance   = 150;                     // number of segments to draw
 var playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
 var playerZ        = null;                    // player relative z distance from camera (computed)
-var fogDensity     = 5;                       // exponential fog density
+var fogDensity     = 4;                       // exponential fog density
 var position       = 0;                       // current camera Z position (add playerZ to get player's absolute Z position)
+var maxSpeed       = (segmentLength/step) * 1.5;      // top speed (ensure we can't move more than 1 segment in a single frame to make collision detection easier)
 var speed          = 0;                       // current speed
-var maxSpeed       = segmentLength/step;      // top speed (ensure we can't move more than 1 segment in a single frame to make collision detection easier)
-var accel          =  maxSpeed/5;             // acceleration rate - tuned until it 'felt' right
+var accel          = maxSpeed/5;             // acceleration rate - tuned until it 'felt' right
 var breaking       = -maxSpeed;               // deceleration rate when braking
 var decel          = -maxSpeed/5;             // 'natural' deceleration rate when neither accelerating, nor braking
 var offRoadDecel   = -maxSpeed/2;             // off road deceleration is somewhere in between
@@ -514,8 +516,11 @@ function resetCars() {
 //=========================================================================
 
 Game.run({
-  canvas: canvas, render: render, update: update, step: step,
-  images: ["background", "sprites"],
+  canvas: canvas,
+  render: render,
+  update: update,
+  step: step,
+  images: ["intro", "background", "sprites"],
   keys: [
     { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: function() { keyLeft   = true;  } },
     { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: function() { keyRight  = true;  } },
@@ -527,9 +532,13 @@ Game.run({
     { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: function() { keySlower = false; } }
   ],
   ready: function(images) {
-    background = images[0];
-    sprites    = images[1];
-    reset();
+    if (gameState === 'intro' || gameState === 'select_player') {
+
+    } else {
+      background = images[0];
+      sprites    = images[1];
+      reset();
+    }
     // Dom.storage.fast_lap_time = Dom.storage.fast_lap_time || 180;
     // updateHud('fast_lap_time', formatTime(Util.toFloat(Dom.storage.fast_lap_time)));
   }
@@ -560,17 +569,17 @@ function reset(options) {
 // TWEAK UI HANDLERS
 //=========================================================================
 
-Dom.on('resolution', 'change', function(ev) {
-  var w, h, ratio;
-  switch(ev.target.options[ev.target.selectedIndex].value) {
-    case 'fine':   w = 1280; h = 960;  ratio=w/width; break;
-    case 'high':   w = 1024; h = 768;  ratio=w/width; break;
-    case 'medium': w = 640;  h = 480;  ratio=w/width; break;
-    case 'low':    w = 480;  h = 360;  ratio=w/width; break;
-  }
-  reset({ width: w, height: h })
-  Dom.blur(ev);
-});
+// Dom.on('resolution', 'change', function(ev) {
+//   var w, h, ratio;
+//   switch(ev.target.options[ev.target.selectedIndex].value) {
+//     case 'fine':   w = 1280; h = 960;  ratio=w/width; break;
+//     case 'high':   w = 1024; h = 768;  ratio=w/width; break;
+//     case 'medium': w = 640;  h = 480;  ratio=w/width; break;
+//     case 'low':    w = 480;  h = 360;  ratio=w/width; break;
+//   }
+//   reset({ width: w, height: h })
+//   Dom.blur(ev);
+// });
 
 Dom.on('lanes',          'change', function(ev) { Dom.blur(ev); reset({ lanes:         ev.target.options[ev.target.selectedIndex].value }); });
 Dom.on('roadWidth',      'change', function(ev) { Dom.blur(ev); reset({ roadWidth:     Util.limit(Util.toInt(ev.target.value), Util.toInt(ev.target.getAttribute('min')), Util.toInt(ev.target.getAttribute('max'))) }); });

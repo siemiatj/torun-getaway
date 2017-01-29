@@ -5,7 +5,7 @@
 var Dom = {
 
   get:  function(id)                     { return ((id instanceof HTMLElement) || (id === document)) ? id : document.getElementById(id); },
-  set:  function(id, html)               { console.log('BLA: ', id, html); Dom.get(id).innerHTML = html;                        },
+  set:  function(id, html)               { Dom.get(id).innerHTML = html;                        },
   on:   function(ele, type, fn, capture) { Dom.get(ele).addEventListener(type, fn, capture);    },
   un:   function(ele, type, fn, capture) { Dom.get(ele).removeEventListener(type, fn, capture); },
   show: function(ele, type)              { Dom.get(ele).style.display = (type || 'block');      },
@@ -173,34 +173,6 @@ var Game = {  // a modified version of the game loop from my previous boulderdas
     Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); } );
     Dom.on(document, 'keyup',   function(ev) { onkey(ev.keyCode, 'up');   } );
   },
-
-  //---------------------------------------------------------------------------
-
-  // stats: function(parentId, id) { // construct mr.doobs FPS counter - along with friendly good/bad/ok message box
-
-  //   var result = new Stats();
-  //   result.domElement.id = id || 'stats';
-  //   Dom.get(parentId).appendChild(result.domElement);
-
-  //   var msg = document.createElement('div');
-  //   msg.style.cssText = "border: 2px solid gray; padding: 5px; margin-top: 5px; text-align: left; font-size: 1.15em; text-align: right;";
-  //   msg.innerHTML = "Your canvas performance is ";
-  //   Dom.get(parentId).appendChild(msg);
-
-  //   var value = document.createElement('span');
-  //   value.innerHTML = "...";
-  //   msg.appendChild(value);
-
-  //   setInterval(function() {
-  //     var fps   = result.current();
-  //     var ok    = (fps > 50) ? 'good'  : (fps < 30) ? 'bad' : 'ok';
-  //     var color = (fps > 50) ? 'green' : (fps < 30) ? 'red' : 'gray';
-  //     value.innerHTML       = ok;
-  //     value.style.color     = color;
-  //     msg.style.borderColor = color;
-  //   }, 5000);
-  //   return result;
-  // },
 
   //---------------------------------------------------------------------------
 
