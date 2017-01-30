@@ -1,11 +1,11 @@
-import { RandomChoice } from 'util';
+import { randomChoice } from 'util';
 import { KEY, COLORS, BACKGROUND, SPRITES } from 'constants';
 
 //=========================================================================
 // canvas rendering helpers
 //=========================================================================
 
-export default class Render {
+class Render {
   polygon(ctx, x1, y1, x2, y2, x3, y3, x4, y4, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -60,6 +60,8 @@ export default class Render {
     var destW = Math.floor(width * (sourceW/imageW));
     var destH = height;
 
+    console.log('CTX: ', ctx, background);
+
     ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
     if (sourceW < imageW)
       ctx.drawImage(background, layer.x, sourceY, imageW-sourceW, sourceH, destW-1, destY, width-destW, destH);
@@ -73,6 +75,8 @@ export default class Render {
     destX = destX + (destW * (offsetX || 0));
     destY = destY + (destH * (offsetY || 0));
 
+    // console.log('CTX: ', ctx)
+
     var clipH = clipY ? Math.max(0, destY+destH-clipY) : 0;
     if (clipH < destH)
       ctx.drawImage(sprites, sprite.x, sprite.y, sprite.w, sprite.h - (sprite.h*clipH/destH), destX, destY, destW, destH - clipH);
@@ -80,7 +84,7 @@ export default class Render {
   }
 
   player(ctx, width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
-    var bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
+    var bounce = (1.5 * Math.random() * speedPercent * resolution) * randomChoice([-1,1]);
     var sprite;
     if (steer < 0)
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_LEFT : SPRITES.PLAYER_LEFT;
@@ -109,3 +113,6 @@ export default class Render {
     return projectedRoadWidth/Math.max(32, 8*lanes);
   }
 }
+
+const render = new Render();
+export default render;

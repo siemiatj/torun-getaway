@@ -1,14 +1,12 @@
 import Dom from 'dom';
-import Util from 'util';
+import { timestamp } from 'util';
 
 //=========================================================================
 // GAME LOOP helpers
 //=========================================================================
 
-export default class Game {  // a modified version of the game loop from my previous boulderdash game - see http://codeincomplete.com/posts/2011/10/25/javascript_boulderdash/#gameloop
-
+export default class Game {
   run(options) {
-
     this.loadImages(options.images, (images) => {
 
       options.ready(images); // tell caller to initialize itself because images are loaded and we're ready to rumble
@@ -19,14 +17,13 @@ export default class Game {  // a modified version of the game loop from my prev
           update = options.update,    // method to update game logic is provided by caller
           render = options.render,    // method to render the game is provided by caller
           step   = options.step,      // fixed frame step (1/fps) is specified by caller
-          // stats  = options.stats,     // stats instance is provided by caller
           now    = null,
-          last   = Util.timestamp(),
+          last   = timestamp(),
           dt     = 0,
           gdt    = 0;
 
       function frame() {
-        now = Util.timestamp();
+        now = timestamp();
         dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
         gdt = gdt + dt;
         while (gdt > step) {
@@ -34,7 +31,6 @@ export default class Game {  // a modified version of the game loop from my prev
           update(step);
         }
         render();
-        // stats.update();
         last = now;
         requestAnimationFrame(frame, canvas);
       }
@@ -45,20 +41,25 @@ export default class Game {  // a modified version of the game loop from my prev
   }
 
   loadImages(names, callback) { // load multiple images and callback when ALL images have loaded
-    var result = [];
-    var count  = names.length;
-
-    var onload = function() {
-      if (--count == 0)
-        callback(result);
+    const preloadImage = function (path) {
+      return new Promise(function (resolve, reject) {
+        var image = new Image();
+        image.onload = resolve(image);
+        image.onerror = resolve();
+        image.src = path;
+      });
     };
 
-    for(var n = 0 ; n < names.length ; n++) {
-      var name = names[n];
-      result[n] = document.createElement('img');
-      Dom.on(result[n], 'load', onload);
-      result[n].src = "public/images/" + name + ".png";
-    }
+    Promise.all(names.map(url => {
+      const imgUrl = `../static/images/${url}.png`;
+      return preloadImage(imgUrl);
+    }))
+    .then(arr => {
+      callback(arr);
+    })
+    .catch(err => {
+      callback(err);
+    });
   }
 
   setKeyListener(keys) {

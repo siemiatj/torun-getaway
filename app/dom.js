@@ -2,7 +2,7 @@
 // minimalist DOM helpers
 //=========================================================================
 
-export default class Dom {
+class Dom {
   constructor() {
     this.storage = window.localStorage || {};
   }
@@ -51,3 +51,6 @@ export default class Dom {
     ele.className = classes.join(' ');
   }
 }
+let dom = new Dom();
+
+export default dom;
