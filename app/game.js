@@ -6,6 +6,14 @@ import { timestamp } from 'util';
 //=========================================================================
 
 export default class Game {
+  constructor() {
+    this.gameState = null;
+  }
+
+  setGameState(state) {
+    this.gameState = state;
+  }
+
   run(options) {
     this.loadImages(options.images, (images) => {
 
@@ -22,13 +30,18 @@ export default class Game {
           dt     = 0,
           gdt    = 0;
 
+      const self = this;
+
       function frame() {
         now = timestamp();
-        dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
-        gdt = gdt + dt;
-        while (gdt > step) {
-          gdt = gdt - step;
-          update(step);
+
+        if (self.gameState !== 'intro') {
+          dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
+          gdt = gdt + dt;
+          while (gdt > step) {
+            gdt = gdt - step;
+            update(step);
+          }  
         }
         render();
         last = now;
@@ -50,6 +63,8 @@ export default class Game {
       });
     };
 
+    console.log('names: ', names);
+
     Promise.all(names.map(url => {
       const imgUrl = `../static/images/${url}.png`;
       return preloadImage(imgUrl);
@@ -57,9 +72,9 @@ export default class Game {
     .then(arr => {
       callback(arr);
     })
-    .catch(err => {
-      callback(err);
-    });
+    // .catch(err => {
+    //   callback(err);
+    // });
   }
 
   setKeyListener(keys) {

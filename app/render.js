@@ -44,27 +44,29 @@ class Render {
   }
 
   background(ctx, background, width, height, layer, rotation, offset) {
-    rotation = rotation || 0;
-    offset   = offset   || 0;
+    if (!layer) {
+      ctx.drawImage(background, 0, 0, 640, 480);
+    } else {
+      rotation = rotation || 0;
+      offset   = offset   || 0;
 
-    var imageW = layer.w/2;
-    var imageH = layer.h;
+      var imageW = layer.w/2;
+      var imageH = layer.h;
 
-    var sourceX = layer.x + Math.floor(layer.w * rotation);
-    var sourceY = layer.y
-    var sourceW = Math.min(imageW, layer.x+layer.w-sourceX);
-    var sourceH = imageH;
-    
-    var destX = 0;
-    var destY = offset;
-    var destW = Math.floor(width * (sourceW/imageW));
-    var destH = height;
+      var sourceX = layer.x + Math.floor(layer.w * rotation);
+      var sourceY = layer.y
+      var sourceW = Math.min(imageW, layer.x+layer.w-sourceX);
+      var sourceH = imageH;
+      
+      var destX = 0;
+      var destY = offset;
+      var destW = Math.floor(width * (sourceW/imageW));
+      var destH = height;
 
-    console.log('CTX: ', ctx, background);
-
-    ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
-    if (sourceW < imageW)
-      ctx.drawImage(background, layer.x, sourceY, imageW-sourceW, sourceH, destW-1, destY, width-destW, destH);
+      ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
+      if (sourceW < imageW)
+        ctx.drawImage(background, layer.x, sourceY, imageW-sourceW, sourceH, destW-1, destY, width-destW, destH);
+    }
   }
 
   sprite(ctx, width, height, resolution, roadWidth, sprites, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
@@ -74,8 +76,6 @@ class Render {
 
     destX = destX + (destW * (offsetX || 0));
     destY = destY + (destH * (offsetY || 0));
-
-    // console.log('CTX: ', ctx)
 
     var clipH = clipY ? Math.max(0, destY+destH-clipY) : 0;
     if (clipH < destH)
@@ -92,6 +92,8 @@ class Render {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
     else
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
+
+    console.log('SPRITE: ', sprite, sprites);
 
     this.sprite(ctx, width, height, resolution, roadWidth, sprites, sprite, scale, destX, destY + bounce, -0.5, -1);
   }

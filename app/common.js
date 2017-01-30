@@ -21,58 +21,58 @@ if (!window.requestAnimationFrame) { // http://paulirish.com/2011/requestanimati
 
 //=========================================================================
 
-let fps            = 60;                      // how many 'update' frames per second
-let step           = 1/fps;                   // how long is each frame (in seconds)
-let width          = 1024;                    // logical canvas width
-let height         = 768;                     // logical canvas height
-let centrifugal    = 0.3;                     // centrifugal force multiplier when going around curves
-// let offRoadDecel   = 0.99;                    // speed multiplier when off road (e.g. you lose 2% speed each update frame)
-let skySpeed       = 0.001;                   // background sky layer scroll speed when going around curve (or up hill)
-let hillSpeed      = 0.002;                   // background hill layer scroll speed when going around curve (or up hill)
-let treeSpeed      = 0.003;                   // background tree layer scroll speed when going around curve (or up hill)
-let skyOffset      = 0;                       // current sky scroll offset
-let hillOffset     = 0;                       // current hill scroll offset
-let treeOffset     = 0;                       // current tree scroll offset
-let segments       = [];                      // array of road segments
-let cars           = [];                      // array of cars on the road
-// let stats          = Game.stats('fps');       // mr.doobs FPS counter
-let canvas         = Dom.get('canvas');       // our canvas...
-let ctx            = canvas.getContext('2d'); // ...and its drawing context
-let GAME_STATES    = ['intro', 'players', 'start', 'game', 'gameover'];
-let gameState      = 'intro';
-let background     = null;                    // our background image (loaded below)
-let sprites        = null;                    // our spritesheet (loaded below)
-let resolution     = null;                    // scaling factor to provide resolution independence (computed)
-let roadWidth      = 2000;                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
-let segmentLength  = 200;                     // length of a single segment
-let rumbleLength   = 3;                       // number of segments per red/white rumble strip
-let trackLength    = null;                    // z length of entire track (computed)
-let lanes          = 3;                       // number of lanes
-let fieldOfView    = 100;                     // angle (degrees) for field of view
-let cameraHeight   = 1000;                    // z height of camera
-let cameraDepth    = null;                    // z distance camera is from screen (computed)
-let drawDistance   = 150;                     // number of segments to draw
-let playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
-let playerZ        = null;                    // player relative z distance from camera (computed)
-let fogDensity     = 4;                       // exponential fog density
-let position       = 0;                       // current camera Z position (add playerZ to get player's absolute Z position)
-let maxSpeed       = (segmentLength/step) * 1.5;      // top speed (ensure we can't move more than 1 segment in a single frame to make collision detection easier)
-let speed          = 0;                       // current speed
-let accel          = maxSpeed/5;             // acceleration rate - tuned until it 'felt' right
-let breaking       = -maxSpeed;               // deceleration rate when braking
-let decel          = -maxSpeed/5;             // 'natural' deceleration rate when neither accelerating, nor braking
-let offRoadDecel   = -maxSpeed/2;             // off road deceleration is somewhere in between
-let offRoadLimit   =  maxSpeed/4;             // limit when off road deceleration no longer applies (e.g. you can always go at least this speed even when off road)
-let totalCars      = 200;                     // total number of cars on the road
-let currentLapTime = 0;                       // current lap time
-let lastLapTime    = null;                    // last lap time
+var fps            = 60;                      // how many 'update' frames per second
+var step           = 1/fps;                   // how long is each frame (in seconds)
+var width          = 1024;                    // logical canvas width
+var height         = 768;                     // logical canvas height
+var centrifugal    = 0.3;                     // centrifugal force multiplier when going around curves
+// var offRoadDecel   = 0.99;                    // speed multiplier when off road (e.g. you lose 2% speed each update frame)
+var skySpeed       = 0.001;                   // background sky layer scroll speed when going around curve (or up hill)
+var hillSpeed      = 0.002;                   // background hill layer scroll speed when going around curve (or up hill)
+var treeSpeed      = 0.003;                   // background tree layer scroll speed when going around curve (or up hill)
+var skyOffset      = 0;                       // current sky scroll offset
+var hillOffset     = 0;                       // current hill scroll offset
+var treeOffset     = 0;                       // current tree scroll offset
+var segments       = [];                      // array of road segments
+var cars           = [];                      // array of cars on the road
+// var stats          = Game.stats('fps');       // mr.doobs FPS counter
+var canvas         = Dom.get('canvas');       // our canvas...
+var ctx            = canvas.getContext('2d'); // ...and its drawing context
+var GAME_STATES    = ['intro', 'players', 'start', 'game', 'gameover'];
+var gameState      = 'intro';
+var background     = null;                    // our background image (loaded below)
+var sprites        = null;                    // our spritesheet (loaded below)
+var resolution     = null;                    // scaling factor to provide resolution independence (computed)
+var roadWidth      = 2000;                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
+var segmentLength  = 200;                     // length of a single segment
+var rumbleLength   = 3;                       // number of segments per red/white rumble strip
+var trackLength    = null;                    // z length of entire track (computed)
+var lanes          = 3;                       // number of lanes
+var fieldOfView    = 100;                     // angle (degrees) for field of view
+var cameraHeight   = 1000;                    // z height of camera
+var cameraDepth    = null;                    // z distance camera is from screen (computed)
+var drawDistance   = 150;                     // number of segments to draw
+var playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
+var playerZ        = null;                    // player relative z distance from camera (computed)
+var fogDensity     = 4;                       // exponential fog density
+var position       = 0;                       // current camera Z position (add playerZ to get player's absolute Z position)
+var maxSpeed       = (segmentLength/step) * 1.5;      // top speed (ensure we can't move more than 1 segment in a single frame to make collision detection easier)
+var speed          = 0;                       // current speed
+var accel          = maxSpeed/5;             // acceleration rate - tuned until it 'felt' right
+var breaking       = -maxSpeed;               // deceleration rate when braking
+var decel          = -maxSpeed/5;             // 'natural' deceleration rate when neither accelerating, nor braking
+var offRoadDecel   = -maxSpeed/2;             // off road deceleration is somewhere in between
+var offRoadLimit   =  maxSpeed/4;             // limit when off road deceleration no longer applies (e.g. you can always go at least this speed even when off road)
+var totalCars      = 200;                     // total number of cars on the road
+var currentLapTime = 0;                       // current lap time
+var lastLapTime    = null;                    // last lap time
 
-let keyLeft        = false;
-let keyRight       = false;
-let keyFaster      = false;
-let keySlower      = false;
+var keyLeft        = false;
+var keyRight       = false;
+var keyFaster      = false;
+var keySlower      = false;
 
-let hud = {
+var hud = {
   speed:            { value: null, dom: Dom.get('speed_value')            },
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
   // last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
@@ -138,7 +138,7 @@ function update(dt) {
     }
   }
 
-  playerX = Util.limit(playerX, -3, 3);     // dont ever let it go too far out of bounds
+  playerX = Util.limit(playerX, -3, 3);     // dont ever var it go too far out of bounds
   speed   = Util.limit(speed, 0, maxSpeed); // or exceed maxSpeed
 
   skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * (position-startPosition)/segmentLength, 1);
@@ -272,68 +272,72 @@ function render() {
 
   ctx.clearRect(0, 0, width, height);
 
-  Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
-  Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
-  Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
+  if (gameState === 'intro') {
+    Render.background(ctx, background, 640, 480);
+  } else {
+    Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
+    Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
+    Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
-  let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
+    let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
 
-  for (n = 0 ; n < drawDistance ; n++) {
-    segment        = segments[(baseSegment.index + n) % segments.length];
-    segment.looped = segment.index < baseSegment.index;
-    segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
-    segment.clip   = maxy;
+    for (n = 0 ; n < drawDistance ; n++) {
+      segment        = segments[(baseSegment.index + n) % segments.length];
+      segment.looped = segment.index < baseSegment.index;
+      segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
+      segment.clip   = maxy;
 
-    Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-    Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+      Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+      Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
 
-    x  = x + dx;
-    dx = dx + segment.curve;
+      x  = x + dx;
+      dx = dx + segment.curve;
 
-    if ((segment.p1.camera.z <= cameraDepth)         || // behind us
-        (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
-        (segment.p2.screen.y >= maxy))                  // clip by (already rendered) hill
-      continue;
+      if ((segment.p1.camera.z <= cameraDepth)         || // behind us
+          (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
+          (segment.p2.screen.y >= maxy))                  // clip by (already rendered) hill
+        continue;
 
-    Render.segment(ctx, width, lanes,
-                   segment.p1.screen.x,
-                   segment.p1.screen.y,
-                   segment.p1.screen.w,
-                   segment.p2.screen.x,
-                   segment.p2.screen.y,
-                   segment.p2.screen.w,
-                   segment.fog,
-                   segment.color);
+      Render.segment(ctx, width, lanes,
+                     segment.p1.screen.x,
+                     segment.p1.screen.y,
+                     segment.p1.screen.w,
+                     segment.p2.screen.x,
+                     segment.p2.screen.y,
+                     segment.p2.screen.w,
+                     segment.fog,
+                     segment.color);
 
-    maxy = segment.p1.screen.y;
-  }
-
-  for (n = (drawDistance-1) ; n > 0 ; n--) {
-    segment = segments[(baseSegment.index + n) % segments.length];
-
-    for(i = 0 ; i < segment.cars.length ; i++) {
-      car         = segment.cars[i];
-      sprite      = car.sprite;
-      spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
-      spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
-      spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
-      Render.sprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+      maxy = segment.p1.screen.y;
     }
 
-    for(i = 0 ; i < segment.sprites.length ; i++) {
-      sprite      = segment.sprites[i];
-      spriteScale = segment.p1.screen.scale;
-      spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
-      spriteY     = segment.p1.screen.y;
-      Render.sprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
-    }
+    for (n = (drawDistance-1) ; n > 0 ; n--) {
+      segment = segments[(baseSegment.index + n) % segments.length];
 
-    if (segment == playerSegment) {
-      Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
-        cameraDepth/playerZ, width/2,
-        (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
-        speed * (keyLeft ? -1 : keyRight ? 1 : 0),
-        playerSegment.p2.world.y - playerSegment.p1.world.y);
+      for(i = 0 ; i < segment.cars.length ; i++) {
+        car         = segment.cars[i];
+        sprite      = car.sprite;
+        spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
+        spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
+        spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
+        Render.sprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+      }
+
+      for(i = 0 ; i < segment.sprites.length ; i++) {
+        sprite      = segment.sprites[i];
+        spriteScale = segment.p1.screen.scale;
+        spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
+        spriteY     = segment.p1.screen.y;
+        Render.sprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+      }
+
+      if (segment == playerSegment) {
+        Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
+          cameraDepth/playerZ, width/2,
+          (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
+          speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+          playerSegment.p2.world.y - playerSegment.p1.world.y);
+      }
     }
   }
 }
@@ -537,6 +541,8 @@ function resetCars() {
 
 let newGame = new Game();
 
+newGame.setGameState('intro');
+
 newGame.run({
   canvas: canvas,
   render: render,
@@ -557,10 +563,10 @@ newGame.run({
     if (gameState === 'intro' || gameState === 'select_player') {
       background = images[0];
     } else {
-      background = images[0];
-      sprites    = images[1];
+      background = images[1];
+      sprites    = images[2];
     }
-    console.log('BACK: ', background);
+    // console.log('BACK: ', background, images);
     reset();
     // Dom.storage.fast_lap_time = Dom.storage.fast_lap_time || 180;
     // updateHud('fast_lap_time', formatTime(Util.toFloat(Dom.storage.fast_lap_time)));
