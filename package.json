@@ -10,8 +10,10 @@
   },
   "scripts": {
     "build": "babel game.js --watch --out-file package.js",
-    "server": "webpack-dev-server --inline --progress",
-    "start": "npm run server"
+    "server": "webpack-dev-server --progress --content-base build/",
+    "start": "npm run server",
+    "go": "NODE_ENV=production webpack -p --config ./webpack.production.config.js",
+    "go:watch": "NODE_ENV=production webpack -p --config ./webpack.production.config.js --watch"
   },
   "keywords": [
     "algorithms",
