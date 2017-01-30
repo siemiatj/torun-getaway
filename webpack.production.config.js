@@ -21,7 +21,8 @@ const config = {
   //   contentBase: './public',
   //   // historyApiFallback: true
   // },
-  devtool: 'eval-source-map',
+  // devtool: 'eval-source-map',
+  devtool: "source-map",
   noInfo: true,
   module: {
     loaders: [
