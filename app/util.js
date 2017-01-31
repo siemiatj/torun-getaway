@@ -51,6 +51,10 @@ const overlap = function(x1, w1, x2, w2, percent) {
   return ! ((max1 < min2) || (min1 > max2));
 };
 
+const findSegment = function(segments, z) {
+  return segments[Math.floor(z/segmentLength) % segments.length]; 
+};
+
 export { timestamp, toInt, toFloat, limit, randomInt, randomChoice,
   percentRemaining, accelerate, interpolate, easeIn, easeOut, easeInOut,
-  exponentialFog, increase, project, overlap };
+  exponentialFog, increase, project, overlap, findSegment };
