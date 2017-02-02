@@ -16,11 +16,11 @@ const limit = function(value, min, max) { return Math.max(min, Math.min(value, m
 const randomInt = function(min, max) { return Math.round(interpolate(min, max, Math.random())); };
 const randomChoice = function(options) { return options[randomInt(0, options.length-1)]; };
 const percentRemaining = function(n, total) { return (n%total)/total; };
-const accelerate = function(v, accel, dt) { return v + (accel * dt);                                        };
-const interpolate = function(a,b,percent) { return a + (b-a)*percent                                        };
-const easeIn = function(a,b,percent) { return a + (b-a)*Math.pow(percent,2);                           };
-const easeOut = function(a,b,percent) { return a + (b-a)*(1-Math.pow(1-percent,2));                     };
-const easeInOut = function(a,b,percent) { return a + (b-a)*((-Math.cos(percent*Math.PI)/2) + 0.5);        };
+const accelerate = function(v, accel, dt) { return v + (accel * dt); };
+const interpolate = function(a,b,percent) { return a + (b-a)*percent; };
+const easeIn = function(a,b,percent) { return a + (b-a)*Math.pow(percent,2); };
+const easeOut = function(a,b,percent) { return a + (b-a)*(1-Math.pow(1-percent,2)); };
+const easeInOut = function(a,b,percent) { return a + (b-a)*((-Math.cos(percent*Math.PI)/2) + 0.5); };
 const exponentialFog = function(distance, density) { return 1 / (Math.pow(Math.E, (distance * distance * density))); };
 
 const increase = function(start, increment, max) { // with looping

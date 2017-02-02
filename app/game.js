@@ -15,8 +15,12 @@ export default class Game {
     this.internals.gameState = state;
   }
 
+//=========================================================================
+// UPDATE THE GAME WORLD
+//=========================================================================
+
   updateStart() {
-    
+
   }
 
   update(dt) {
