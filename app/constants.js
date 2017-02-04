@@ -2,6 +2,42 @@
 // RACING GAME CONSTANTS
 //=============================================================================
 
+const GAME_SETTINGS = {
+  GAME_STATES: ['intro', 'players', 'start', 'game', 'gameover'],
+  fps: 60,                      // how many 'update' frames per second
+  step: 1/60,                   // how long is each frame (in seconds)
+  width: 1024,                    // logical canvas width
+  height: 768,                     // logical canvas height
+  centrifugal: 0.3,                     // centrifugal force multiplier when going around curves
+  skySpeed: 0.001,                   // background sky layer scroll speed when going around curve (or up hill)
+  hillSpeed: 0.002,                   // background hill layer scroll speed when going around curve (or up hill)
+  treeSpeed: 0.003,                   // background tree layer scroll speed when going around curve (or up hill)
+  roadWidth   : 2000,                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
+  segmentLengt: 200,                     // length of a single segment
+  rumbleLength: 3,                       // number of segments per red/white rumble strip
+  drawDistance: 150,                     // number of segments to draw
+  lanes       : 3,                       // number of lanes
+  fieldOfView : 100,                     // angle (degrees) for field of view
+  cameraHeight: 1000,                    // z height of camera
+  fogDensity  : 4,                       // exponential fog density
+  maxSpeed    : null,      // top speed (ensure we can't move more than 1 segment in a single frame to make collision detection easier)
+  accel       : null,            // acceleration rate - tuned until it 'felt' right
+  breaking    : null,               // deceleration rate when braking
+  decel       : null,            // 'natural' deceleration rate when neither accelerating, nor braking
+  offRoadDecel: null,             // off road deceleration is somewhere in between
+  offRoadLimit:  null,             // limit when off road deceleration no longer applies (e.g. you can always go at least this speed even when off road)
+  totalCars: 200,                     // total number of cars on the road
+};
+
+GAME_SETTINGS.maxSpeed = (GAME_SETTINGS.segmentLength / GAME_SETTINGS.step) * 1.5;
+GAME_SETTINGS.accel = GAME_SETTINGS.maxSpeed/5;
+GAME_SETTINGS.accel = GAME_SETTINGS.maxSpeed/5;
+GAME_SETTINGS.breaking = -GAME_SETTINGS.maxSpeed;
+GAME_SETTINGS.decel = -GAME_SETTINGS.maxSpeed/5;
+GAME_SETTINGS.offRoadDecel = -GAME_SETTINGS.maxSpeed/2;
+GAME_SETTINGS.offRoadLimit =  GAME_SETTINGS.maxSpeed/4;
+
+
 const KEY = {
   LEFT:  37,
   UP:    38,
@@ -71,4 +107,4 @@ SPRITES.BILLBOARDS = [SPRITES.BILLBOARD01, SPRITES.BILLBOARD02, SPRITES.BILLBOAR
 SPRITES.PLANTS     = [SPRITES.TREE1, SPRITES.TREE2, SPRITES.DEAD_TREE1, SPRITES.DEAD_TREE2, SPRITES.PALM_TREE, SPRITES.BUSH1, SPRITES.BUSH2, SPRITES.CACTUS, SPRITES.STUMP, SPRITES.BOULDER1, SPRITES.BOULDER2, SPRITES.BOULDER3];
 SPRITES.CARS       = [SPRITES.CAR01, SPRITES.CAR02, SPRITES.CAR03, SPRITES.CAR04, SPRITES.SEMI, SPRITES.TRUCK];
 
-export { KEY, COLORS, BACKGROUND, SPRITES };
+export { KEY, COLORS, BACKGROUND, SPRITES, GAME_SETTINGS };
