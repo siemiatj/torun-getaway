@@ -136,7 +136,7 @@ export default class Game {
     if ((carSegment.index - playerSegment.index) > drawDistance) { return 0; }
 
     for(i = 1 ; i < lookahead ; i++) {
-      segment = segments[(carSegment.index+i)%segments.length];
+      segment = this.internals.segments[(carSegment.index+i)%this.internals.segments.length];
 
       if ((segment === playerSegment) && (car.speed > speed) && (Util.overlap(playerX, playerW, car.offset, carW, 1.2))) {
         if (playerX > 0.5) {
