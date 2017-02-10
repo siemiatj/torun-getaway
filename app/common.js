@@ -11,7 +11,7 @@ if (!window.requestAnimationFrame) { // http://paulirish.com/2011/requestanimati
                                  window.mozRequestAnimationFrame    || 
                                  window.oRequestAnimationFrame      || 
                                  window.msRequestAnimationFrame     || 
-                                 function(callback, element) {
+                                 function(callback) {
                                    window.setTimeout(callback, 1000 / 60);
                                  }
 }

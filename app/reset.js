@@ -1,4 +1,4 @@
-import { randomChoice } from 'util';
+import * as Util from 'util';
 import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 
 //=========================================================================
@@ -7,126 +7,143 @@ import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 
 export default class Reset {
   constructor(opts) {
-    this.game = o;
+    this.gameInstance = opts.game;
   }
 
   lastY() {
+    const { segments } = this.gameInstance;
+
     return (segments.length == 0) ? 0 : segments[segments.length-1].p2.world.y;
   }
 
-  addSegment(segments, segmentLength, curve, y) {
-    var n = segments.length;
+  addSegment(curve, y) {
+    const { segments, segmentLength, rumbleLength } = this.gameInstance;
+    const n = segments.length;
+
     segments.push({
         index: n,
-           p1: { world: { y: lastY(), z:  n   *segmentLength }, camera: {}, screen: {} },
-           p2: { world: { y: y,       z: (n+1)*segmentLength }, camera: {}, screen: {} },
+           p1: { world: { y: this.lastY(), z:  n * segmentLength }, camera: {}, screen: {} },
+           p2: { world: { y: y, z: (n + 1) * segmentLength }, camera: {}, screen: {} },
         curve: curve,
       sprites: [],
          cars: [],
-        color: Math.floor(n/rumbleLength)%2 ? COLORS.DARK : COLORS.LIGHT
+        color: Math.floor(n / rumbleLength) % 2 ? COLORS.DARK : COLORS.LIGHT
     });
   }
 
   addSprite(n, sprite, offset) {
+    const { segments } = this.gameInstance;
+
     segments[n].sprites.push({ source: sprite, offset: offset });
   }
 
   addRoad(enter, hold, leave, curve, y) {
-    var startY   = lastY();
-    var endY     = startY + (Util.toInt(y, 0) * segmentLength);
-    var n, total = enter + hold + leave;
-    for(n = 0 ; n < enter ; n++)
-      addSegment(Util.easeIn(0, curve, n/enter), Util.easeInOut(startY, endY, n/total));
-    for(n = 0 ; n < hold  ; n++)
-      addSegment(curve, Util.easeInOut(startY, endY, (enter+n)/total));
-    for(n = 0 ; n < leave ; n++)
-      addSegment(Util.easeInOut(curve, 0, n/leave), Util.easeInOut(startY, endY, (enter+hold+n)/total));
+    const { segmentLength } = this.gameInstance;
+    const startY = this.lastY();
+    const endY = startY + (Util.toInt(y, 0) * segmentLength);
+    const total = enter + hold + leave;
+    let n;
+
+    for (n = 0; n < enter; n++) {
+      this.addSegment(Util.easeIn(0, curve, n/enter), Util.easeInOut(startY, endY, n/total));
+    }
+    for (n = 0; n < hold; n++) {
+      this.addSegment(curve, Util.easeInOut(startY, endY, (enter+n)/total));
+    }
+    for (n = 0; n < leave; n++) {
+      this.addSegment(Util.easeInOut(curve, 0, n/leave), Util.easeInOut(startY, endY, (enter+hold+n)/total));
+    }
   }
 
   addStraight(num) {
     num = num || ROAD.LENGTH.MEDIUM;
-    addRoad(num, num, num, 0, 0);
+    this.addRoad(num, num, num, 0, 0);
   }
 
   addHill(num, height) {
     num    = num    || ROAD.LENGTH.MEDIUM;
     height = height || ROAD.HILL.MEDIUM;
-    addRoad(num, num, num, 0, height);
+    this.addRoad(num, num, num, 0, height);
   }
 
   addCurve(num, curve, height) {
     num    = num    || ROAD.LENGTH.MEDIUM;
     curve  = curve  || ROAD.CURVE.MEDIUM;
     height = height || ROAD.HILL.NONE;
-    addRoad(num, num, num, curve, height);
+    this.addRoad(num, num, num, curve, height);
   }
       
   addLowRollingHills(num, height) {
     num    = num    || ROAD.LENGTH.SHORT;
     height = height || ROAD.HILL.LOW;
-    addRoad(num, num, num,  0,                height/2);
-    addRoad(num, num, num,  0,               -height);
-    addRoad(num, num, num,  ROAD.CURVE.EASY,  height);
-    addRoad(num, num, num,  0,                0);
-    addRoad(num, num, num, -ROAD.CURVE.EASY,  height/2);
-    addRoad(num, num, num,  0,                0);
+    this.addRoad(num, num, num,  0,                height/2);
+    this.addRoad(num, num, num,  0,               -height);
+    this.addRoad(num, num, num,  ROAD.CURVE.EASY,  height);
+    this.addRoad(num, num, num,  0,                0);
+    this.addRoad(num, num, num, -ROAD.CURVE.EASY,  height/2);
+    this.addRoad(num, num, num,  0,                0);
   }
 
   addSCurves() {
-    addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.NONE);
-    addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.MEDIUM,  ROAD.HILL.MEDIUM);
-    addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.EASY,   -ROAD.HILL.LOW);
-    addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.MEDIUM);
-    addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.NONE);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.MEDIUM,  ROAD.HILL.MEDIUM);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.EASY,   -ROAD.HILL.LOW);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.MEDIUM);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
   }
 
   addBumps() {
-    addRoad(10, 10, 10, 0,  5);
-    addRoad(10, 10, 10, 0, -2);
-    addRoad(10, 10, 10, 0, -5);
-    addRoad(10, 10, 10, 0,  8);
-    addRoad(10, 10, 10, 0,  5);
-    addRoad(10, 10, 10, 0, -7);
-    addRoad(10, 10, 10, 0,  5);
-    addRoad(10, 10, 10, 0, -2);
+    this.addRoad(10, 10, 10, 0,  5);
+    this.addRoad(10, 10, 10, 0, -2);
+    this.addRoad(10, 10, 10, 0, -5);
+    this.addRoad(10, 10, 10, 0,  8);
+    this.addRoad(10, 10, 10, 0,  5);
+    this.addRoad(10, 10, 10, 0, -7);
+    this.addRoad(10, 10, 10, 0,  5);
+    this.addRoad(10, 10, 10, 0, -2);
   }
 
   addDownhillToEnd(num) {
+    const { segmentLength, lastY } = this.gameInstance;
+
     num = num || 200;
-    addRoad(num, num, num, -ROAD.CURVE.EASY, -lastY()/segmentLength);
+    this.addRoad(num, num, num, -ROAD.CURVE.EASY, - lastY() / segmentLength);
   }
 
   resetRoad() {
-    segments = [];
+    const { playerZ, rumbleLength, segments, segmentLength } = this.gameInstance;
+    // const segments = [];
 
-    addStraight(ROAD.LENGTH.SHORT);
-    addLowRollingHills();
-    addSCurves();
-    addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
-    addBumps();
-    addLowRollingHills();
-    addCurve(ROAD.LENGTH.LONG*2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
-    addStraight();
-    addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
-    addSCurves();
-    addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
-    addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
-    addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
-    addBumps();
-    addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
-    addStraight();
-    addSCurves();
-    addDownhillToEnd();
+    this.addStraight(ROAD.LENGTH.SHORT);
+    this.addLowRollingHills();
+    this.addSCurves();
+    this.addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
+    this.addBumps();
+    this.addLowRollingHills();
+    this.addCurve(ROAD.LENGTH.LONG * 2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+    this.addStraight();
+    this.addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
+    this.addSCurves();
+    this.addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
+    this.addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
+    this.addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
+    this.addBumps();
+    this.addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
+    this.addStraight();
+    this.addSCurves();
+    this.addDownhillToEnd();
 
-    resetSprites();
-    resetCars();
+    this.resetSprites();
+    this.resetCars();
 
     segments[Util.findSegment(segments, playerZ).index + 2].color = COLORS.START;
     segments[Util.findSegment(segments, playerZ).index + 3].color = COLORS.START;
-    for(var n = 0 ; n < rumbleLength ; n++)
+    
+    for (var n = 0; n < rumbleLength; n++) {
       segments[segments.length-1-n].color = COLORS.FINISH;
+    }
 
-    trackLength = segments.length * segmentLength;
+    this.gameInstance.trackLength = segments.length * segmentLength;
   }
 
   resetSprites() {
@@ -177,9 +194,11 @@ export default class Reset {
   }
 
   resetCars() {
-    cars = [];
-    var n, car, segment, offset, z, sprite, speed;
-    for (var n = 0 ; n < totalCars ; n++) {
+    const { segments, maxSpeed, segmentLength, totalCars } = this.gameInstance;
+    const cars = [];
+
+    let car, segment, offset, z, sprite, speed;
+    for (let n = 0; n < totalCars; n += 1) {
       offset = Math.random() * Util.randomChoice([-0.8, 0.8]);
       z      = Math.floor(Math.random() * segments.length) * segmentLength;
       sprite = Util.randomChoice(SPRITES.CARS);
@@ -189,13 +208,16 @@ export default class Reset {
       segment.cars.push(car);
       cars.push(car);
     }
+
+    this.gameInstance.cars = [...cars];
   }
 
-  reset({ ...options }) {
+  reset() {
+    const { gameInstance } = this;
     // console.log('options: ', options);
     // options       = options || {};
-    options.canvas.width  = options.width;//  = Util.toInt(canvas.width, width);
-    options.canvas.height = options.height;// = Util.toInt(canvas.height, height);
+    gameInstance.canvas.width  = gameInstance.width;//  = Util.toInt(canvas.width, width);
+    gameInstance.canvas.height = gameInstance.height;// = Util.toInt(canvas.height, height);
     // lanes                  = Util.toInt(lanes,lanes);
     // roadWidth              = Util.toInt(roadWidth, roadWidth);
     // cameraHeight           = Util.toInt(cameraHeight, cameraHeight);
@@ -204,14 +226,14 @@ export default class Reset {
     // fieldOfView            = Util.toInt(fieldOfView, fieldOfView);
     // segmentLength          = Util.toInt(segmentLength, segmentLength);
     // rumbleLength           = Util.toInt(rumbleLength, rumbleLength);
-    options.cameraDepth            = 1 / Math.tan((options.fieldOfView/2) * Math.PI/180);
-    options.playerZ                = (options.cameraHeight * options.cameraDepth);
-    options.resolution             = options.height/480;
+    gameInstance.cameraDepth = 1 / Math.tan((gameInstance.fieldOfView/2) * Math.PI/180);
+    gameInstance.playerZ = (gameInstance.cameraHeight * gameInstance.cameraDepth);
+    gameInstance.resolution = gameInstance.height/480;
     // refreshTweakUI();
 
-    if (options.gameState === 'game' && (options.segments.length==0) ||
-      (options.segmentLength) || (options.rumbleLength)) {
-      resetRoad();
+    if (gameInstance.gameState === 'game' && (gameInstance.segments.length==0) ||
+      (gameInstance.segmentLength) || (gameInstance.rumbleLength)) {
+      this.resetRoad();
     }
   }
 }
