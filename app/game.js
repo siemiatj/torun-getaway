@@ -1,9 +1,25 @@
 import Dom from 'dom';
 import { timestamp, findSegment } from 'util';
 
-//=========================================================================
-// GAME LOOP helpers
-//=========================================================================
+
+let skyOffset      = 0;                       // current sky scroll offset
+let hillOffset     = 0;                       // current hill scroll offset
+let treeOffset     = 0;                       // current tree scroll offset
+let segments       = [];                      // array of road segments
+let cars           = [];                      // array of cars on the road
+let gameState      = 'intro';
+let background     = null;                    // our background image (loaded below)
+let sprites        = null;                    // our spritesheet (loaded below)
+let resolution     = null;                    // scaling factor to provide resolution independence (computed)
+let trackLength    = null;                    // z length of entire track (computed)
+let cameraDepth    = null;                    // z distance camera is from screen (computed)
+let playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
+let playerZ        = null;                    // player relative z distance from camera (computed)
+let position       = 0;                       // current camera Z position (add playerZ to get player's absolute Z position)
+let speed          = 0;                       // current speed
+let currentLapTime = 0;                       // current lap time
+let lastLapTime    = null;                    // last lap time
+
 
 export default class Game {
   constructor(opts) {
@@ -234,6 +250,17 @@ export default class Game {
       
       // Game.playMusic();
     });
+  }
+
+  ready(images) {
+    if (gameState === 'intro' || gameState === 'select_player') {
+      background = images[0];
+    } else {
+      background = images[1];
+      sprites    = images[2];
+    }
+
+    reset({ ...GAME_SETTINGS, canvas, segments });
   }
 
   loadImages(names, callback) { // load multiple images and callback when ALL images have loaded
