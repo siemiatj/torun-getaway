@@ -1,13 +1,15 @@
-import { randomChoice } from 'util';
+import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
 
 //=========================================================================
 // canvas rendering helpers
 //=========================================================================
 export default class Render {
-  constructor(gameVariables, context) {
-    this.game = gameVariables;
+  constructor(gameInstance, context) {
+    this.game = gameInstance;
     this.ctx = context;
+
+    console.log('GAMEee: ', this.game);
   }
 
   drawPolygon(x1, y1, x2, y2, x3, y3, x4, y4, color) {
@@ -69,6 +71,8 @@ export default class Render {
     const destW = Math.floor(width * (sourceW/imageW));
     const destH = height;
 
+    console.log('WIDTH/HEIGHT: ', width, height, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH)
+
     this.ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
     if (sourceW < imageW) {
       this.ctx.drawImage(background, layer.x, sourceY, imageW-sourceW, sourceH, destW-1, destY, width-destW, destH);
@@ -83,7 +87,7 @@ export default class Render {
     destX = destX + (destW * (offsetX || 0));
     destY = destY + (destH * (offsetY || 0));
 
-    var clipH = clipY ? Math.max(0, destY+destH-clipY) : 0;
+    const clipH = clipY ? Math.max(0, destY+destH-clipY) : 0;
     if (clipH < destH)
       this.ctx.drawImage(sprites, sprite.x, sprite.y, sprite.w, sprite.h - (sprite.h*clipH/destH), destX, destY, destW, destH - clipH);
 
@@ -95,11 +99,9 @@ export default class Render {
 
     if (steer < 0) {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_LEFT : SPRITES.PLAYER_LEFT;
-    }
-    else if (steer > 0) {
+    } else if (steer > 0) {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
-    }
-    else {
+    } else {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
     }
 
@@ -129,6 +131,21 @@ export default class Render {
   // RENDER THE GAME WORLD
   //=========================================================================
   renderGame() {
+    const segments = this.game.getValue('segments');
+    const segmentLength = this.game.getValue('segmentLength');
+    const position = this.game.getValue('position');
+    const background = this.game.getValue('background');
+    const width = this.game.getValue('width');
+    const height = this.game.getValue('height');
+    const resolution = this.game.getValue('resolution');
+    const skySpeed = this.game.getValue('skySpeed');
+    const hillSpeed = this.game.getValue('hillSpeed');
+    const treeSpeed = this.game.getValue('treeSpeed');
+    const playerZ = this.game.getValue('playerZ');
+    const skyOffset = this.game.getValue('skyOffset');
+    const hillOffset = this.game.getValue('hillOffset');
+    const treeOffset = this.game.getValue('treeOffset');
+
     let baseSegment   = Util.findSegment(segments, position);
     let basePercent   = Util.percentRemaining(position, segmentLength);
     let playerSegment = Util.findSegment(segments, position+playerZ);
@@ -144,80 +161,79 @@ export default class Render {
     this.background(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
     this.background(background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
-    let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
+    // let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
 
-    for (n = 0 ; n < drawDistance ; n++) {
-      segment        = segments[(baseSegment.index + n) % segments.length];
-      segment.looped = segment.index < baseSegment.index;
-      segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
-      segment.clip   = maxy;
+    // for (n = 0 ; n < drawDistance ; n++) {
+    //   segment        = segments[(baseSegment.index + n) % segments.length];
+    //   segment.looped = segment.index < baseSegment.index;
+    //   segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
+    //   segment.clip   = maxy;
 
-      Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-      Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    //   Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    //   Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
 
-      x  = x + dx;
-      dx = dx + segment.curve;
+    //   x  = x + dx;
+    //   dx = dx + segment.curve;
 
-      if ((segment.p1.camera.z <= cameraDepth)         || // behind us
-          (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
-          (segment.p2.screen.y >= maxy))                  // clip by (already thised) hill
-        continue;
+    //   if ((segment.p1.camera.z <= cameraDepth)         || // behind us
+    //       (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
+    //       (segment.p2.screen.y >= maxy))                  // clip by (already thised) hill
+    //     continue;
 
-      this.segment(ctx, width, lanes,
-                     segment.p1.screen.x,
-                     segment.p1.screen.y,
-                     segment.p1.screen.w,
-                     segment.p2.screen.x,
-                     segment.p2.screen.y,
-                     segment.p2.screen.w,
-                     segment.fog,
-                     segment.color);
+    //   this.segment(ctx, width, lanes,
+    //                  segment.p1.screen.x,
+    //                  segment.p1.screen.y,
+    //                  segment.p1.screen.w,
+    //                  segment.p2.screen.x,
+    //                  segment.p2.screen.y,
+    //                  segment.p2.screen.w,
+    //                  segment.fog,
+    //                  segment.color);
 
-      maxy = segment.p1.screen.y;
-    }
+    //   maxy = segment.p1.screen.y;
+    // }
 
-    for (n = (drawDistance-1) ; n > 0 ; n--) {
-      segment = segments[(baseSegment.index + n) % segments.length];
+    // for (n = (drawDistance-1) ; n > 0 ; n--) {
+    //   segment = segments[(baseSegment.index + n) % segments.length];
 
-      for(i = 0 ; i < segment.cars.length ; i++) {
-        car         = segment.cars[i];
-        sprite      = car.sprite;
-        spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
-        spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
-        spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
-        this.renderSprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
-      }
+    //   for(i = 0 ; i < segment.cars.length ; i++) {
+    //     car         = segment.cars[i];
+    //     sprite      = car.sprite;
+    //     spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
+    //     spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
+    //     spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
+    //     this.renderSprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+    //   }
 
-      for(i = 0 ; i < segment.sprites.length ; i++) {
-        sprite      = segment.sprites[i];
-        spriteScale = segment.p1.screen.scale;
-        spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
-        spriteY     = segment.p1.screen.y;
-        this.renderSprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
-      }
+    //   for(i = 0 ; i < segment.sprites.length ; i++) {
+    //     sprite      = segment.sprites[i];
+    //     spriteScale = segment.p1.screen.scale;
+    //     spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
+    //     spriteY     = segment.p1.screen.y;
+    //     this.renderSprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+    //   }
 
-      if (segment == playerSegment) {
-        this.renderPlayer(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
-          cameraDepth/playerZ, width/2,
-          (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
-          speed * (keyLeft ? -1 : keyRight ? 1 : 0),
-          playerSegment.p2.world.y - playerSegment.p1.world.y);
-      }
-    }
+    //   if (segment == playerSegment) {
+    //     this.renderPlayer(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
+    //       cameraDepth/playerZ, width/2,
+    //       (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
+    //       speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+    //       playerSegment.p2.world.y - playerSegment.p1.world.y);
+    //   }
+    // }
   }
 
   renderScreens() {
-    // console.log('THIS RENDERE: ', this)
     this.drawBackground(this.game.background, 640, 480, BACKGROUND.MENU);
   }
 
   render() {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);
 
-    if (this.game.gameState !== 'game') {
-      this.renderScreens();
-    } else {
+    // if (this.game.gameState !== 'game') {
+    //   this.renderScreens();
+    // } else {
       this.renderGame();
-    }
+    // }
   }
 }

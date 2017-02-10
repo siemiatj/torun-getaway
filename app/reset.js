@@ -7,7 +7,6 @@ import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 
 export default class Reset {
   constructor(game) {
-    console.log('GAME: ', game);
     this.gameInstance = game;
   }
 

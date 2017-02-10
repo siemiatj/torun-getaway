@@ -39,7 +39,7 @@ export default class Game {
       { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.keySlower = false; } }
     ];
 
-    this.renderer = new Renderer(this.internals, this.internals.canvas.getContext('2d'));
+    this.renderer = new Renderer(this, this.internals.canvas.getContext('2d'));
     this.resetter = new Resetter(this);
   }
 
