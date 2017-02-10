@@ -1,4 +1,4 @@
 {
-  "extends": "eslint:defaults",
+  "extends": "defaults",
   "parser": "babel-eslint",
 }

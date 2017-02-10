@@ -1,6 +1,4 @@
-import Render from 'render';
 import Game from 'game';
-import * as Util from 'util';
 import Dom from 'dom';
 import { GAME_SETTINGS } from 'constants';
 
