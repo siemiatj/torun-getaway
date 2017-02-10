@@ -5,9 +5,9 @@ import { COLORS, BACKGROUND, SPRITES } from 'constants';
 // canvas rendering helpers
 //=========================================================================
 export default class Render {
-  constructor(props) {
-    this.game = props.gameVariables;
-    this.ctx = props.ctx;
+  constructor(gameVariables, context) {
+    this.game = gameVariables;
+    this.ctx = context;
   }
 
   drawPolygon(x1, y1, x2, y2, x3, y3, x4, y4, color) {
@@ -138,7 +138,7 @@ export default class Render {
     let x  = 0;
     let dx = - (baseSegment.curve * basePercent);
 
-    ctx.clearRect(0, 0, width, height);
+    // ctx.clearRect(0, 0, width, height);
 
     this.background(background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
     this.background(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
@@ -207,7 +207,8 @@ export default class Render {
   }
 
   renderScreens() {
-    this.background(ctx, background, 640, 480);
+    // console.log('THIS RENDERE: ', this)
+    this.drawBackground(this.game.background, 640, 480, BACKGROUND.MENU);
   }
 
   render() {

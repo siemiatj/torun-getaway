@@ -4,7 +4,7 @@ import Resetter from 'reset';
 import _set from 'lodash.set';
 import _get from 'lodash.get';
 import { timestamp, findSegment } from 'util';
-import { KEY, COLORS, BACKGROUND, SPRITES } from 'constants';
+import { KEY, SPRITES } from 'constants';
 
 export default class Game {
   constructor(opts) {
@@ -39,26 +39,15 @@ export default class Game {
       { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.keySlower = false; } }
     ];
 
-    this.renderer = new Renderer({
-      gameVariables: this.internals,
-      ctx: this.internals.canvas.getContext('2d'),
-    });
-
-    this.resetter = new Resetter({
-      game: this,
-    });
+    this.renderer = new Renderer(this.internals, this.internals.canvas.getContext('2d'));
+    this.resetter = new Resetter(this);
   }
 
   setValue(name, value) {
-    // const { internals } = this;
-    // this.internals[name] = value;
     _set(this.internals, name, value);
-
-    // this.internals = internals;
   }
 
   getValue(name) {
-    // return this.internals[name];
     return _get(this.internals, name);
   }
 
@@ -99,7 +88,7 @@ export default class Game {
 //=========================================================================
 
   updateStart() {
-    console.log('update start');
+    // console.log('update start');
   }
 
   update(dt) {
@@ -287,11 +276,11 @@ export default class Game {
   ready(images) {
     const { gameState } = this.internals;
 
-    if (gameState === 'intro' || gameState === 'select_player') {
-      this.background = images[0];
+    if (gameState !== 'game') {
+      this.setValue('background', images[0]);
     } else {
-      this.background = images[1];
-      this.sprites    = images[2];
+      this.setValue('background', images[1]);
+      this.setValue('sprites', images[2]);
     }
 
     this.resetter.reset();
@@ -340,11 +329,11 @@ export default class Game {
             gdt = gdt - step;
             update(step);
           }
-          this.renderer.render();
         } else {
           updateStart();
-          this.renderer.renderStart();
         }
+
+        this.renderer.render();
         
         last = now;
         window.requestAnimationFrame(frame, canvas);
