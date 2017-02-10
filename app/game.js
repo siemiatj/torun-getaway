@@ -1,46 +1,88 @@
 import Dom from 'dom';
+import Renderer from 'render';
 import { timestamp, findSegment } from 'util';
-
-
-let skyOffset      = 0;                       // current sky scroll offset
-let hillOffset     = 0;                       // current hill scroll offset
-let treeOffset     = 0;                       // current tree scroll offset
-let segments       = [];                      // array of road segments
-let cars           = [];                      // array of cars on the road
-let gameState      = 'intro';
-let background     = null;                    // our background image (loaded below)
-let sprites        = null;                    // our spritesheet (loaded below)
-let resolution     = null;                    // scaling factor to provide resolution independence (computed)
-let trackLength    = null;                    // z length of entire track (computed)
-let cameraDepth    = null;                    // z distance camera is from screen (computed)
-let playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
-let playerZ        = null;                    // player relative z distance from camera (computed)
-let position       = 0;                       // current camera Z position (add playerZ to get player's absolute Z position)
-let speed          = 0;                       // current speed
-let currentLapTime = 0;                       // current lap time
-let lastLapTime    = null;                    // last lap time
-
+import { KEY, COLORS, BACKGROUND, SPRITES } from 'constants';
 
 export default class Game {
   constructor(opts) {
-    console.log('OPTS: ', opts);
-    this.internals = { ...opts };
+    this.internals = {
+      ...opts,
+      skyOffset: 0, // current sky scroll offset
+      hillOffset: 0, // current hill scroll offset
+      treeOffset: 0, // current tree scroll offset
+      segments: [], // array of road segments
+      cars: [], // array of cars on the road
+      background: null, // our background image (loaded below)
+      sprites: null, // our spritesheet (loaded below)
+      resolution: null, // scaling factor to provide resolution independence (computed)
+      trackLength: null,  // z length of entire track (computed)
+      cameraDepth: null, // z distance camera is from screen (computed)
+      playerX: 0, // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
+      playerZ: null, // player relative z distance from camera (computed)
+      position: 0, // current camera Z position (add playerZ to get player's absolute Z position)
+      speed: 0, // current speed
+      currentLapTime: 0, // current lap time
+      lastLapTime: null, // last lap time
+    };
+
+    this.keys: [
+      { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: () => { this.keyLeft   = true;  } },
+      { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: () => { this.keyRight  = true;  } },
+      { keys: [KEY.UP,    KEY.W], mode: 'down', action: () => { this.keyFaster = true;  } },
+      { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: () => { this.keySlower = true;  } },
+      { keys: [KEY.LEFT,  KEY.A], mode: 'up',   action: () => { this.keyLeft   = false; } },
+      { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: () => { this.keyRight  = false; } },
+      { keys: [KEY.UP,    KEY.W], mode: 'up',   action: () => { this.keyFaster = false; } },
+      { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.keySlower = false; } }
+    ];
   }
 
   setGameState(state) {
     this.internals.gameState = state;
   }
 
+  setKeyListener() {
+    const onkey = (keyCode, mode) => {
+      const { keys } = this;
+      var n, k;
+      for(n = 0 ; n < keys.length ; n++) {
+        k = keys[n];
+        k.mode = k.mode || 'up';
+        if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
+          if (k.mode == mode) {
+            k.action.call();
+          }
+        }
+      }
+    };
+
+    Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); });
+    Dom.on(document, 'keyup', function(ev) { onkey(ev.keyCode, 'up'); });
+  }
+
+  // playMusic: function() {
+  //   var music = Dom.get('music');
+  //   music.loop = true;
+  //   music.volume = 0.05; // shhhh! annoying music!
+  //   music.muted = (Dom.storage.muted === "true");
+  //   music.play();
+  //   Dom.toggleClassName('mute', 'on', music.muted);
+  //   Dom.on('mute', 'click', function() {
+  //     Dom.storage.muted = music.muted = !music.muted;
+  //     Dom.toggleClassName('mute', 'on', music.muted);
+  //   });
+  // }
+
 //=========================================================================
 // UPDATE THE GAME WORLD
 //=========================================================================
 
   updateStart() {
-
+    console.log('update start');
   }
 
   update(dt) {
-    const { segments } = this.internals;
+    const { segments, position, playerZ, speed, maxSpeed } = this.internals;
     var n, car, carW, sprite, spriteW;
     var playerSegment = findSegment(segments, position+playerZ);
     var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
@@ -124,7 +166,7 @@ export default class Game {
       }
     }
 
-    updateHud('speed',            5 * Math.round(speed/500));
+    updateHud('speed', 5 * Math.round(speed/500));
     updateHud('current_lap_time', formatTime(currentLapTime));
   }
 
@@ -194,6 +236,8 @@ export default class Game {
   }
 
   updateHud(key, value) { // accessing DOM can be slow, so only do it if value has changed
+    const { hud } = this;
+
     if (hud[key].value !== value) {
       hud[key].value = value;
       Dom.set(hud[key].dom, value);
@@ -211,36 +255,66 @@ export default class Game {
     }
   }
 
+  ready(images) {
+    const { gameState } = this.internals;
+
+    if (gameState === 'intro' || gameState === 'select_player') {
+      this.background = images[0];
+    } else {
+      this.background = images[1];
+      this.sprites    = images[2];
+    }
+
+    this.reset();
+  }
+
+  loadImages(names, callback) { // load multiple images and callback when ALL images have loaded
+    const preloadImage = function (path) {
+      return new Promise(function (resolve, reject) {
+        var image = new Image();
+        image.onload = resolve(image);
+        image.onerror = reject();
+        image.src = path;
+      });
+    };
+
+    Promise.all(names.map(url => {
+      const imgUrl = `../static/images/${url}.png`;
+      return preloadImage(imgUrl);
+    }))
+    .then(images => {
+      callback(images);
+    });
+  }
+
   run() {
-    const { ready, images, canvas, render, step } = this.internals;
+    const { images, canvas, step } = this.internals;
     const { update, updateStart } = this;
 
-    this.loadImages(images, (images) => {
+    this.loadImages(images, (loadedImages) => {
+      this.ready(loadedImages);
+      this.setKeyListener();
 
-      ready(images);
-      this.setKeyListener(keys);
+      let now = null;
+      let last = timestamp();
+      let dt = 0;
+      let gdt = 0;
 
-      var now    = null,
-          last   = timestamp(),
-          dt     = 0,
-          gdt    = 0;
-
-      const self = this;
-
-      function frame() {
+      const frame = () => {
         now = timestamp();
 
-        if (self.gameState === 'game') {
+        if (this.gameState === 'game') {
           dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
           gdt = gdt + dt;
+
           while (gdt > step) {
             gdt = gdt - step;
             update(step);
           }
-          render();
+          Rendered.render();
         } else {
           updateStart();
-          renderStart();
+          Renderer.renderStart();
         }
         
         last = now;
@@ -251,64 +325,4 @@ export default class Game {
       // Game.playMusic();
     });
   }
-
-  ready(images) {
-    if (gameState === 'intro' || gameState === 'select_player') {
-      background = images[0];
-    } else {
-      background = images[1];
-      sprites    = images[2];
-    }
-
-    reset({ ...GAME_SETTINGS, canvas, segments });
-  }
-
-  loadImages(names, callback) { // load multiple images and callback when ALL images have loaded
-    const preloadImage = function (path) {
-      return new Promise(function (resolve, reject) {
-        var image = new Image();
-        image.onload = resolve(image);
-        image.onerror = resolve();
-        image.src = path;
-      });
-    };
-
-    Promise.all(names.map(url => {
-      const imgUrl = `../static/images/${url}.png`;
-      return preloadImage(imgUrl);
-    }))
-    .then(arr => {
-      callback(arr);
-    });
-  }
-
-  setKeyListener(keys) {
-    var onkey = function(keyCode, mode) {
-      var n, k;
-      for(n = 0 ; n < keys.length ; n++) {
-        k = keys[n];
-        k.mode = k.mode || 'up';
-        if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
-          if (k.mode == mode) {
-            k.action.call();
-          }
-        }
-      }
-    };
-    Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); } );
-    Dom.on(document, 'keyup',   function(ev) { onkey(ev.keyCode, 'up');   } );
-  }
-
-  // playMusic: function() {
-  //   var music = Dom.get('music');
-  //   music.loop = true;
-  //   music.volume = 0.05; // shhhh! annoying music!
-  //   music.muted = (Dom.storage.muted === "true");
-  //   music.play();
-  //   Dom.toggleClassName('mute', 'on', music.muted);
-  //   Dom.on('mute', 'click', function() {
-  //     Dom.storage.muted = music.muted = !music.muted;
-  //     Dom.toggleClassName('mute', 'on', music.muted);
-  //   });
-  // }
 };
