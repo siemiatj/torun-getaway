@@ -5,11 +5,15 @@ import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 // canvas rendering helpers
 //=========================================================================
 class Render {
-  constructor(opts) {
-    this.internals = { ...opts };
+  constructor() {
+    this.game = null;
   }
 
-  polygon(ctx, x1, y1, x2, y2, x3, y3, x4, y4, color) {
+  setGame(gameObj) {
+    this.game = gameObj;
+  }
+
+  drawPolygon(ctx, x1, y1, x2, y2, x3, y3, x4, y4, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -20,7 +24,7 @@ class Render {
     ctx.fill();
   }
 
-  segment(ctx, width, lanes, x1, y1, w1, x2, y2, w2, fog, color) {
+  drawSegment(ctx, width, lanes, x1, y1, w1, x2, y2, w2, fog, color) {
     var r1 = this.rumbleWidth(w1, lanes),
         r2 = this.rumbleWidth(w2, lanes),
         l1 = this.laneMarkerWidth(w1, lanes),
@@ -46,22 +50,22 @@ class Render {
     this.fog(ctx, 0, y1, width, y2-y1, fog);
   }
 
-  background(ctx, background, width, height, layer, rotation, offset) {
+  drawBackground(background, width, height, layer, rotation, offset) {
     rotation = rotation || 0;
     offset   = offset   || 0;
 
-    var imageW = layer.w/2;
-    var imageH = layer.h;
+    const imageW = layer.w / 2;
+    const imageH = layer.h;
 
-    var sourceX = layer.x + Math.floor(layer.w * rotation);
-    var sourceY = layer.y
-    var sourceW = Math.min(imageW, layer.x+layer.w-sourceX);
-    var sourceH = imageH;
+    const sourceX = layer.x + Math.floor(layer.w * rotation);
+    const sourceY = layer.y
+    const sourceW = Math.min(imageW, layer.x+layer.w-sourceX);
+    const sourceH = imageH;
     
-    var destX = 0;
-    var destY = offset;
-    var destW = Math.floor(width * (sourceW/imageW));
-    var destH = height;
+    const destX = 0;
+    const destY = offset;
+    const destW = Math.floor(width * (sourceW/imageW));
+    const destH = height;
 
     ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
     if (sourceW < imageW)
@@ -115,8 +119,7 @@ class Render {
   //=========================================================================
   // RENDER THE GAME WORLD
   //=========================================================================
-
-  render(segments, position, ctx, background, width, height, ) {
+  renderGame() {
     let baseSegment   = Util.findSegment(segments, position);
     let basePercent   = Util.percentRemaining(position, segmentLength);
     let playerSegment = Util.findSegment(segments, position+playerZ);
@@ -128,73 +131,92 @@ class Render {
 
     ctx.clearRect(0, 0, width, height);
 
-    if (gameState === 'intro') {
-      Render.background(ctx, background, 640, 480);
+    Render.background(background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
+    Render.background(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
+    Render.background(background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
+
+    let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
+
+    for (n = 0 ; n < drawDistance ; n++) {
+      segment        = segments[(baseSegment.index + n) % segments.length];
+      segment.looped = segment.index < baseSegment.index;
+      segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
+      segment.clip   = maxy;
+
+      Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+      Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+
+      x  = x + dx;
+      dx = dx + segment.curve;
+
+      if ((segment.p1.camera.z <= cameraDepth)         || // behind us
+          (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
+          (segment.p2.screen.y >= maxy))                  // clip by (already rendered) hill
+        continue;
+
+      Render.segment(ctx, width, lanes,
+                     segment.p1.screen.x,
+                     segment.p1.screen.y,
+                     segment.p1.screen.w,
+                     segment.p2.screen.x,
+                     segment.p2.screen.y,
+                     segment.p2.screen.w,
+                     segment.fog,
+                     segment.color);
+
+      maxy = segment.p1.screen.y;
+    }
+
+    for (n = (drawDistance-1) ; n > 0 ; n--) {
+      segment = segments[(baseSegment.index + n) % segments.length];
+
+      for(i = 0 ; i < segment.cars.length ; i++) {
+        car         = segment.cars[i];
+        sprite      = car.sprite;
+        spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
+        spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
+        spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
+        Render.sprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+      }
+
+      for(i = 0 ; i < segment.sprites.length ; i++) {
+        sprite      = segment.sprites[i];
+        spriteScale = segment.p1.screen.scale;
+        spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
+        spriteY     = segment.p1.screen.y;
+        Render.sprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+      }
+
+      if (segment == playerSegment) {
+        Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
+          cameraDepth/playerZ, width/2,
+          (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
+          speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+          playerSegment.p2.world.y - playerSegment.p1.world.y);
+      }
+    }
+  }
+
+  renderScreens() {
+    this.background(ctx, background, 640, 480);
+  }
+
+  render() {
+    let baseSegment   = Util.findSegment(segments, position);
+    let basePercent   = Util.percentRemaining(position, segmentLength);
+    let playerSegment = Util.findSegment(segments, position+playerZ);
+    let playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
+    let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
+    let maxy          = height;
+    let x  = 0;
+    let dx = - (baseSegment.curve * basePercent);
+
+    ctx.clearRect(0, 0, width, height);
+
+    if (gameState !== 'game') {
+      this.renderScreens();
     } else {
-      Render.background(ctx, background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
-      Render.background(ctx, background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
-      Render.background(ctx, background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
-
-      let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
-
-      for (n = 0 ; n < drawDistance ; n++) {
-        segment        = segments[(baseSegment.index + n) % segments.length];
-        segment.looped = segment.index < baseSegment.index;
-        segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
-        segment.clip   = maxy;
-
-        Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-        Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-
-        x  = x + dx;
-        dx = dx + segment.curve;
-
-        if ((segment.p1.camera.z <= cameraDepth)         || // behind us
-            (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
-            (segment.p2.screen.y >= maxy))                  // clip by (already rendered) hill
-          continue;
-
-        Render.segment(ctx, width, lanes,
-                       segment.p1.screen.x,
-                       segment.p1.screen.y,
-                       segment.p1.screen.w,
-                       segment.p2.screen.x,
-                       segment.p2.screen.y,
-                       segment.p2.screen.w,
-                       segment.fog,
-                       segment.color);
-
-        maxy = segment.p1.screen.y;
-      }
-
-      for (n = (drawDistance-1) ; n > 0 ; n--) {
-        segment = segments[(baseSegment.index + n) % segments.length];
-
-        for(i = 0 ; i < segment.cars.length ; i++) {
-          car         = segment.cars[i];
-          sprite      = car.sprite;
-          spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
-          spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
-          spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
-          Render.sprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
-        }
-
-        for(i = 0 ; i < segment.sprites.length ; i++) {
-          sprite      = segment.sprites[i];
-          spriteScale = segment.p1.screen.scale;
-          spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
-          spriteY     = segment.p1.screen.y;
-          Render.sprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
-        }
-
-        if (segment == playerSegment) {
-          Render.player(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
-            cameraDepth/playerZ, width/2,
-            (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
-            speed * (keyLeft ? -1 : keyRight ? 1 : 0),
-            playerSegment.p2.world.y - playerSegment.p1.world.y);
-        }
-      }
+      this.renderGame();
     }
   }
 }

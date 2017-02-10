@@ -25,7 +25,7 @@ export default class Game {
       lastLapTime: null, // last lap time
     };
 
-    this.keys: [
+    this.keys = [
       { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: () => { this.keyLeft   = true;  } },
       { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: () => { this.keyRight  = true;  } },
       { keys: [KEY.UP,    KEY.W], mode: 'down', action: () => { this.keyFaster = true;  } },
@@ -45,7 +45,7 @@ export default class Game {
     const onkey = (keyCode, mode) => {
       const { keys } = this;
       var n, k;
-      for(n = 0 ; n < keys.length ; n++) {
+      for(n = 0; n < keys.length; n++) {
         k = keys[n];
         k.mode = k.mode || 'up';
         if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
@@ -82,92 +82,97 @@ export default class Game {
   }
 
   update(dt) {
-    const { segments, position, playerZ, speed, maxSpeed } = this.internals;
-    var n, car, carW, sprite, spriteW;
-    var playerSegment = findSegment(segments, position+playerZ);
-    var playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
-    var speedPercent  = speed/maxSpeed;
-    var dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
-    var startPosition = position;
+    // const { segments, playerZ, speed, maxSpeed } = this.internals;
+    // let { position } = this.internals;
+    // let n, car, carW, sprite, spriteW;
+    // let playerSegment = this.findSegment(segments, position+playerZ);
+    // let playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
+    // let speedPercent  = speed/maxSpeed;
+    // let dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
+    // let startPosition = position;
 
-    updateCars(dt, playerSegment, playerW);
+    // updateCars(dt, playerSegment, playerW);
 
-    position = Util.increase(position, dt * speed, trackLength);
+    // position = Util.increase(position, dt * speed, trackLength);
 
-    if (keyLeft)
-      playerX = playerX - dx;
-    else if (keyRight)
-      playerX = playerX + dx;
+    // if (keyLeft)
+    //   playerX = playerX - dx;
+    // else if (keyRight)
+    //   playerX = playerX + dx;
 
-    playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
+    // playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
-    if (keyFaster)
-      speed = Util.accelerate(speed, accel, dt);
-    else if (keySlower)
-      speed = Util.accelerate(speed, breaking, dt);
-    else
-      speed = Util.accelerate(speed, decel, dt);
+    // if (keyFaster) {
+    //   speed = Util.accelerate(speed, accel, dt);
+    // }
+    // else if (keySlower) {
+    //   speed = Util.accelerate(speed, breaking, dt);
+    // }
+    // else {
+    //   speed = Util.accelerate(speed, decel, dt);
+    // }
 
 
-    if ((playerX < -1) || (playerX > 1)) {
+    // if ((playerX < -1) || (playerX > 1)) {
 
-      if (speed > offRoadLimit)
-        speed = Util.accelerate(speed, offRoadDecel, dt);
+    //   if (speed > offRoadLimit) {
+    //     speed = Util.accelerate(speed, offRoadDecel, dt);
+    //   }
 
-      for(n = 0 ; n < playerSegment.sprites.length ; n++) {
-        sprite  = playerSegment.sprites[n];
-        spriteW = sprite.source.w * SPRITES.SCALE;
-        if (Util.overlap(playerX, playerW, sprite.offset + spriteW/2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
-          speed = maxSpeed/5;
-          position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
-          break;
-        }
-      }
-    }
+    //   for(n = 0 ; n < playerSegment.sprites.length ; n++) {
+    //     sprite  = playerSegment.sprites[n];
+    //     spriteW = sprite.source.w * SPRITES.SCALE;
+    //     if (Util.overlap(playerX, playerW, sprite.offset + spriteW/2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
+    //       speed = maxSpeed/5;
+    //       position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
+    //       break;
+    //     }
+    //   }
+    // }
 
-    for(n = 0 ; n < playerSegment.cars.length ; n++) {
-      car  = playerSegment.cars[n];
-      carW = car.sprite.w * SPRITES.SCALE;
-      if (speed > car.speed) {
-        if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
-          speed    = car.speed * (car.speed/speed);
-          position = Util.increase(car.z, -playerZ, trackLength);
-          break;
-        }
-      }
-    }
+    // for(n = 0 ; n < playerSegment.cars.length ; n++) {
+    //   car  = playerSegment.cars[n];
+    //   carW = car.sprite.w * SPRITES.SCALE;
+    //   if (speed > car.speed) {
+    //     if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
+    //       speed    = car.speed * (car.speed/speed);
+    //       position = Util.increase(car.z, -playerZ, trackLength);
+    //       break;
+    //     }
+    //   }
+    // }
 
-    playerX = Util.limit(playerX, -3, 3);     // dont ever var it go too far out of bounds
-    speed   = Util.limit(speed, 0, maxSpeed); // or exceed maxSpeed
+    // playerX = Util.limit(playerX, -3, 3);     // dont ever var it go too far out of bounds
+    // speed   = Util.limit(speed, 0, maxSpeed); // or exceed maxSpeed
 
-    skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * (position-startPosition)/segmentLength, 1);
-    hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
-    treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
+    // skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * (position-startPosition)/segmentLength, 1);
+    // hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
+    // treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
 
-    if (position > playerZ) {
-      if (currentLapTime && (startPosition < playerZ)) {
-        // lastLapTime    = currentLapTime;
-        // currentLapTime = 0;
-        // if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
-        //   Dom.storage.fast_lap_time = lastLapTime;
-        //   updateHud('fast_lap_time', formatTime(lastLapTime));
-        //   Dom.addClassName('fast_lap_time', 'fastest');
-        //   Dom.addClassName('last_lap_time', 'fastest');
-        // }
-        // else {
-        //   Dom.removeClassName('fast_lap_time', 'fastest');
-        //   Dom.removeClassName('last_lap_time', 'fastest');
-        // }
-        // updateHud('last_lap_time', formatTime(lastLapTime));
-        // Dom.show('last_lap_time');
-      }
-      else {
-        currentLapTime += dt;
-      }
-    }
+    // if (position > playerZ) {
+    //   if (currentLapTime && (startPosition < playerZ)) {
+    //     // lastLapTime    = currentLapTime;
+    //     // currentLapTime = 0;
+    //     // if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
+    //     //   Dom.storage.fast_lap_time = lastLapTime;
+    //     //   updateHud('fast_lap_time', formatTime(lastLapTime));
+    //     //   Dom.addClassName('fast_lap_time', 'fastest');
+    //     //   Dom.addClassName('last_lap_time', 'fastest');
+    //     // }
+    //     // else {
+    //     //   Dom.removeClassName('fast_lap_time', 'fastest');
+    //     //   Dom.removeClassName('last_lap_time', 'fastest');
+    //     // }
+    //     // updateHud('last_lap_time', formatTime(lastLapTime));
+    //     // Dom.show('last_lap_time');
+    //   }
+    //   else {
+    //     currentLapTime += dt;
+    //   }
+    // }
 
-    updateHud('speed', 5 * Math.round(speed/500));
-    updateHud('current_lap_time', formatTime(currentLapTime));
+    // updateHud('speed', 5 * Math.round(speed/500));
+    // updateHud('current_lap_time', formatTime(currentLapTime));
   }
 
   updateCars(dt, playerSegment, playerW) {
@@ -318,7 +323,7 @@ export default class Game {
         }
         
         last = now;
-        requestAnimationFrame(frame, canvas);
+        window.requestAnimationFrame(frame, canvas);
       }
       frame(); // lets get this party started
       
