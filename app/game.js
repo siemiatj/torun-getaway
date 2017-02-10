@@ -47,6 +47,14 @@ export default class Game {
     });
   }
 
+  setValue(name, value) {
+    this.internals[name] = value;
+  }
+
+  getValue(name) {
+    return this.internals[name];
+  }
+
   setKeyListener() {
     const onkey = (keyCode, mode) => {
       const { keys } = this;
@@ -182,14 +190,17 @@ export default class Game {
   }
 
   updateCars(dt, playerSegment, playerW) {
-    var n, car, oldSegment, newSegment;
-    for (n = 0 ; n < cars.length ; n++) {
+    const { cars } = this.internals;
+    let car, oldSegment, newSegment;
+
+    for (let n = 0; n < cars.length; n++) {
       car         = cars[n];
       oldSegment  = findSegment(car.z);
       car.offset  = car.offset + updateCarOffset(car, oldSegment, playerSegment, playerW);
       car.z       = Util.increase(car.z, dt * car.speed, trackLength);
       car.percent = Util.percentRemaining(car.z, segmentLength); // useful for interpolation during rendering phase
       newSegment  = findSegment(car.z);
+
       if (oldSegment != newSegment) {
         index = oldSegment.cars.indexOf(car);
         oldSegment.cars.splice(index, 1);
@@ -276,13 +287,13 @@ export default class Game {
       this.sprites    = images[2];
     }
 
-    this.reset();
+    this.resetter.reset();
   }
 
   loadImages(names, callback) { // load multiple images and callback when ALL images have loaded
     const preloadImage = function (path) {
       return new Promise(function (resolve, reject) {
-        var image = new Image();
+        const image = new Image();
         image.onload = resolve(image);
         image.onerror = reject();
         image.src = path;
@@ -336,4 +347,4 @@ export default class Game {
       // Game.playMusic();
     });
   }
-};
+}

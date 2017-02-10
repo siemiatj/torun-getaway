@@ -7,6 +7,7 @@ import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 
 export default class Reset {
   constructor(opts) {
+    console.log('GAME: ', opts);
     this.gameInstance = opts.game;
   }
 
@@ -216,7 +217,7 @@ export default class Reset {
     const { gameInstance } = this;
     // console.log('options: ', options);
     // options       = options || {};
-    gameInstance.canvas.width  = gameInstance.width;//  = Util.toInt(canvas.width, width);
+    gameInstance.internals.canvas.width  = gameInstance.width;//  = Util.toInt(canvas.width, width);
     gameInstance.canvas.height = gameInstance.height;// = Util.toInt(canvas.height, height);
     // lanes                  = Util.toInt(lanes,lanes);
     // roadWidth              = Util.toInt(roadWidth, roadWidth);
