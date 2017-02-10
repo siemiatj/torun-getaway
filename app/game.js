@@ -1,6 +1,8 @@
 import Dom from 'dom';
 import Renderer from 'render';
 import Resetter from 'reset';
+import _set from 'lodash.set';
+import _get from 'lodash.get';
 import { timestamp, findSegment } from 'util';
 import { KEY, COLORS, BACKGROUND, SPRITES } from 'constants';
 
@@ -48,11 +50,16 @@ export default class Game {
   }
 
   setValue(name, value) {
-    this.internals[name] = value;
+    // const { internals } = this;
+    // this.internals[name] = value;
+    _set(this.internals, name, value);
+
+    // this.internals = internals;
   }
 
   getValue(name) {
-    return this.internals[name];
+    // return this.internals[name];
+    return _get(this.internals, name);
   }
 
   setKeyListener() {

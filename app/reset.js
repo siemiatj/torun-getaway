@@ -214,11 +214,11 @@ export default class Reset {
   }
 
   reset() {
-    const { gameInstance } = this;
+    const gI = this.gameInstance;
     // console.log('options: ', options);
     // options       = options || {};
-    gameInstance.internals.canvas.width  = gameInstance.width;//  = Util.toInt(canvas.width, width);
-    gameInstance.canvas.height = gameInstance.height;// = Util.toInt(canvas.height, height);
+    gI.setValue('canvas.width', gI.getValue('width'));//  = Util.toInt(canvas.width, width);
+    gI.setValue('canvas.height', gI.getValue('height'));// = Util.toInt(canvas.height, height);
     // lanes                  = Util.toInt(lanes,lanes);
     // roadWidth              = Util.toInt(roadWidth, roadWidth);
     // cameraHeight           = Util.toInt(cameraHeight, cameraHeight);
@@ -227,13 +227,13 @@ export default class Reset {
     // fieldOfView            = Util.toInt(fieldOfView, fieldOfView);
     // segmentLength          = Util.toInt(segmentLength, segmentLength);
     // rumbleLength           = Util.toInt(rumbleLength, rumbleLength);
-    gameInstance.cameraDepth = 1 / Math.tan((gameInstance.fieldOfView/2) * Math.PI/180);
-    gameInstance.playerZ = (gameInstance.cameraHeight * gameInstance.cameraDepth);
-    gameInstance.resolution = gameInstance.height/480;
+    gI.setValue('cameraDepth', 1 / Math.tan((gI.getValue('fieldOfView') / 2) * Math.PI / 180));
+    gI.setValue('playerZ', gI.getValue('cameraHeight') * gI.getValue('cameraDepth'));
+    gI.setValue('resolution', gI.getValue('height') / 480);
     // refreshTweakUI();
 
-    if (gameInstance.gameState === 'game' && (gameInstance.segments.length==0) ||
-      (gameInstance.segmentLength) || (gameInstance.rumbleLength)) {
+    if (gI.gameState === 'game' && (gI.segments.length==0) ||
+      (gI.segmentLength) || (gI.rumbleLength)) {
       this.resetRoad();
     }
   }
