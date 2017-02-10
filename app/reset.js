@@ -5,9 +5,9 @@ import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 // game reset helpers
 //=========================================================================
 
-class Reset {
+export default class Reset {
   constructor(opts) {
-    this.game = opts.game;
+    this.game = o;
   }
 
   lastY() {
@@ -215,6 +215,3 @@ class Reset {
     }
   }
 }
-
-const reset = new Reset();
-export default reset;

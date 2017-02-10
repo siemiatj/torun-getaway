@@ -1,5 +1,6 @@
 import Dom from 'dom';
 import Renderer from 'render';
+import Resetter from 'reset';
 import { timestamp, findSegment } from 'util';
 import { KEY, COLORS, BACKGROUND, SPRITES } from 'constants';
 
@@ -35,10 +36,15 @@ export default class Game {
       { keys: [KEY.UP,    KEY.W], mode: 'up',   action: () => { this.keyFaster = false; } },
       { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.keySlower = false; } }
     ];
-  }
 
-  setGameState(state) {
-    this.internals.gameState = state;
+    this.renderer = new Renderer({
+      gameVariables: this.internals,
+      ctx: this.internals.canvas.getContext('2d'),
+    });
+
+    this.resetter = new Resetter({
+      game: this,
+    });
   }
 
   setKeyListener() {
@@ -316,10 +322,10 @@ export default class Game {
             gdt = gdt - step;
             update(step);
           }
-          Rendered.render();
+          this.renderer.render();
         } else {
           updateStart();
-          Renderer.renderStart();
+          this.renderer.renderStart();
         }
         
         last = now;

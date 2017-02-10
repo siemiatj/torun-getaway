@@ -1,10 +1,10 @@
 import { randomChoice } from 'util';
-import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
+import { COLORS, BACKGROUND, SPRITES } from 'constants';
 
 //=========================================================================
 // canvas rendering helpers
 //=========================================================================
-class Render {
+export default class Render {
   constructor() {
     this.game = null;
   }
@@ -220,6 +220,3 @@ class Render {
     }
   }
 }
-
-const render = new Render();
-export default render;
