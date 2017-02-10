@@ -22,25 +22,7 @@ if (!window.requestAnimationFrame) { // http://paulirish.com/2011/requestanimati
 //=========================================================================
 
 const canvas = Dom.get('canvas');
-const ctx = canvas.getContext('2d'); // ...and its drawing context
-
-let skyOffset      = 0;                       // current sky scroll offset
-let hillOffset     = 0;                       // current hill scroll offset
-let treeOffset     = 0;                       // current tree scroll offset
-let segments       = [];                      // array of road segments
-let cars           = [];                      // array of cars on the road
-let gameState      = 'intro';
-let background     = null;                    // our background image (loaded below)
-let sprites        = null;                    // our spritesheet (loaded below)
-let resolution     = null;                    // scaling factor to provide resolution independence (computed)
-let trackLength    = null;                    // z length of entire track (computed)
-let cameraDepth    = null;                    // z distance camera is from screen (computed)
-let playerX        = 0;                       // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
-let playerZ        = null;                    // player relative z distance from camera (computed)
-let position       = 0;                       // current camera Z position (add playerZ to get player's absolute Z position)
-let speed          = 0;                       // current speed
-let currentLapTime = 0;                       // current lap time
-let lastLapTime    = null;                    // last lap time
+// const ctx = canvas.getContext('2d'); // ...and its drawing context
 const hud = {
   speed:            { value: null, dom: Dom.get('speed_value')            },
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
@@ -52,35 +34,11 @@ const hud = {
 //=========================================================================
 // THE GAME LOOP
 //=========================================================================
-const reset = function({ ...options }) {
-  // console.log('options: ', options);
-  // options       = options || {};
-  options.canvas.width  = options.width;//  = Util.toInt(canvas.width, width);
-  options.canvas.height = options.height;// = Util.toInt(canvas.height, height);
-  // lanes                  = Util.toInt(lanes,lanes);
-  // roadWidth              = Util.toInt(roadWidth, roadWidth);
-  // cameraHeight           = Util.toInt(cameraHeight, cameraHeight);
-  // drawDistance           = Util.toInt(drawDistance, drawDistance);
-  // fogDensity             = Util.toInt(fogDensity, fogDensity);
-  // fieldOfView            = Util.toInt(fieldOfView, fieldOfView);
-  // segmentLength          = Util.toInt(segmentLength, segmentLength);
-  // rumbleLength           = Util.toInt(rumbleLength, rumbleLength);
-  options.cameraDepth            = 1 / Math.tan((options.fieldOfView/2) * Math.PI/180);
-  options.playerZ                = (options.cameraHeight * options.cameraDepth);
-  options.resolution             = options.height/480;
-  // refreshTweakUI();
-
-  if (options.gameState === 'game' && (options.segments.length==0) ||
-    (options.segmentLength) || (options.rumbleLength)) {
-    resetRoad();
-  }
-};
 
 const newGame = new Game({
   ...GAME_SETTINGS,
-  segments,
   canvas,
-  render,
+  hud,
   gameStep: 'intro',
   images: ["intro", "background", "sprites"],
   keys: [
@@ -92,16 +50,7 @@ const newGame = new Game({
     { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: function() { keyRight  = false; } },
     { keys: [KEY.UP,    KEY.W], mode: 'up',   action: function() { keyFaster = false; } },
     { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: function() { keySlower = false; } }
-  ],
-  ready: function(images) {
-    if (gameState === 'intro' || gameState === 'select_player') {
-      background = images[0];
-    } else {
-      background = images[1];
-      sprites    = images[2];
-    }
-    reset({ ...GAME_SETTINGS, canvas, segments });
-  }
+  ]
 });
 
 newGame.run();
