@@ -1,5 +1,5 @@
 import * as Util from 'util';
-import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
+import { COLORS, SPRITES, ROAD } from 'constants';
 
 //=========================================================================
 // game reset helpers
@@ -139,7 +139,7 @@ export default class Reset {
     segments[Util.findSegment(segments, playerZ).index + 2].color = COLORS.START;
     segments[Util.findSegment(segments, playerZ).index + 3].color = COLORS.START;
     
-    for (var n = 0; n < rumbleLength; n++) {
+    for (let n = 0; n < rumbleLength; n++) {
       segments[segments.length-1-n].color = COLORS.FINISH;
     }
 
@@ -147,7 +147,7 @@ export default class Reset {
   }
 
   resetSprites() {
-    var n, i;
+    let n, i;
 
     // addSprite(20,  SPRITES.BILLBOARD07, -1);
     // addSprite(40,  SPRITES.BILLBOARD06, -1);

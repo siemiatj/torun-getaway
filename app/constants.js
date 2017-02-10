@@ -6,8 +6,8 @@ const GAME_SETTINGS = {
   GAME_STATES: ['intro', 'players', 'start', 'game', 'gameover'],
   fps: 60,                      // how many 'update' frames per second
   step: 1/60,                   // how long is each frame (in seconds)
-  width: 1024,                    // logical canvas width
-  height: 768,                     // logical canvas height
+  width: 640,                    // logical canvas width
+  height: 480,                     // logical canvas height
   centrifugal: 0.3,                     // centrifugal force multiplier when going around curves
   skySpeed: 0.001,                   // background sky layer scroll speed when going around curve (or up hill)
   hillSpeed: 0.002,                   // background hill layer scroll speed when going around curve (or up hill)
@@ -68,7 +68,7 @@ const BACKGROUND = {
   HILLS: { x:   5, y:   5, w: 1280, h: 480 },
   SKY:   { x:   5, y: 495, w: 1280, h: 480 },
   TREES: { x:   5, y: 985, w: 1280, h: 480 },
-  MENU:  { x: 0, y: 0, w: 640, h: 480 },
+  MENU:  { x: 0, y: 0, w: 1280, h: 480 },
 };
 
 const SPRITES = {

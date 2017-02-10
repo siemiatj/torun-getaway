@@ -63,15 +63,16 @@ export default class Render {
 
     const sourceX = layer.x + Math.floor(layer.w * rotation);
     const sourceY = layer.y
-    const sourceW = Math.min(imageW, layer.x+layer.w-sourceX);
+    const sourceW = Math.min(imageW, layer.x + layer.w - sourceX);
     const sourceH = imageH;
     
     const destX = 0;
     const destY = offset;
-    const destW = Math.floor(width * (sourceW/imageW));
+    const destW = Math.floor(width * (sourceW / imageW));
     const destH = height;
 
-    console.log('WIDTH/HEIGHT: ', width, height, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH)
+    // 640 480 0 0 640 960 0 0 640 480
+    // console.log('WIDTH/HEIGHT: ', width, height, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH)
 
     this.ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
     if (sourceW < imageW) {
@@ -94,7 +95,7 @@ export default class Render {
   }
 
   drawPlayer(ctx, width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
-    const bounce = (1.5 * Math.random() * speedPercent * resolution) * randomChoice([-1,1]);
+    const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
     let sprite;
 
     if (steer < 0) {
@@ -146,14 +147,18 @@ export default class Render {
     const hillOffset = this.game.getValue('hillOffset');
     const treeOffset = this.game.getValue('treeOffset');
 
-    let baseSegment   = Util.findSegment(segments, position);
+    let baseSegment   = Util.findSegment(segments, segmentLength, position);
     let basePercent   = Util.percentRemaining(position, segmentLength);
-    let playerSegment = Util.findSegment(segments, position+playerZ);
-    let playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
-    let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
-    let maxy          = height;
-    let x  = 0;
-    let dx = - (baseSegment.curve * basePercent);
+    let playerSegment = Util.findSegment(segments, segmentLength, position+playerZ);
+
+
+    console.log('BASE: ', baseSegment, basePercent, playerSegment)
+
+    // let playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
+    // let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
+    // let maxy          = height;
+    // let x  = 0;
+    // let dx = - (baseSegment.curve * basePercent);
 
     // ctx.clearRect(0, 0, width, height);
 
@@ -224,16 +229,19 @@ export default class Render {
   }
 
   renderScreens() {
-    this.drawBackground(this.game.background, 640, 480, BACKGROUND.MENU);
+    this.drawBackground(this.game.getValue('background'), 640, 480, BACKGROUND.MENU);
+
+    // render title
+    // render menu button
   }
 
   render() {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);
 
-    // if (this.game.gameState !== 'game') {
-    //   this.renderScreens();
-    // } else {
+    if (this.game.gameState !== 'game') {
+      this.renderScreens();
+    } else {
       this.renderGame();
-    // }
+    }
   }
 }
