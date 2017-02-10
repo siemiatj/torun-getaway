@@ -2,7 +2,7 @@ import Render from 'render';
 import Game from 'game';
 import * as Util from 'util';
 import Dom from 'dom';
-import { KEY, COLORS, BACKGROUND, SPRITES, GAME_SETTINGS } from 'constants';
+import { GAME_SETTINGS } from 'constants';
 
 //=========================================================================
 // POLYFILL for requestAnimationFrame
@@ -41,16 +41,6 @@ const newGame = new Game({
   hud,
   gameStep: 'intro',
   images: ["intro", "background", "sprites"],
-  keys: [
-    { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: function() { keyLeft   = true;  } },
-    { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: function() { keyRight  = true;  } },
-    { keys: [KEY.UP,    KEY.W], mode: 'down', action: function() { keyFaster = true;  } },
-    { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: function() { keySlower = true;  } },
-    { keys: [KEY.LEFT,  KEY.A], mode: 'up',   action: function() { keyLeft   = false; } },
-    { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: function() { keyRight  = false; } },
-    { keys: [KEY.UP,    KEY.W], mode: 'up',   action: function() { keyFaster = false; } },
-    { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: function() { keySlower = false; } }
-  ]
 });
 
 newGame.run();

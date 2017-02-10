@@ -7,10 +7,10 @@ import { KEY, COLORS, BACKGROUND, SPRITES, ROAD } from 'constants';
 
 class Reset {
   constructor(opts) {
-    this.internals = { ...opts };
+    this.game = opts.game;
   }
 
-  lastY(segments) {
+  lastY() {
     return (segments.length == 0) ? 0 : segments[segments.length-1].p2.world.y;
   }
 
@@ -216,5 +216,5 @@ class Reset {
   }
 }
 
-const render = new Render();
-export default render;
+const reset = new Reset();
+export default reset;
