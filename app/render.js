@@ -65,6 +65,13 @@ export default class Render {
     const gameStep = prop('gameStep');
 
     if (gameStep !== 'game') {
+      for (const i of Object.values(this.uiElements)) {
+        if (i.hovered) {
+          i.onClick && i.onClick();
+          this.uiElements = {};
+          document.body.style.cursor = '';
+        }
+      }  
     }
   }
 
