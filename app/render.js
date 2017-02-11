@@ -27,8 +27,7 @@ export default class Render {
     const gameStep = prop('gameStep');
 
     if (gameStep !== 'game') {
-      // const mouseX = parseInt(e.clientX);
-      // const mouseY = parseInt(e.clientY);
+      let hoveredLink = false;
 
       let x = 0;
       let y = 0;
@@ -41,21 +40,19 @@ export default class Render {
       x -= this.canvas.offsetLeft;
       y -= this.canvas.offsetTop;
 
-      console.log('move ', this.uiElements);
-
       for (const i of Object.values(this.uiElements)) {
+        if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
+          i.hovered = true;
+          hoveredLink = true;
+        } else {
+          i.hovered = false;
+        }
+      }
 
-
-        //is the mouse over the link?
-        // if(x>=linkX && x <= (linkX + linkWidth) && y<=linkY && y>= (linkY-linkHeight)){
-        //     document.body.style.cursor = "pointer";
-        //     // inLink=true;
-
-        // }
-        // else{
-        //     document.body.style.cursor = "";
-        //     // inLink=false;
-        // }
+      if (hoveredLink) {
+        document.body.style.cursor = 'pointer';
+      } else {
+        document.body.style.cursor = '';
       }
     }
   }
@@ -63,8 +60,6 @@ export default class Render {
   handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
-
-    console.log('click');
 
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
@@ -305,6 +300,7 @@ export default class Render {
   renderIntro() {
     const text = 'START GAME';
     const textPosition = [250, 300];
+    const textSize = 2;
     let color = 'white';
 
     if (this.uiElements.start_game_text) {
@@ -320,13 +316,13 @@ export default class Render {
         hovered: false,
         posX: textPosition[0],
         posY: textPosition[1],
-        width: measuredText.width,
+        width: measuredText.width * textSize,
         // height: measuredText.height,
-        height: 20,
+        height: 15 * textSize,
         onClick: null,
       }
 
-      png_font.drawText(text, textPosition, color, 2, 'black');
+      png_font.drawText(text, textPosition, color, textSize, 'black');
     }
   }
 
