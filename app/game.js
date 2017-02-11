@@ -17,8 +17,6 @@ export default class Game {
       segments: [], // array of road segments
       cars: [], // array of cars on the road
       assets: {},
-      // background: null, // our background image (loaded below)
-      // sprites: null, // our spritesheet (loaded below)
       resolution: null, // scaling factor to provide resolution independence (computed)
       trackLength: null,  // z length of entire track (computed)
       cameraDepth: null, // z distance camera is from screen (computed)
@@ -41,7 +39,7 @@ export default class Game {
       { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.keySlower = false; } }
     ];
 
-    this.renderer = new Renderer(this, this.internals.canvas.getContext('2d'));
+    this.renderer = new Renderer(this, this.internals.canvas);
     this.resetter = new Resetter(this);
 
     this.getValue = this.getValue.bind(this);
@@ -303,8 +301,6 @@ export default class Game {
     } else {
       this.showHud();
     }
-
-    // console.log('IMAGE: ', this.getValue('assets.unifont'));
 
     png_font.setup(this.internals.canvas.getContext('2d'),
       this.getValue('assets.unifont'));
