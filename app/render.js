@@ -6,9 +6,71 @@ import png_font from 'pngfont';
 // canvas rendering helpers
 //=========================================================================
 export default class Render {
-  constructor(gameInstance, context) {
+  constructor(gameInstance, canvas) {
     this.game = gameInstance;
-    this.ctx = context;
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.uiElements = {};
+
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+
+    canvas.addEventListener('mousemove', this.handleMouseMove, false);
+    canvas.addEventListener('click', this.handleClick, false);
+  }
+
+  handleMouseMove(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const prop = this.game.getValue;
+    const gameStep = prop('gameStep');
+
+    if (gameStep !== 'game') {
+      // const mouseX = parseInt(e.clientX);
+      // const mouseY = parseInt(e.clientY);
+
+      let x = 0;
+      let y = 0;
+
+      // Get the mouse position relative to the canvas element.
+      if (e.layerX || e.layerX == 0) { //for firefox
+        x = e.layerX;
+        y = e.layerY;
+      }
+      x -= this.canvas.offsetLeft;
+      y -= this.canvas.offsetTop;
+
+      console.log('move ', this.uiElements);
+
+      for (const i of Object.values(this.uiElements)) {
+
+
+        //is the mouse over the link?
+        // if(x>=linkX && x <= (linkX + linkWidth) && y<=linkY && y>= (linkY-linkHeight)){
+        //     document.body.style.cursor = "pointer";
+        //     // inLink=true;
+
+        // }
+        // else{
+        //     document.body.style.cursor = "";
+        //     // inLink=false;
+        // }
+      }
+    }
+  }
+
+  handleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log('click');
+
+    const prop = this.game.getValue;
+    const gameStep = prop('gameStep');
+
+    if (gameStep !== 'game') {
+    }
   }
 
   drawPolygon(x1, y1, x2, y2, x3, y3, x4, y4, color) {
@@ -236,14 +298,51 @@ export default class Render {
     // }
   }
 
+  renderPlayerSelection() {
+
+  }
+
+  renderIntro() {
+    const text = 'START GAME';
+    const textPosition = [250, 300];
+    let color = 'white';
+
+    if (this.uiElements.start_game_text) {
+      if (this.uiElements.start_game_text.hovered) {
+        color = 'yellow';
+      }
+      png_font.drawText(text, textPosition, color, 2, 'black');
+    } else {
+      png_font.drawText(text, textPosition, color, 2, 'black');
+      const measuredText = this.ctx.measureText(text);
+
+      this.uiElements.start_game_text = {
+        hovered: false,
+        posX: textPosition[0],
+        posY: textPosition[1],
+        width: measuredText.width,
+        // height: measuredText.height,
+        height: 20,
+        onClick: null,
+      }
+
+      png_font.drawText(text, textPosition, color, 2, 'black');
+    }
+  }
+
   renderScreens() {
     // const { game } = this;
     const prop = this.game.getValue;
+    const gameStep = prop('gameStep');
 
     this.drawBackground(prop('assets.intro'), 640, 480, BACKGROUND.MENU);
     this.drawTitle();
-    // render menu button
-    png_font.drawText('START GAME', [250, 300], 'white', 2, 'black');
+
+    if (gameStep === 'intro') {
+      this.renderIntro();
+    } else if (gameStep === 'players') {
+      this.renderPlayerSelection();
+    }
   }
 
   render() {
