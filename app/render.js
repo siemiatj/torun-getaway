@@ -1,5 +1,6 @@
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
+import png_font from 'pngfont';
 
 //=========================================================================
 // canvas rendering helpers
@@ -242,6 +243,7 @@ export default class Render {
     this.drawBackground(prop('assets.intro'), 640, 480, BACKGROUND.MENU);
     this.drawTitle();
     // render menu button
+    png_font.drawText('START GAME', [250, 300], 'white', 2, 'black');
   }
 
   render() {

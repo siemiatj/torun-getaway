@@ -5,6 +5,7 @@ import _set from 'lodash.set';
 import _get from 'lodash.get';
 import { timestamp, findSegment } from 'util';
 import { KEY, SPRITES } from 'constants';
+import png_font from 'pngfont';
 
 export default class Game {
   constructor(opts) {
@@ -290,17 +291,23 @@ export default class Game {
   ready(images) {
     const { gameState } = this.internals;
     const assetsObject = {};
+    // let fontImage = null;
 
     images.forEach(image => {
       assetsObject[image.name] = image.image;
     });
+    this.setValue('assets', { ...assetsObject });
 
     if (gameState !== 'game') {
       this.hideHud();
     } else {
       this.showHud();
     }
-    this.setValue('assets', { ...assetsObject });
+
+    // console.log('IMAGE: ', this.getValue('assets.unifont'));
+
+    png_font.setup(this.internals.canvas.getContext('2d'),
+      this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }
