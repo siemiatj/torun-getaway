@@ -38,7 +38,7 @@ const newGame = new Game({
   canvas,
   hud,
   gameStep: 'intro',
-  images: ["intro", "background", "sprites"],
+  images: ["intro", "title", "background", "sprites"],
 });
 
 newGame.run();

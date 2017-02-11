@@ -8,8 +8,6 @@ export default class Render {
   constructor(gameInstance, context) {
     this.game = gameInstance;
     this.ctx = context;
-
-    console.log('GAMEee: ', this.game);
   }
 
   drawPolygon(x1, y1, x2, y2, x3, y3, x4, y4, color) {
@@ -80,7 +78,7 @@ export default class Render {
     }
   }
 
-  drawSprite(ctx, width, height, resolution, roadWidth, sprites, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
+  drawSprite(width, height, roadWidth, sprites, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
                    //  scale for projection AND relative to roadWidth (for tweakUI)
     const destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
     const destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
@@ -89,9 +87,18 @@ export default class Render {
     destY = destY + (destH * (offsetY || 0));
 
     const clipH = clipY ? Math.max(0, destY+destH-clipY) : 0;
-    if (clipH < destH)
+    if (clipH < destH) {
       this.ctx.drawImage(sprites, sprite.x, sprite.y, sprite.w, sprite.h - (sprite.h*clipH/destH), destX, destY, destW, destH - clipH);
+    }
+  }
 
+  drawTitle() {
+    const props = this.game.getValue;
+    const image = props('assets.title');
+    const width = props('width');
+    // const height = props('height');
+
+    this.ctx.drawImage(image, ((width / 2) - (435 / 2)), 100, 435, 52);
   }
 
   drawPlayer(ctx, width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
@@ -106,14 +113,14 @@ export default class Render {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
     }
 
-    this.drawSprite(ctx, width, height, resolution, roadWidth, sprites, sprite, scale, destX, destY + bounce, -0.5, -1);
+    this.drawSprite(ctx, width, height, roadWidth, sprites, sprite, scale, destX, destY + bounce, -0.5, -1);
   }
 
   drawFog(x, y, width, height, fog) {
     const { ctx } = this;
 
     if (fog < 1) {
-      ctx.globalAlpha = (1-fog)
+      ctx.globalAlpha = (1 - fog);
       ctx.fillStyle = COLORS.FOG;
       ctx.fillRect(x, y, width, height);
       ctx.globalAlpha = 1;
@@ -152,7 +159,7 @@ export default class Render {
     let playerSegment = Util.findSegment(segments, segmentLength, position+playerZ);
 
 
-    console.log('BASE: ', baseSegment, basePercent, playerSegment)
+    // console.log('BASE: ', baseSegment, basePercent, playerSegment)
 
     // let playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
     // let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
@@ -229,9 +236,11 @@ export default class Render {
   }
 
   renderScreens() {
-    this.drawBackground(this.game.getValue('background'), 640, 480, BACKGROUND.MENU);
+    // const { game } = this;
+    const prop = this.game.getValue;
 
-    // render title
+    this.drawBackground(prop('assets.intro'), 640, 480, BACKGROUND.MENU);
+    this.drawTitle();
     // render menu button
   }
 
