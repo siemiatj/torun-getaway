@@ -15,8 +15,9 @@ export default class Game {
       treeOffset: 0, // current tree scroll offset
       segments: [], // array of road segments
       cars: [], // array of cars on the road
-      background: null, // our background image (loaded below)
-      sprites: null, // our spritesheet (loaded below)
+      assets: {},
+      // background: null, // our background image (loaded below)
+      // sprites: null, // our spritesheet (loaded below)
       resolution: null, // scaling factor to provide resolution independence (computed)
       trackLength: null,  // z length of entire track (computed)
       cameraDepth: null, // z distance camera is from screen (computed)
@@ -41,6 +42,9 @@ export default class Game {
 
     this.renderer = new Renderer(this, this.internals.canvas.getContext('2d'));
     this.resetter = new Resetter(this);
+
+    this.getValue = this.getValue.bind(this);
+    this.setValue = this.setValue.bind(this);
   }
 
   setValue(name, value) {
@@ -285,24 +289,27 @@ export default class Game {
 
   ready(images) {
     const { gameState } = this.internals;
+    const assetsObject = {};
+
+    images.forEach(image => {
+      assetsObject[image.name] = image.image;
+    });
 
     if (gameState !== 'game') {
-      this.setValue('background', images[0]);
       this.hideHud();
     } else {
       this.showHud();
-      this.setValue('background', images[1]);
-      this.setValue('sprites', images[2]);
     }
+    this.setValue('assets', { ...assetsObject });
 
     this.resetter.reset();
   }
 
   loadImages(names, callback) { // load multiple images and callback when ALL images have loaded
-    const preloadImage = function (path) {
+    const preloadImage = function (name, path) {
       return new Promise(function (resolve, reject) {
         const image = new Image();
-        image.onload = resolve(image);
+        image.onload = resolve({ name, image });
         image.onerror = reject();
         image.src = path;
       });
@@ -310,7 +317,7 @@ export default class Game {
 
     Promise.all(names.map(url => {
       const imgUrl = `../static/images/${url}.png`;
-      return preloadImage(imgUrl);
+      return preloadImage(url, imgUrl);
     }))
     .then(images => {
       callback(images);
