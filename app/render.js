@@ -163,9 +163,8 @@ export default class Render {
     const props = this.game.getValue;
     const image = props('assets.title');
     const width = props('width');
-    // const height = props('height');
 
-    this.ctx.drawImage(image, ((width / 2) - (435 / 2)), 100, 435, 52);
+    this.ctx.drawImage(image, ((width / 2) - (435 / 2)), 50, 435, 52);
   }
 
   drawPlayer(ctx, width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
@@ -302,8 +301,38 @@ export default class Render {
     // }
   }
 
-  renderPlayerSelection() {
+  renderPlayerIcon() {}
 
+  renderPlayerSelection(uiEvents) {
+    const player1Text = 'MACIARENKO';
+    const player2Text = 'APTEKARZ';
+    const player3Text = 'BECIA';
+    // const textPosition = [250, 300];
+    // const textSize = 2;
+    // let color = 'white';
+
+    // if (this.uiElements.start_game_text) {
+    //   if (this.uiElements.start_game_text.hovered) {
+    //     color = 'yellow';
+    //   }
+    //   png_font.drawText(text, textPosition, color, 2, 'black');
+    // } else {
+    //   png_font.drawText(text, textPosition, color, 2, 'black');
+    //   const measuredText = this.ctx.measureText(text);
+
+    //   this.uiElements.start_game_text = {
+    //     hovered: false,
+    //     posX: textPosition[0],
+    //     posY: textPosition[1],
+    //     width: measuredText.width * textSize,
+    //     height: 15 * textSize,
+    //     onClick: uiEvents.start_game_text,
+    //   }
+
+    //   png_font.drawText(text, textPosition, color, textSize, 'black');
+    // }
+
+    png_font.drawText('SELECT YOUR DRIVER', [170, 110], 'black', 2, 'white');
   }
 
   renderIntro(uiEvents) {

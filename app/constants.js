@@ -3,7 +3,7 @@
 //=============================================================================
 
 const GAME_SETTINGS = {
-  GAME_STATES: ['intro', 'players', 'start', 'game', 'gameover'],
+  GAME_STATES: ['intro', 'players', 'game', 'gameover'],
   fps: 60,                      // how many 'update' frames per second
   step: 1/60,                   // how long is each frame (in seconds)
   width: 640,                    // logical canvas width

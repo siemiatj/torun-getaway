@@ -26,6 +26,7 @@ export default class Game {
       speed: 0, // current speed
       currentLapTime: 0, // current lap time
       lastLapTime: null, // last lap time
+      driver: null,
     };
 
     this.keys = [
@@ -76,11 +77,21 @@ export default class Game {
   }
 
   generateUIEvents() {
+    const driverSelectHandler = (num) => {
+      // console.log('NUM: ', num);
+      this.setValue('driver', num);
+      this.setValue('gameStep', 'game');
+    };
     const eventsObject = {
       start_game_text: () => {
-        console.log('EVENT !');
         this.setValue('gameStep', 'players');
-      }
+      },
+      driver_1: () => driverSelectHandler(1),
+      driver_2: () => driverSelectHandler(2),
+      driver_3: () => driverSelectHandler(3),
+      driver_1_text: () => driverSelectHandler(1),
+      driver_2_text: () => driverSelectHandler(2),
+      driver_3_text: () => driverSelectHandler(3),
     };
 
     return eventsObject;
