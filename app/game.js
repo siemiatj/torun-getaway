@@ -39,6 +39,8 @@ export default class Game {
       { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.keySlower = false; } }
     ];
 
+    this.ui_events = this.generateUIEvents();
+
     this.renderer = new Renderer(this, this.internals.canvas);
     this.resetter = new Resetter(this);
 
@@ -71,6 +73,17 @@ export default class Game {
 
     Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); });
     Dom.on(document, 'keyup', function(ev) { onkey(ev.keyCode, 'up'); });
+  }
+
+  generateUIEvents() {
+    const eventsObject = {
+      start_game_text: () => {
+        console.log('EVENT !');
+        this.setValue('gameStep', 'players');
+      }
+    };
+
+    return eventsObject;
   }
 
   // playMusic: function() {
@@ -329,7 +342,7 @@ export default class Game {
 
   run() {
     const { images, canvas, step } = this.internals;
-    const { update, updateStart } = this;
+    const { update, updateStart, ui_events } = this;
 
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);
@@ -355,7 +368,7 @@ export default class Game {
           updateStart();
         }
 
-        this.renderer.render();
+        this.renderer.render(ui_events);
         
         last = now;
         window.requestAnimationFrame(frame, canvas);

@@ -70,6 +70,8 @@ export default class Render {
           i.onClick && i.onClick();
           this.uiElements = {};
           document.body.style.cursor = '';
+
+          break;
         }
       }  
     }
@@ -304,7 +306,7 @@ export default class Render {
 
   }
 
-  renderIntro() {
+  renderIntro(uiEvents) {
     const text = 'START GAME';
     const textPosition = [250, 300];
     const textSize = 2;
@@ -324,17 +326,15 @@ export default class Render {
         posX: textPosition[0],
         posY: textPosition[1],
         width: measuredText.width * textSize,
-        // height: measuredText.height,
         height: 15 * textSize,
-        onClick: null,
+        onClick: uiEvents.start_game_text,
       }
 
       png_font.drawText(text, textPosition, color, textSize, 'black');
     }
   }
 
-  renderScreens() {
-    // const { game } = this;
+  renderScreens(uiEvents) {
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
 
@@ -342,17 +342,17 @@ export default class Render {
     this.drawTitle();
 
     if (gameStep === 'intro') {
-      this.renderIntro();
+      this.renderIntro(uiEvents);
     } else if (gameStep === 'players') {
-      this.renderPlayerSelection();
+      this.renderPlayerSelection(uiEvents);
     }
   }
 
-  render() {
+  render(uiEvents) {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);
 
     if (this.game.gameState !== 'game') {
-      this.renderScreens();
+      this.renderScreens(uiEvents);
     } else {
       this.renderGame();
     }
