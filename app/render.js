@@ -136,26 +136,41 @@ export default class Render {
     const destW = Math.floor(width * (sourceW / imageW));
     const destH = height;
 
-    // 640 480 0 0 640 960 0 0 640 480
-    // console.log('WIDTH/HEIGHT: ', width, height, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH)
-
     this.ctx.drawImage(background, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
     if (sourceW < imageW) {
       this.ctx.drawImage(background, layer.x, sourceY, imageW-sourceW, sourceH, destW-1, destY, width-destW, destH);
     }
   }
 
-  drawSprite(width, height, roadWidth, sprites, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
-                   //  scale for projection AND relative to roadWidth (for tweakUI)
-    const destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
-    const destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
+  drawSprite(width, height, roadWidth, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
+    const sprites = this.game.getValue('assets.sprites');
+    let destW, destH;
+
+    // gameplay sprites
+    if (roadWidth) {
+      destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
+      destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
+    } else {
+      destW = (sprite.w * scale * width/2);
+      destH = (sprite.h * scale * width/2);
+    }
 
     destX = destX + (destW * (offsetX || 0));
     destY = destY + (destH * (offsetY || 0));
-
     const clipH = clipY ? Math.max(0, destY+destH-clipY) : 0;
+
     if (clipH < destH) {
-      this.ctx.drawImage(sprites, sprite.x, sprite.y, sprite.w, sprite.h - (sprite.h*clipH/destH), destX, destY, destW, destH - clipH);
+      this.ctx.drawImage(
+        sprites,
+        sprite.x,
+        sprite.y,
+        sprite.w,
+        sprite.h - (sprite.h * clipH / destH),
+        destX,
+        destY,
+        destW,
+        destH - clipH
+      );
     }
   }
 
@@ -301,36 +316,71 @@ export default class Render {
     // }
   }
 
-  renderPlayerIcon() {}
+  renderPlayerIcon(playerData, spriteData) {
+    const width = this.game.getValue('width');
+    const height = this.game.getValue('height');
+    const resolution = this.game.getValue('resolution');
+
+    this.renderSprite(width, height, resolution, null, spriteData, 1,
+      playerData.iconPosition[0], playerData.iconPosition[1], 0, 0, 0);
+   }
 
   renderPlayerSelection(uiEvents) {
-    const player1Text = 'MACIARENKO';
-    const player2Text = 'APTEKARZ';
-    const player3Text = 'BECIA';
-    // const textPosition = [250, 300];
-    // const textSize = 2;
-    // let color = 'white';
+    const players = [{
+      name: 'MACIARENKO',
+      textPosition: [250, 200],
+      iconPosition: [180, 200],
+      event: uiEvents.driver_1
+    },
+    {
+      name: 'APTEKARZ',
+      textPosition: [250, 200],
+      iconPosition: [180, 200],
+      event: uiEvents.driver_2
+    },
+    {
+      name: 'BECIA',
+      textPosition: [250, 200],
+      iconPosition: [180, 200],
+      event: uiEvents.driver_3
+    }];
+    const textSize = 2;
+    let color = 'white';
 
-    // if (this.uiElements.start_game_text) {
-    //   if (this.uiElements.start_game_text.hovered) {
-    //     color = 'yellow';
-    //   }
-    //   png_font.drawText(text, textPosition, color, 2, 'black');
-    // } else {
-    //   png_font.drawText(text, textPosition, color, 2, 'black');
-    //   const measuredText = this.ctx.measureText(text);
+    for (let i = 0; i < players.length; i += 1) {
+      const player = players[i];
+      const sprite = SPRITES[player.name];
 
-    //   this.uiElements.start_game_text = {
-    //     hovered: false,
-    //     posX: textPosition[0],
-    //     posY: textPosition[1],
-    //     width: measuredText.width * textSize,
-    //     height: 15 * textSize,
-    //     onClick: uiEvents.start_game_text,
-    //   }
+      if (this.uiElements[`player_${i}_icon`]) {
+        if (this.uiElements[`player_${i}_icon`].hovered || this.uiElements[`player_${i}_text`].hovered) {
+          color = 'yellow';
+        }
 
-    //   png_font.drawText(text, textPosition, color, textSize, 'black');
-    // }
+        this.renderPlayerIcon(player, sprite);
+        png_font.drawText(player.name, player.textPosition, color, 2, 'black');
+      } else {
+        png_font.drawText(player.name, player.textPosition, color, 2, 'black');
+        const measuredText = this.ctx.measureText(player.name);
+
+        this.uiElements[`player_${i}_text`] = {
+          hovered: false,
+          posX: player.textPosition[0],
+          posY: player.textPosition[1],
+          width: measuredText.width * textSize,
+          height: 15 * textSize,
+          onClick: uiEvents[`driver_${i}`],
+        }
+
+        this.uiElements[`player_${i}_icon`] = {
+          hovered: false,
+          posX: player.iconPosition[0],
+          posY: player.iconPosition[1],
+          width: 80,
+          height: 80,
+          onClick: uiEvents[`driver_${i}`],
+        }
+      }
+    }
 
     png_font.drawText('SELECT YOUR DRIVER', [170, 110], 'black', 2, 'white');
   }
@@ -359,7 +409,7 @@ export default class Render {
         onClick: uiEvents.start_game_text,
       }
 
-      png_font.drawText(text, textPosition, color, textSize, 'black');
+      //png_font.drawText(text, textPosition, color, textSize, 'black');
     }
   }
 
