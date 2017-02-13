@@ -79,6 +79,7 @@ export default class Game {
   generateUIEvents() {
     const driverSelectHandler = (num) => {
       // console.log('NUM: ', num);
+      this.showHud();
       this.setValue('driver', num);
       this.setValue('gameStep', 'game');
     };
@@ -311,7 +312,7 @@ export default class Game {
   }
 
   ready(images) {
-    const { gameState } = this.internals;
+    // const { gameState } = this.internals;
     const assetsObject = {};
     // let fontImage = null;
 
@@ -320,14 +321,13 @@ export default class Game {
     });
     this.setValue('assets', { ...assetsObject });
 
-    if (gameState !== 'game') {
+    // if (gameState !== 'game') {
       this.hideHud();
-    } else {
-      this.showHud();
-    }
+    // } else {
+      // this.showHud();
+    // }
 
-    png_font.setup(this.internals.canvas.getContext('2d'),
-      this.getValue('assets.unifont'));
+    png_font.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }

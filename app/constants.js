@@ -112,8 +112,8 @@ const BACKGROUND = {
 const SPRITES = {
   SEMI: { x: 0, y: 0, w: 122, h: 144 },
   TRUCK: { x: 122, y:  0, w: 100, h: 78 },
-  BEATKA: { x: 222, y:  0, w: 80, h: 80 },
-  MISIEWICZ: { x: 0, y: 144, w: 80, h: 80 },
+  BECIA: { x: 222, y:  0, w: 80, h: 80 },
+  APTEKARZ: { x: 0, y: 144, w: 80, h: 80 },
   MACIARENKO: { x: 80, y: 144, w: 80, h: 80 },
   CAR03: { x: 122, y: 78, w: 88, h: 55 },
   CAR02: { x: 222, y: 80, w: 80, h: 59 },
