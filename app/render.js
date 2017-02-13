@@ -14,6 +14,7 @@ export default class Render {
 
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.renderGame = this.renderGame.bind(this);
 
     canvas.addEventListener('mousemove', this.handleMouseMove, false);
     canvas.addEventListener('click', this.handleClick, false);
@@ -112,11 +113,11 @@ export default class Render {
       lanex1 = x1 - w1 + lanew1;
       lanex2 = x2 - w2 + lanew2;
       for (lane = 1; lane < lanes; lanex1 += lanew1, lanex2 += lanew2, lane++) {
-        this.drawPolygon(ctx, lanex1 - l1/2, y1, lanex1 + l1/2, y1, lanex2 + l2/2, y2, lanex2 - l2/2, y2, color.lane);
+        this.drawPolygon(lanex1 - l1/2, y1, lanex1 + l1/2, y1, lanex2 + l2/2, y2, lanex2 - l2/2, y2, color.lane);
       }
     }
     
-    this.drawFog(ctx, 0, y1, width, y2-y1, fog);
+    this.drawFog(0, y1, width, y2-y1, fog);
   }
 
   drawBackground(background, width, height, layer, rotation, offset) {
@@ -212,32 +213,33 @@ export default class Render {
   // RENDER THE GAME WORLD
   //=========================================================================
   renderGame() {
-    const segments = this.game.getValue('segments');
-    const segmentLength = this.game.getValue('segmentLength');
-    const position = this.game.getValue('position');
-    const background = this.game.getValue('background');
-    const width = this.game.getValue('width');
-    const height = this.game.getValue('height');
-    const resolution = this.game.getValue('resolution');
-    const skySpeed = this.game.getValue('skySpeed');
-    const hillSpeed = this.game.getValue('hillSpeed');
-    const treeSpeed = this.game.getValue('treeSpeed');
-    const playerZ = this.game.getValue('playerZ');
-    const skyOffset = this.game.getValue('skyOffset');
-    const hillOffset = this.game.getValue('hillOffset');
-    const treeOffset = this.game.getValue('treeOffset');
+    const props = this.game.getValue;
+    const segments = props('segments');
+    const segmentLength = props('segmentLength');
+    const position = props('position');
+    const background = props('background');
+    const width = props('width');
+    const height = props('height');
+    const resolution = props('resolution');
+    const skySpeed = props('skySpeed');
+    const hillSpeed = props('hillSpeed');
+    const treeSpeed = props('treeSpeed');
+    const playerZ = props('playerZ');
+    const skyOffset = props('skyOffset');
+    const hillOffset = props('hillOffset');
+    const treeOffset = props('treeOffset');
 
     let baseSegment   = Util.findSegment(segments, segmentLength, position);
     let basePercent   = Util.percentRemaining(position, segmentLength);
-    let playerSegment = Util.findSegment(segments, segmentLength, position+playerZ);
+    let playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
 
-    // let playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
-    // let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
-    // let maxy          = height;
-    // let x  = 0;
-    // let dx = - (baseSegment.curve * basePercent);
+    let playerPercent = Util.percentRemaining(position + playerZ, segmentLength);
+    let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
+    let maxy          = height;
+    let x  = 0;
+    let dx = - (baseSegment.curve * basePercent);
 
-    // ctx.clearRect(0, 0, width, height);
+    this.ctx.clearRect(0, 0, width, height);
 
     this.drawBackground(background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
     this.drawBackground(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
@@ -251,7 +253,7 @@ export default class Render {
     //   segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
     //   segment.clip   = maxy;
 
-    //   Util.project(segment.p1, (playerX * roadWidth) - x,      playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+    //   Util.project(segment.p1, (playerX * roadWidth) - x, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
     //   Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
 
     //   x  = x + dx;
@@ -262,7 +264,7 @@ export default class Render {
     //       (segment.p2.screen.y >= maxy))                  // clip by (already thised) hill
     //     continue;
 
-    //   this.segment(width, lanes,
+    //   this.drawSegment(width, lanes,
     //                  segment.p1.screen.x,
     //                  segment.p1.screen.y,
     //                  segment.p1.screen.w,
@@ -423,9 +425,10 @@ export default class Render {
   }
 
   render(uiEvents) {
-    this.ctx.clearRect(0, 0, this.game.width, this.game.height);
+    const prop = this.game.getValue;
+    this.ctx.clearRect(0, 0, prop('width'), prop('height'));
 
-    if (this.game.gameState !== 'game') {
+    if (prop('gameStep') !== 'game') {
       this.renderScreens(uiEvents);
     } else {
       this.renderGame();

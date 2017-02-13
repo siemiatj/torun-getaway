@@ -12,7 +12,7 @@ export default class Game {
     this.internals = {
       ...opts,
       skyOffset: 0, // current sky scroll offset
-      hillOffset: 0, // current hill scroll offset
+      hillOffset: 0, // current hill scroll offset centrifugal
       treeOffset: 0, // current tree scroll offset
       segments: [], // array of road segments
       cars: [], // array of cars on the road
@@ -121,10 +121,13 @@ export default class Game {
 
   update(dt) {
     const { segments, playerZ, maxSpeed, trackLength, keyLeft,
-      keyRight, keyFaster, keySlower, centrifugal } = this.internals;
+      keyRight, keyFaster, keySlower, centrifugal, accel, breaking,
+      decel, segmentLength, offRoadLimit, offRoadDecel, skyOffset,
+      hillOffset, treeOffset, skySpeed, hillSpeed, treeSpeed,
+      currentLapTime } = this.internals;
     let { position, speed, playerX } = this.internals;
     let n, car, carW, sprite, spriteW;
-    let playerSegment = Util.findSegment(segments, position + playerZ);
+    let playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
     let playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
     let speedPercent  = speed / maxSpeed;
     let dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
@@ -150,13 +153,12 @@ export default class Game {
       speed = Util.accelerate(speed, decel, dt);
     }
 
-
     if ((playerX < -1) || (playerX > 1)) {
       if (speed > offRoadLimit) {
         speed = Util.accelerate(speed, offRoadDecel, dt);
       }
 
-      for(n = 0; n < playerSegment.sprites.length; n += 1) {
+      for (n = 0; n < playerSegment.sprites.length; n += 1) {
         sprite  = playerSegment.sprites[n];
         spriteW = sprite.source.w * SPRITES.SCALE;
         if (Util.overlap(playerX, playerW, sprite.offset + spriteW / 2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
@@ -167,7 +169,7 @@ export default class Game {
       }
     }
 
-    for(n = 0; n < playerSegment.cars.length; n += 1) {
+    for (n = 0; n < playerSegment.cars.length; n += 1) {
       car  = playerSegment.cars[n];
       carW = car.sprite.w * SPRITES.SCALE;
       if (speed > car.speed) {
@@ -179,12 +181,13 @@ export default class Game {
       }
     }
 
-    playerX = Util.limit(playerX, -3, 3);     // dont ever var it go too far out of bounds
-    speed   = Util.limit(speed, 0, maxSpeed); // or exceed maxSpeed
+    this.setValue('position', position);
+    this.setValue('playerX', Util.limit(playerX, -3, 3));     // dont ever var it go too far out of bounds
+    this.setValue('speed', Util.limit(speed, 0, maxSpeed)); // or exceed maxSpeed
 
-    skyOffset  = Util.increase(skyOffset,  skySpeed  * playerSegment.curve * (position-startPosition)/segmentLength, 1);
-    hillOffset = Util.increase(hillOffset, hillSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
-    treeOffset = Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition)/segmentLength, 1);
+    this.setValue('skyOffset', Util.increase(skyOffset, skySpeed  * playerSegment.curve * (position-startPosition) / segmentLength, 1));
+    this.setValue('hillOffset', Util.increase(hillOffset, hillSpeed * playerSegment.curve * (position-startPosition) / segmentLength, 1));
+    this.setValue('treeOffset', Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition) / segmentLength, 1));
 
     if (position > playerZ) {
       if (currentLapTime && (startPosition < playerZ)) {
@@ -202,30 +205,29 @@ export default class Game {
         // }
         // updateHud('last_lap_time', formatTime(lastLapTime));
         // Dom.show('last_lap_time');
-      }
-      else {
-        currentLapTime += dt;
+      } else {
+        this.setValue('currentLapTime',  currentLapTime + dt);
       }
     }
 
-    updateHud('speed', 5 * Math.round(speed/500));
-    updateHud('current_lap_time', formatTime(currentLapTime));
+    this.updateHud('speed', 5 * Math.round(speed/500));
+    this.updateHud('current_lap_time', this.formatTime(currentLapTime));
   }
 
   updateCars(dt, playerSegment, playerW) {
-    const { cars } = this.internals;
+    const { cars, segments, segmentLength, trackLength } = this.internals;
     let car, oldSegment, newSegment;
 
     for (let n = 0; n < cars.length; n++) {
       car         = cars[n];
-      oldSegment  = Util.findSegment(car.z);
+      oldSegment  = Util.findSegment(segments, segmentLength, car.z);
       car.offset  = car.offset + this.updateCarOffset(car, oldSegment, playerSegment, playerW);
       car.z       = Util.increase(car.z, dt * car.speed, trackLength);
       car.percent = Util.percentRemaining(car.z, segmentLength); // useful for interpolation during rendering phase
-      newSegment  = Util.findSegment(car.z);
+      newSegment  = Util.findSegment(segments, segmentLength, car.z);
 
       if (oldSegment != newSegment) {
-        index = oldSegment.cars.indexOf(car);
+        const index = oldSegment.cars.indexOf(car);
         oldSegment.cars.splice(index, 1);
         newSegment.cars.push(car);
       }
@@ -233,7 +235,7 @@ export default class Game {
   }
 
   updateCarOffset(car, carSegment, playerSegment, playerW) {
-    const { segments, playerX, speed, maxSpeed } = this.internals;
+    const { segments, playerX, speed, maxSpeed, drawDistance } = this.internals;
     const lookahead = 20;
     const carW = car.sprite.w * SPRITES.SCALE;
     let segment, i, j, dir, otherCar, otherCarW
@@ -243,7 +245,7 @@ export default class Game {
       return 0;
     }
 
-    for (i = 1 ; i < lookahead ; i++) {
+    for (i = 1; i < lookahead; i += 1) {
       segment = segments[(carSegment.index+i) % segments.length];
 
       if ((segment === playerSegment) && (car.speed > speed) && (Util.overlap(playerX, playerW, car.offset, carW, 1.2))) {
@@ -258,7 +260,7 @@ export default class Game {
         return dir * 1 / i * (car.speed - speed) / maxSpeed; // the closer the cars (smaller i) and the greated the speed ratio, the larger the offset
       }
 
-      for (j = 0 ; j < segment.cars.length ; j++) {
+      for (j = 0; j < segment.cars.length; j += 1) {
         otherCar  = segment.cars[j];
         otherCarW = otherCar.sprite.w * SPRITES.SCALE;
 
@@ -373,10 +375,10 @@ export default class Game {
 
           while (gdt > step) {
             gdt = gdt - step;
-            update(step);
+            // update(step);
           }
         } else {
-          updateStart();
+          // updateStart();
         }
 
         this.renderer.render(ui_events);

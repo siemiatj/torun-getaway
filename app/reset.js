@@ -17,9 +17,10 @@ export default class Reset {
   }
 
   addSegment(curve, y) {
-    const segments = this.gameInstance.getValue('segments');
-    const segmentLength = this.gameInstance.getValue('segmentLength');
-    const rumbleLength = this.gameInstance.getValue('rumbleLength');
+    const props = this.gameInstance.getValue;
+    const segments = props('segments');
+    const segmentLength = props('segmentLength');
+    const rumbleLength = props('rumbleLength');
     const n = segments.length;
 
     segments.push({
@@ -34,7 +35,7 @@ export default class Reset {
   }
 
   addSprite(n, sprite, offset) {
-    const { segments } = this.gameInstance;
+    const segments = this.gameInstance.getValue('segments');
 
     segments[n].sprites.push({ source: sprite, offset: offset });
   }
@@ -118,8 +119,13 @@ export default class Reset {
   }
 
   resetRoad() {
-    const { playerZ, rumbleLength, segments, segmentLength } = this.gameInstance;
-    // const segments = [];
+    // const { playerZ, rumbleLength, segments, segmentLength } = this.gameInstance;
+    const segments = [];
+    const props = this.gameInstance.getValue;
+    const playerZ = props('playerZ');
+    const rumbleLength = props('rumbleLength');
+    // const segments = props('segments');
+    const segmentLength = props('segmentLength');
 
     this.addStraight(ROAD.LENGTH.SHORT);
     this.addLowRollingHills();
@@ -140,17 +146,20 @@ export default class Reset {
     this.addSCurves();
     this.addDownhillToEnd();
 
-    this.resetSprites();
-    this.resetCars();
+    // this.resetSprites();
+    // this.resetCars();
 
-    segments[Util.findSegment(segments, playerZ).index + 2].color = COLORS.START;
-    segments[Util.findSegment(segments, playerZ).index + 3].color = COLORS.START;
+    console.log('PLAYER: ', Util.findSegment(segments, playerZ));
+
+    segments[Util.findSegment(segments, segmentLength, playerZ).index + 2].color = COLORS.START;
+    segments[Util.findSegment(segments, segmentLength, playerZ).index + 3].color = COLORS.START;
     
     for (let n = 0; n < rumbleLength; n++) {
       segments[segments.length-1-n].color = COLORS.FINISH;
     }
 
-    this.gameInstance.trackLength = segments.length * segmentLength;
+    this.gameInstance.setValue('segments', [...segments]);
+    this.gameInstance.setValue('trackLength', (segments.length * segmentLength));
   }
 
   resetSprites() {
@@ -201,30 +210,38 @@ export default class Reset {
   }
 
   resetCars() {
-    const { segments, maxSpeed, segmentLength, totalCars } = this.gameInstance;
+    // const { segments, maxSpeed, segmentLength, totalCars } = this.gameInstance;
+    const props = this.gameInstance.getValue;
+    const segments = props('segments');
+    const maxSpeed = props('maxSpeed');
+    const segmentLength = props('segmentLength');
+    const totalCars = props('totalCars');
     const cars = [];
+
+    console.log('SEGMENTS: ', segments);
 
     let car, segment, offset, z, sprite, speed;
     for (let n = 0; n < totalCars; n += 1) {
       offset = Math.random() * Util.randomChoice([-0.8, 0.8]);
       z      = Math.floor(Math.random() * segments.length) * segmentLength;
       sprite = Util.randomChoice(SPRITES.CARS);
-      speed  = maxSpeed/4 + Math.random() * maxSpeed/(sprite == SPRITES.SEMI ? 4 : 2);
+      speed  = maxSpeed / 4 + Math.random() * maxSpeed / (sprite == SPRITES.SEMI ? 4 : 2);
       car = { offset: offset, z: z, sprite: sprite, speed: speed };
-      segment = Util.findSegment(segments, car.z);
+      segment = Util.findSegment(segments, segmentLength, car.z);
       segment.cars.push(car);
       cars.push(car);
     }
 
-    this.gameInstance.cars = [...cars];
+    this.gameInstance.setValue('cars', [...cars]);
   }
 
   reset() {
-    const gI = this.gameInstance;
+    const gV = this.gameInstance.getValue;
+    const sV = this.gameInstance.setValue
     // console.log('options: ', options);
     // options       = options || {};
-    gI.setValue('canvas.width', gI.getValue('width'));//  = Util.toInt(canvas.width, width);
-    gI.setValue('canvas.height', gI.getValue('height'));// = Util.toInt(canvas.height, height);
+    sV('canvas.width', gV('width'));//  = Util.toInt(canvas.width, width);
+    sV('canvas.height', gV('height'));// = Util.toInt(canvas.height, height);
     // lanes                  = Util.toInt(lanes,lanes);
     // roadWidth              = Util.toInt(roadWidth, roadWidth);
     // cameraHeight           = Util.toInt(cameraHeight, cameraHeight);
@@ -233,13 +250,13 @@ export default class Reset {
     // fieldOfView            = Util.toInt(fieldOfView, fieldOfView);
     // segmentLength          = Util.toInt(segmentLength, segmentLength);
     // rumbleLength           = Util.toInt(rumbleLength, rumbleLength);
-    gI.setValue('cameraDepth', 1 / Math.tan((gI.getValue('fieldOfView') / 2) * Math.PI / 180));
-    gI.setValue('playerZ', gI.getValue('cameraHeight') * gI.getValue('cameraDepth'));
-    gI.setValue('resolution', gI.getValue('height') / 480);
+    sV('cameraDepth', 1 / Math.tan((gV('fieldOfView') / 2) * Math.PI / 180));
+    sV('playerZ', gV('cameraHeight') * gV('cameraDepth'));
+    sV('resolution', gV('height') / 480);
     // refreshTweakUI();
 
-    if (gI.gameState === 'game' && (gI.segments.length==0) ||
-      (gI.segmentLength) || (gI.rumbleLength)) {
+    if (gV('gameState') === 'game' && (gV('segments').length==0) ||
+      gV('segmentLength') || gV('rumbleLength')) {
       this.resetRoad();
     }
   }
