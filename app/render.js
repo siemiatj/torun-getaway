@@ -144,16 +144,16 @@ export default class Render {
 
   drawSprite(width, height, roadWidth, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
     const sprites = this.game.getValue('assets.sprites');
-    let destW, destH;
+    // let destW, destH;
 
     // gameplay sprites
-    if (roadWidth) {
-      destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
-      destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
-    } else {
-      destW = (sprite.w * scale * width/2);
-      destH = (sprite.h * scale * width/2);
-    }
+    // if (roadWidth) {
+      const destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
+      const destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
+    // } else {
+    //   destW = (sprite.w * scale * width/2);
+    //   destH = (sprite.h * scale * width/2);
+    // }
 
     destX = destX + (destW * (offsetX || 0));
     destY = destY + (destH * (offsetY || 0));
@@ -182,7 +182,7 @@ export default class Render {
     this.ctx.drawImage(image, ((width / 2) - (435 / 2)), 50, 435, 52);
   }
 
-  drawPlayer(ctx, width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
+  drawPlayer(width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
     const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
     let sprite;
 
@@ -194,7 +194,7 @@ export default class Render {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
     }
 
-    this.drawSprite(ctx, width, height, roadWidth, sprites, sprite, scale, destX, destY + bounce, -0.5, -1);
+    this.drawSprite(width, height, roadWidth, sprites, sprite, scale, destX, destY + bounce, -0.5, -1);
   }
 
   drawFog(x, y, width, height, fog) {
@@ -250,9 +250,9 @@ export default class Render {
 
     // ctx.clearRect(0, 0, width, height);
 
-    this.background(background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
-    this.background(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
-    this.background(background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
+    this.drawBackground(background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
+    this.drawBackground(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
+    this.drawBackground(background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
     // let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
 
@@ -273,7 +273,7 @@ export default class Render {
     //       (segment.p2.screen.y >= maxy))                  // clip by (already thised) hill
     //     continue;
 
-    //   this.segment(ctx, width, lanes,
+    //   this.segment(width, lanes,
     //                  segment.p1.screen.x,
     //                  segment.p1.screen.y,
     //                  segment.p1.screen.w,
@@ -295,7 +295,7 @@ export default class Render {
     //     spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
     //     spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
     //     spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
-    //     this.renderSprite(ctx, width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+    //     this.drawSprite(width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
     //   }
 
     //   for(i = 0 ; i < segment.sprites.length ; i++) {
@@ -303,7 +303,7 @@ export default class Render {
     //     spriteScale = segment.p1.screen.scale;
     //     spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
     //     spriteY     = segment.p1.screen.y;
-    //     this.renderSprite(ctx, width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+    //     this.drawSprite(width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
     //   }
 
     //   if (segment == playerSegment) {
@@ -317,31 +317,38 @@ export default class Render {
   }
 
   renderPlayerIcon(playerData, spriteData) {
-    const width = this.game.getValue('width');
-    const height = this.game.getValue('height');
-    const resolution = this.game.getValue('resolution');
+    const sprites = this.game.getValue('assets.sprites');
 
-    this.renderSprite(width, height, resolution, null, spriteData, 1,
-      playerData.iconPosition[0], playerData.iconPosition[1], 0, 0, 0);
+    this.ctx.drawImage(
+      sprites,
+      spriteData.x,
+      spriteData.y,
+      spriteData.w,
+      spriteData.h,
+      playerData.iconPosition[0],
+      playerData.iconPosition[1],
+      80,
+      80,
+    );
    }
 
   renderPlayerSelection(uiEvents) {
     const players = [{
       name: 'MACIARENKO',
       textPosition: [250, 200],
-      iconPosition: [180, 200],
+      iconPosition: [150, 180],
       event: uiEvents.driver_1
     },
     {
       name: 'APTEKARZ',
-      textPosition: [250, 200],
-      iconPosition: [180, 200],
+      textPosition: [250, 300],
+      iconPosition: [150, 280],
       event: uiEvents.driver_2
     },
     {
       name: 'BECIA',
-      textPosition: [250, 200],
-      iconPosition: [180, 200],
+      textPosition: [250, 400],
+      iconPosition: [150, 380],
       event: uiEvents.driver_3
     }];
     const textSize = 2;
@@ -408,8 +415,6 @@ export default class Render {
         height: 15 * textSize,
         onClick: uiEvents.start_game_text,
       }
-
-      //png_font.drawText(text, textPosition, color, textSize, 'black');
     }
   }
 
