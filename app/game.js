@@ -312,20 +312,12 @@ export default class Game {
   }
 
   ready(images) {
-    // const { gameState } = this.internals;
     const assetsObject = {};
-    // let fontImage = null;
 
     images.forEach(image => {
       assetsObject[image.name] = image.image;
     });
     this.setValue('assets', { ...assetsObject });
-
-    // if (gameState !== 'game') {
-      this.hideHud();
-    // } else {
-      // this.showHud();
-    // }
 
     png_font.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
 
@@ -354,6 +346,8 @@ export default class Game {
   run() {
     const { images, canvas, step } = this.internals;
     const { update, updateStart, ui_events } = this;
+
+    this.hideHud();
 
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);
