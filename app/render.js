@@ -144,16 +144,8 @@ export default class Render {
 
   drawSprite(width, height, roadWidth, sprite, scale, destX, destY, offsetX, offsetY, clipY) {
     const sprites = this.game.getValue('assets.sprites');
-    // let destW, destH;
-
-    // gameplay sprites
-    // if (roadWidth) {
-      const destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
-      const destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
-    // } else {
-    //   destW = (sprite.w * scale * width/2);
-    //   destH = (sprite.h * scale * width/2);
-    // }
+    const destW  = (sprite.w * scale * width/2) * (SPRITES.SCALE * roadWidth);
+    const destH  = (sprite.h * scale * width/2) * (SPRITES.SCALE * roadWidth);
 
     destX = destX + (destW * (offsetX || 0));
     destY = destY + (destH * (offsetY || 0));
@@ -238,9 +230,6 @@ export default class Render {
     let baseSegment   = Util.findSegment(segments, segmentLength, position);
     let basePercent   = Util.percentRemaining(position, segmentLength);
     let playerSegment = Util.findSegment(segments, segmentLength, position+playerZ);
-
-
-    // console.log('BASE: ', baseSegment, basePercent, playerSegment)
 
     // let playerPercent = Util.percentRemaining(position+playerZ, segmentLength);
     // let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
@@ -352,14 +341,15 @@ export default class Render {
       event: uiEvents.driver_3
     }];
     const textSize = 2;
-    let color = 'white';
 
     for (let i = 0; i < players.length; i += 1) {
+      const it = i + 1;
       const player = players[i];
       const sprite = SPRITES[player.name];
+      let color = 'white';
 
-      if (this.uiElements[`player_${i}_icon`]) {
-        if (this.uiElements[`player_${i}_icon`].hovered || this.uiElements[`player_${i}_text`].hovered) {
+      if (this.uiElements[`player_${it}_icon`]) {
+        if (this.uiElements[`player_${it}_icon`].hovered || this.uiElements[`player_${it}_text`].hovered) {
           color = 'yellow';
         }
 
@@ -369,22 +359,22 @@ export default class Render {
         png_font.drawText(player.name, player.textPosition, color, 2, 'black');
         const measuredText = this.ctx.measureText(player.name);
 
-        this.uiElements[`player_${i}_text`] = {
+        this.uiElements[`player_${it}_text`] = {
           hovered: false,
           posX: player.textPosition[0],
           posY: player.textPosition[1],
           width: measuredText.width * textSize,
           height: 15 * textSize,
-          onClick: uiEvents[`driver_${i}`],
+          onClick: uiEvents[`driver_${it}`],
         }
 
-        this.uiElements[`player_${i}_icon`] = {
+        this.uiElements[`player_${it}_icon`] = {
           hovered: false,
           posX: player.iconPosition[0],
           posY: player.iconPosition[1],
           width: 80,
           height: 80,
-          onClick: uiEvents[`driver_${i}`],
+          onClick: uiEvents[`driver_${it}`],
         }
       }
     }

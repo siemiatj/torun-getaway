@@ -11,13 +11,15 @@ export default class Reset {
   }
 
   lastY() {
-    const { segments } = this.gameInstance;
+    const segments = this.gameInstance.getValue('segments');
 
     return (segments.length == 0) ? 0 : segments[segments.length-1].p2.world.y;
   }
 
   addSegment(curve, y) {
-    const { segments, segmentLength, rumbleLength } = this.gameInstance;
+    const segments = this.gameInstance.getValue('segments');
+    const segmentLength = this.gameInstance.getValue('segmentLength');
+    const rumbleLength = this.gameInstance.getValue('rumbleLength');
     const n = segments.length;
 
     segments.push({
@@ -38,20 +40,22 @@ export default class Reset {
   }
 
   addRoad(enter, hold, leave, curve, y) {
-    const { segmentLength } = this.gameInstance;
+    const segmentLength = this.gameInstance.getValue('segmentLength');
     const startY = this.lastY();
     const endY = startY + (Util.toInt(y, 0) * segmentLength);
     const total = enter + hold + leave;
     let n;
 
-    for (n = 0; n < enter; n++) {
-      this.addSegment(Util.easeIn(0, curve, n/enter), Util.easeInOut(startY, endY, n/total));
+    for (n = 0; n < enter; n +=1 ) {
+      this.addSegment(Util.easeIn(0, curve, n / enter), Util.easeInOut(startY, endY, n/total));
     }
-    for (n = 0; n < hold; n++) {
+
+    for (n = 0; n < hold; n += 1) {
       this.addSegment(curve, Util.easeInOut(startY, endY, (enter+n)/total));
     }
-    for (n = 0; n < leave; n++) {
-      this.addSegment(Util.easeInOut(curve, 0, n/leave), Util.easeInOut(startY, endY, (enter+hold+n)/total));
+
+    for (n = 0; n < leave; n += 1) {
+      this.addSegment(Util.easeInOut(curve, 0, n / leave), Util.easeInOut(startY, endY, (enter+hold+n)/total));
     }
   }
 
@@ -63,6 +67,7 @@ export default class Reset {
   addHill(num, height) {
     num    = num    || ROAD.LENGTH.MEDIUM;
     height = height || ROAD.HILL.MEDIUM;
+
     this.addRoad(num, num, num, 0, height);
   }
 
@@ -70,26 +75,28 @@ export default class Reset {
     num    = num    || ROAD.LENGTH.MEDIUM;
     curve  = curve  || ROAD.CURVE.MEDIUM;
     height = height || ROAD.HILL.NONE;
+
     this.addRoad(num, num, num, curve, height);
   }
       
   addLowRollingHills(num, height) {
     num    = num    || ROAD.LENGTH.SHORT;
     height = height || ROAD.HILL.LOW;
-    this.addRoad(num, num, num,  0,                height/2);
-    this.addRoad(num, num, num,  0,               -height);
-    this.addRoad(num, num, num,  ROAD.CURVE.EASY,  height);
-    this.addRoad(num, num, num,  0,                0);
-    this.addRoad(num, num, num, -ROAD.CURVE.EASY,  height/2);
-    this.addRoad(num, num, num,  0,                0);
+
+    this.addRoad(num, num, num, 0, height/2);
+    this.addRoad(num, num, num, 0, -height);
+    this.addRoad(num, num, num, ROAD.CURVE.EASY, height);
+    this.addRoad(num, num, num, 0, 0);
+    this.addRoad(num, num, num, -ROAD.CURVE.EASY, height/2);
+    this.addRoad(num, num, num, 0, 0);
   }
 
   addSCurves() {
-    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.NONE);
-    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.MEDIUM,  ROAD.HILL.MEDIUM);
-    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,   ROAD.CURVE.EASY,   -ROAD.HILL.LOW);
-    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.EASY,    ROAD.HILL.MEDIUM);
-    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM,  -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.EASY, ROAD.HILL.NONE);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.EASY, -ROAD.HILL.LOW);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.EASY, ROAD.HILL.MEDIUM);
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
   }
 
   addBumps() {
@@ -104,10 +111,10 @@ export default class Reset {
   }
 
   addDownhillToEnd(num) {
-    const { segmentLength, lastY } = this.gameInstance;
+    const segmentLength = this.gameInstance.getValue('segmentLength');
 
     num = num || 200;
-    this.addRoad(num, num, num, -ROAD.CURVE.EASY, - lastY() / segmentLength);
+    this.addRoad(num, num, num, -ROAD.CURVE.EASY, - this.lastY() / segmentLength);
   }
 
   resetRoad() {
