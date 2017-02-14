@@ -338,8 +338,8 @@ export default class Render {
     ctx.restore();
 
     png_font.drawText(`GAME OVER`, [200, 180], 'red', 3, 'white');
-    png_font.drawText(`Your time`, [230, 250], 'white', 2, 'black');
-    png_font.drawText(`${score} seconds`, [240, 250], 'white', 2, 'black');
+    png_font.drawText(`Your time (s):`, [200, 250], 'white', 2, 'black');
+    png_font.drawText(`${score}`, [260, 290], 'white', 2, 'black');
 
     this.uiElements['game_over_overlay'] = {
       fullScreenClick: true,
