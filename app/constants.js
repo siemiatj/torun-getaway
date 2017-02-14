@@ -13,7 +13,7 @@ const GAME_SETTINGS = {
   hillSpeed: 0.002,                   // background hill layer scroll speed when going around curve (or up hill)
   treeSpeed: 0.003,                   // background tree layer scroll speed when going around curve (or up hill)
   roadWidth   : 2000,                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
-  segmentLengt: 200,                     // length of a single segment
+  segmentLength: 200,                     // length of a single segment
   rumbleLength: 3,                       // number of segments per red/white rumble strip
   drawDistance: 150,                     // number of segments to draw
   lanes       : 3,                       // number of lanes

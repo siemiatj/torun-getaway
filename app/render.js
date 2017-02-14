@@ -217,7 +217,7 @@ export default class Render {
     const segments = props('segments');
     const segmentLength = props('segmentLength');
     const position = props('position');
-    const background = props('background');
+    const background = props('assets.background');
     const width = props('width');
     const height = props('height');
     const resolution = props('resolution');
@@ -229,15 +229,14 @@ export default class Render {
     const hillOffset = props('hillOffset');
     const treeOffset = props('treeOffset');
 
-    let baseSegment   = Util.findSegment(segments, segmentLength, position);
-    let basePercent   = Util.percentRemaining(position, segmentLength);
-    let playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
-
-    let playerPercent = Util.percentRemaining(position + playerZ, segmentLength);
-    let playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
-    let maxy          = height;
-    let x  = 0;
-    let dx = - (baseSegment.curve * basePercent);
+    const baseSegment   = Util.findSegment(segments, segmentLength, position);
+    const basePercent   = Util.percentRemaining(position, segmentLength);
+    const playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
+    const playerPercent = Util.percentRemaining(position + playerZ, segmentLength);
+    const playerY       = Util.interpolate(playerSegment.p1.world.y, playerSegment.p2.world.y, playerPercent);
+    let maxy = height;
+    let x = 0;
+    let dx = -(baseSegment.curve * basePercent);
 
     this.ctx.clearRect(0, 0, width, height);
 
