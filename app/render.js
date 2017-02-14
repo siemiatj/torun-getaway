@@ -248,6 +248,7 @@ export default class Render {
     let maxy = height;
     let x = 0;
     let dx = -(baseSegment.curve * basePercent);
+    let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
 
     this.ctx.clearRect(0, 0, width, height);
 
@@ -255,7 +256,6 @@ export default class Render {
     this.drawBackground(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
     this.drawBackground(background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
-    let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
     for (n = 0; n < drawDistance; n += 1) {
       segment        = segments[(baseSegment.index + n) % segments.length];
       segment.looped = segment.index < baseSegment.index;
@@ -322,6 +322,31 @@ export default class Render {
         );
       }
     }
+  }
+
+  renderGameOver(uiEvents) {
+    const { ctx } = this;
+    const width = this.game.getValue('width');
+    const height = this.game.getValue('height');
+    const score = this.game.getValue('currentLapTime');
+
+    ctx.save();
+    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = COLORS.OVERLAY;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+
+    png_font.drawText(`GAME OVER`, [200, 180], 'red', 3, 'white');
+    png_font.drawText(`Your time ${score}`, [220, 250], 'white', 2, 'black');
+
+    this.uiElements['game_over_overlay'] = {
+      fullScreenClick: true,
+      posX: 0,
+      posY: 0,
+      width,
+      height,
+      onClick: uiEvents['game_over_overlay'],
+    };
   }
 
   renderOverlay(uiEvents) {
@@ -497,7 +522,7 @@ export default class Render {
       } else if (!gameRunning && !gameOver) {
         this.renderCountdown();
       } else if (gameOver) {
-        this.renderGameOver();
+        this.renderGameOver(uiEvents);
       }
     }
   }

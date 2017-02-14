@@ -171,6 +171,7 @@ export default class Game {
       for (n = 0; n < playerSegment.sprites.length; n += 1) {
         sprite  = playerSegment.sprites[n];
         spriteW = sprite.source.w * SPRITES.SCALE;
+
         if (Util.overlap(playerX, playerW, sprite.offset + spriteW / 2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
           speed = maxSpeed/5;
           position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
@@ -184,8 +185,11 @@ export default class Game {
       carW = car.sprite.w * SPRITES.SCALE;
       if (speed > car.speed) {
         if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
-          speed    = car.speed * (car.speed/speed);
-          position = Util.increase(car.z, -playerZ, trackLength);
+          // speed    = car.speed * (car.speed/speed);
+          // position = Util.increase(car.z, -playerZ, trackLength);
+          this.internals.gameRunning = false;
+          this.internals.gameOver = true;
+
           break;
         }
       }
@@ -220,8 +224,8 @@ export default class Game {
       }
     }
 
-    // this.updateHud('speed', 5 * Math.round(speed/500));
-    // this.updateHud('current_lap_time', this.formatTime(currentLapTime));
+    this.updateHud('speed', 5 * Math.round(speed/500));
+    this.updateHud('current_lap_time', this.formatTime(currentLapTime));
   }
 
   updateCars(dt, playerSegment, playerW) {
@@ -299,11 +303,13 @@ export default class Game {
   }
 
   updateHud(key, value) { // accessing DOM can be slow, so only do it if value has changed
-    const { hud } = this;
+    const { hud, gameRunning } = this.internals;
 
-    if (hud[key].value !== value) {
-      hud[key].value = value;
-      Dom.set(hud[key].dom, value);
+    if (gameRunning) {
+      if (hud[key].value !== value) {
+        hud[key].value = value;
+        Dom.set(hud[key].dom, value);
+      }
     }
   }
 
@@ -390,6 +396,8 @@ export default class Game {
 
               counterTimestamp = now;
             }
+          } else if (gameOver) {
+
           } else {
             dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
             gdt = gdt + dt;
