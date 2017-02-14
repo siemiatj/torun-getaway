@@ -144,10 +144,8 @@ export default class Reset {
     this.addSCurves();
     this.addDownhillToEnd();
 
-    // this.resetSprites();
-    // this.resetCars();
-
-    console.log('PLAYER: ', Util.findSegment(segments, playerZ), segments.length);
+    this.resetSprites();
+    this.resetCars();
 
     segments[Util.findSegment(segments, segmentLength, playerZ).index + 2].color = COLORS.START;
     segments[Util.findSegment(segments, segmentLength, playerZ).index + 3].color = COLORS.START;
@@ -208,15 +206,12 @@ export default class Reset {
   }
 
   resetCars() {
-    // const { segments, maxSpeed, segmentLength, totalCars } = this.gameInstance;
     const props = this.gameInstance.getValue;
     const segments = props('segments');
     const maxSpeed = props('maxSpeed');
     const segmentLength = props('segmentLength');
     const totalCars = props('totalCars');
     const cars = [];
-
-    // console.log('SEGMENTS: ', segments);
 
     let car, segment, offset, z, sprite, speed;
     for (let n = 0; n < totalCars; n += 1) {
@@ -236,8 +231,7 @@ export default class Reset {
   reset() {
     const gV = this.gameInstance.getValue;
     const sV = this.gameInstance.setValue
-    // console.log('options: ', options);
-    // options       = options || {};
+
     sV('canvas.width', gV('width'));//  = Util.toInt(canvas.width, width);
     sV('canvas.height', gV('height'));// = Util.toInt(canvas.height, height);
     // lanes                  = Util.toInt(lanes,lanes);

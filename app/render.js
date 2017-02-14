@@ -175,7 +175,7 @@ export default class Render {
     this.ctx.drawImage(image, ((width / 2) - (435 / 2)), 50, 435, 52);
   }
 
-  drawPlayer(width, height, resolution, roadWidth, sprites, speedPercent, scale, destX, destY, steer, updown) {
+  drawPlayer(width, height, resolution, roadWidth, speedPercent, scale, destX, destY, steer, updown) {
     const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
     let sprite;
 
@@ -187,7 +187,7 @@ export default class Render {
       sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
     }
 
-    this.drawSprite(width, height, roadWidth, sprites, sprite, scale, destX, destY + bounce, -0.5, -1);
+    this.drawSprite(width, height, roadWidth, sprite, scale, destX, destY + bounce, -0.5, -1);
   }
 
   drawFog(x, y, width, height, fog) {
@@ -214,6 +214,8 @@ export default class Render {
   //=========================================================================
   renderGame() {
     const props = this.game.getValue;
+    const keyLeft = props('keyLeft');
+    const keyRight = props('keyRight');
     const segments = props('segments');
     const segmentLength = props('segmentLength');
     const position = props('position');
@@ -221,6 +223,8 @@ export default class Render {
     const width = props('width');
     const height = props('height');
     const resolution = props('resolution');
+    const speed = props('speed');
+    const maxSpeed = props('maxSpeed');
     const skySpeed = props('skySpeed');
     const hillSpeed = props('hillSpeed');
     const treeSpeed = props('treeSpeed');
@@ -284,34 +288,40 @@ export default class Render {
       maxy = segment.p1.screen.y;
     }
 
-    // for (n = (drawDistance-1) ; n > 0 ; n--) {
-    //   segment = segments[(baseSegment.index + n) % segments.length];
+    for (n = (drawDistance - 1); n > 0; n -= 1) {
+      segment = segments[(baseSegment.index + n) % segments.length];
 
-    //   for(i = 0 ; i < segment.cars.length ; i++) {
-    //     car         = segment.cars[i];
-    //     sprite      = car.sprite;
-    //     spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
-    //     spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
-    //     spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
-    //     this.drawSprite(width, height, resolution, roadWidth, sprites, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
-    //   }
+      for(i = 0; i < segment.cars.length; i++) {
+        car         = segment.cars[i];
+        sprite      = car.sprite;
+        spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
+        spriteX     = Util.interpolate(segment.p1.screen.x,     segment.p2.screen.x,     car.percent) + (spriteScale * car.offset * roadWidth * width/2);
+        spriteY     = Util.interpolate(segment.p1.screen.y,     segment.p2.screen.y,     car.percent);
+        this.drawSprite(width, height, roadWidth, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+      }
 
-    //   for(i = 0 ; i < segment.sprites.length ; i++) {
-    //     sprite      = segment.sprites[i];
-    //     spriteScale = segment.p1.screen.scale;
-    //     spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
-    //     spriteY     = segment.p1.screen.y;
-    //     this.drawSprite(width, height, resolution, roadWidth, sprites, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
-    //   }
+      // for(i = 0 ; i < segment.sprites.length ; i++) {
+      //   sprite      = segment.sprites[i];
+      //   spriteScale = segment.p1.screen.scale;
+      //   spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
+      //   spriteY     = segment.p1.screen.y;
+      //   this.drawSprite(width, height, roadWidth, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+      // }
 
-    //   if (segment == playerSegment) {
-    //     this.renderPlayer(ctx, width, height, resolution, roadWidth, sprites, speed/maxSpeed,
-    //       cameraDepth/playerZ, width/2,
-    //       (height/2) - (cameraDepth/playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height/2),
-    //       speed * (keyLeft ? -1 : keyRight ? 1 : 0),
-    //       playerSegment.p2.world.y - playerSegment.p1.world.y);
-    //   }
-    // }
+      if (segment == playerSegment) {
+        this.drawPlayer(
+          width,
+          height,
+          resolution,
+          roadWidth,
+          speed / maxSpeed,
+          cameraDepth / playerZ, width / 2,
+          (height / 2) - (cameraDepth / playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height / 2),
+          speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+          playerSegment.p2.world.y - playerSegment.p1.world.y
+        );
+      }
+    }
   }
 
   renderPlayerIcon(playerData, spriteData) {
