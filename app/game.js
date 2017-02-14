@@ -47,6 +47,7 @@ export default class Game {
 
     this.getValue = this.getValue.bind(this);
     this.setValue = this.setValue.bind(this);
+    this.update = this.update.bind(this);
   }
 
   setValue(name, value) {
@@ -114,10 +115,6 @@ export default class Game {
 //=========================================================================
 // UPDATE THE GAME WORLD
 //=========================================================================
-
-  updateStart() {
-    // console.log('update start');
-  }
 
   update(dt) {
     const { segments, playerZ, maxSpeed, trackLength, keyLeft,
@@ -210,8 +207,8 @@ export default class Game {
       }
     }
 
-    this.updateHud('speed', 5 * Math.round(speed/500));
-    this.updateHud('current_lap_time', this.formatTime(currentLapTime));
+    // this.updateHud('speed', 5 * Math.round(speed/500));
+    // this.updateHud('current_lap_time', this.formatTime(currentLapTime));
   }
 
   updateCars(dt, playerSegment, playerW) {
@@ -238,8 +235,8 @@ export default class Game {
     const { segments, playerX, speed, maxSpeed, drawDistance } = this.internals;
     const lookahead = 20;
     const carW = car.sprite.w * SPRITES.SCALE;
-    let segment, i, j, dir, otherCar, otherCarW
-    
+    let segment, i, j, dir, otherCar, otherCarW;
+
     // optimization, dont bother steering around other cars when 'out of sight' of the player
     if ((carSegment.index - playerSegment.index) > drawDistance) {
       return 0;
@@ -353,7 +350,7 @@ export default class Game {
 
   run() {
     const { images, canvas, step } = this.internals;
-    const { update, updateStart, ui_events } = this;
+    const { update, ui_events } = this;
 
     this.hideHud();
 
@@ -369,16 +366,14 @@ export default class Game {
       const frame = () => {
         now = Util.timestamp();
 
-        if (this.gameState === 'game') {
+        if (this.internals.gameStep === 'game') {
           dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
           gdt = gdt + dt;
 
           while (gdt > step) {
             gdt = gdt - step;
-            // update(step);
+            update(step);
           }
-        } else {
-          // updateStart();
         }
 
         this.renderer.render(ui_events);
