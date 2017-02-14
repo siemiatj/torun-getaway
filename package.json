@@ -42,6 +42,7 @@
   "dependencies": {
     "babel-loader": "^6.2.10",
     "lodash.get": "^4.4.2",
+    "lodash.round": "^4.0.4",
     "lodash.set": "^4.3.2",
     "webpack": "^1.14.0",
     "webpack-dev-middleware": "^1.9.0",

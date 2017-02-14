@@ -1,3 +1,4 @@
+import round from 'lodash.round';
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
 import png_font from 'pngfont';
@@ -328,7 +329,7 @@ export default class Render {
     const { ctx } = this;
     const width = this.game.getValue('width');
     const height = this.game.getValue('height');
-    const score = this.game.getValue('currentLapTime');
+    const score = round(this.game.getValue('currentLapTime'), 2);
 
     ctx.save();
     ctx.globalAlpha = 0.8;
@@ -337,7 +338,8 @@ export default class Render {
     ctx.restore();
 
     png_font.drawText(`GAME OVER`, [200, 180], 'red', 3, 'white');
-    png_font.drawText(`Your time ${score}`, [220, 250], 'white', 2, 'black');
+    png_font.drawText(`Your time`, [230, 250], 'white', 2, 'black');
+    png_font.drawText(`${score} seconds`, [240, 250], 'white', 2, 'black');
 
     this.uiElements['game_over_overlay'] = {
       fullScreenClick: true,
