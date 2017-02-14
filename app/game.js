@@ -27,6 +27,7 @@ export default class Game {
       currentLapTime: 0, // current lap time
       lastLapTime: null, // last lap time
       driver: null,
+      startCounter: 3,
     };
 
     this.keys = [
@@ -80,9 +81,8 @@ export default class Game {
 
   generateUIEvents() {
     const driverSelectHandler = (num) => {
-      this.showHud();
       this.setValue('driver', num);
-      this.setValue('gameStep', 'game');
+      this.setValue('gameStep', 'start');
     };
     const eventsObject = {
       start_game_text: () => {
@@ -94,6 +94,10 @@ export default class Game {
       driver_1_text: () => driverSelectHandler(1),
       driver_2_text: () => driverSelectHandler(2),
       driver_3_text: () => driverSelectHandler(3),
+      start_overlay: () => {
+        this.showHud();
+        this.setValue('gameStep', 'game');
+      }
     };
 
     return eventsObject;
@@ -115,6 +119,14 @@ export default class Game {
 //=========================================================================
 // UPDATE THE GAME WORLD
 //=========================================================================
+  updateCountdown() {
+    if (this.internals.startCounter === 0) {
+      this.internals.startCounter = 3;
+      this.internals.gameRunning = true;
+    } else {
+      this.internals.startCounter -= 1;
+    }
+  }
 
   update(dt) {
     const { segments, playerZ, maxSpeed, trackLength, keyLeft,
@@ -349,8 +361,8 @@ export default class Game {
   }
 
   run() {
-    const { images, canvas, step } = this.internals;
-    const { update, ui_events } = this;
+    const { images, canvas, step, gameStep } = this.internals;
+    const { update, updateCountdown, ui_events } = this;
 
     this.hideHud();
 
@@ -358,21 +370,32 @@ export default class Game {
       this.ready(loadedImages);
       this.setKeyListener();
 
-      let now = null;
+      // let now = null;
       let last = Util.timestamp();
-      let dt = 0;
-      let gdt = 0;
+      // let dt = 0;
+      // let gdt = 0;
+      let counterTimestamp = Util.timestamp();
 
       const frame = () => {
-        now = Util.timestamp();
+        const now = Util.timestamp();
 
-        if (this.internals.gameStep === 'game') {
-          dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
-          gdt = gdt + dt;
+        if (gameStep === 'game') {
+          if (!this.internals.gameRunning && !this.internals.gamePaused) {
+            const timeDifference = now - counterTimestamp;
 
-          while (gdt > step) {
-            gdt = gdt - step;
-            update(step);
+            if (timeDifference > 1000) {
+              updateCountdown();
+
+              counterTimestamp = now;
+            }
+          } else {
+            const dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
+            const gdt = gdt + dt;
+
+            while (gdt > step) {
+              gdt = gdt - step;
+              update(step);
+            }
           }
         }
 

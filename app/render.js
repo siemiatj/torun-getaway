@@ -67,7 +67,7 @@ export default class Render {
 
     if (gameStep !== 'game') {
       for (const i of Object.values(this.uiElements)) {
-        if (i.hovered) {
+        if (i.hovered || i.fullScreenClick) {
           i.onClick && i.onClick();
           this.uiElements = {};
           document.body.style.cursor = '';
@@ -324,6 +324,44 @@ export default class Render {
     }
   }
 
+  renderOverlay(uiEvents, mode) {
+    const { ctx } = this;
+    const width = this.game.getValue('width');
+    const height = this.game.getValue('height');
+
+    ctx.save();
+    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = COLORS.OVERLAY;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+
+    this.uiElements[`${mode}_overlay`] = {
+      fullScreenClick: true,
+      posX: 0,
+      posY: 0,
+      width,
+      height,
+      onClick: uiEvents[`${mode}_overlay`],
+    };
+  }
+
+  renderCountdown() {
+    const tick = this.game.getValue('startCounter');
+
+    png_font.drawText(tick, [300, 300], 'white', 3, 'black'); 
+  }
+
+  renderStartScreen() {
+    const firstLine = 'JAK DALEKO DOWIEZIESZ VIPA ?';
+    const secondLine = 'NIE MOZESZ STANAC !';
+    const thirdLine = 'NIE SPOWODUJ KARAMBOLU !';
+
+    png_font.drawText(firstLine, [100, 180], 'white', 2, 'black');
+    png_font.drawText(secondLine, [170, 220], 'white', 2, 'black');
+    png_font.drawText(thirdLine, [130, 260], 'white', 2, 'black');
+    png_font.drawText('KLIKNIJ ABY ROZPOCZAC GRE', [200, 320], 'yellow', 1, 'black');
+  }
+
   renderPlayerIcon(playerData, spriteData) {
     const sprites = this.game.getValue('assets.sprites');
 
@@ -443,12 +481,18 @@ export default class Render {
 
   render(uiEvents) {
     const prop = this.game.getValue;
+    const gameStep = prop('gameStep');
     this.ctx.clearRect(0, 0, prop('width'), prop('height'));
 
-    if (prop('gameStep') !== 'game') {
+    if (gameStep !== 'game' && gameStep !== 'start') {
       this.renderScreens(uiEvents);
     } else {
       this.renderGame();
+
+      if (gameStep === 'start') {
+        this.renderOverlay(uiEvents, 'start');
+        this.renderStartScreen();
+      }
     }
   }
 }

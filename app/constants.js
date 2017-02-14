@@ -3,7 +3,7 @@
 //=============================================================================
 
 const GAME_SETTINGS = {
-  GAME_STATES: ['intro', 'players', 'game', 'gameover'],
+  GAME_STATES: ['intro', 'players', 'start', 'game', 'gameover', 'restart'],
   fps: 60,                      // how many 'update' frames per second
   step: 1/60,                   // how long is each frame (in seconds)
   width: 640,                    // logical canvas width
@@ -58,6 +58,7 @@ const COLORS = {
   SKY:  '#72D7EE',
   TREE: '#005108',
   FOG:  '#005108',
+  OVERLAY: '#343D54',
   LIGHT:  { road: '#6B6B6B', grass: '#10AA10', rumble: '#555555', lane: '#CCCCCC'  },
   DARK:   { road: '#696969', grass: '#009A00', rumble: '#BBBBBB'                   },
   START:  { road: 'white',   grass: 'white',   rumble: 'white'                     },

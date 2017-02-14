@@ -37,7 +37,9 @@ const newGame = new Game({
   ...GAME_SETTINGS,
   canvas,
   hud,
-  gameStep: 'players',
+  gameStep: 'start',
+  gameRunning: false,
+  gameOver: false,
   images: ['intro', 'title', 'background', 'sprites', 'unifont'],
 });
 
