@@ -49,6 +49,7 @@ export default class Game {
     this.getValue = this.getValue.bind(this);
     this.setValue = this.setValue.bind(this);
     this.update = this.update.bind(this);
+    this.updateCountdown = this.updateCountdown.bind(this);
   }
 
   setValue(name, value) {
@@ -361,7 +362,7 @@ export default class Game {
   }
 
   run() {
-    const { images, canvas, step, gameStep } = this.internals;
+    const { images, canvas, step } = this.internals;
     const { update, updateCountdown, ui_events } = this;
 
     this.hideHud();
@@ -370,17 +371,18 @@ export default class Game {
       this.ready(loadedImages);
       this.setKeyListener();
 
-      // let now = null;
+      let now = null;
       let last = Util.timestamp();
-      // let dt = 0;
-      // let gdt = 0;
+      let dt = 0;
+      let gdt = 0;
       let counterTimestamp = Util.timestamp();
 
       const frame = () => {
-        const now = Util.timestamp();
+        const { gameStep, gameRunning, gameOver } = this.internals;
+        now = Util.timestamp();
 
         if (gameStep === 'game') {
-          if (!this.internals.gameRunning && !this.internals.gamePaused) {
+          if (!gameRunning && !gameOver) {
             const timeDifference = now - counterTimestamp;
 
             if (timeDifference > 1000) {
@@ -389,8 +391,8 @@ export default class Game {
               counterTimestamp = now;
             }
           } else {
-            const dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
-            const gdt = gdt + dt;
+            dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
+            gdt = gdt + dt;
 
             while (gdt > step) {
               gdt = gdt - step;

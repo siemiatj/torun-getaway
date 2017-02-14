@@ -324,7 +324,7 @@ export default class Render {
     }
   }
 
-  renderOverlay(uiEvents, mode) {
+  renderOverlay(uiEvents) {
     const { ctx } = this;
     const width = this.game.getValue('width');
     const height = this.game.getValue('height');
@@ -335,20 +335,20 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    this.uiElements[`${mode}_overlay`] = {
+    this.uiElements['start_overlay'] = {
       fullScreenClick: true,
       posX: 0,
       posY: 0,
       width,
       height,
-      onClick: uiEvents[`${mode}_overlay`],
+      onClick: uiEvents['start_overlay'],
     };
   }
 
   renderCountdown() {
-    const tick = this.game.getValue('startCounter');
+    const tick = this.game.getValue('startCounter') || 'GO !';
 
-    png_font.drawText(tick, [300, 300], 'white', 3, 'black'); 
+    png_font.drawText(`${tick}`, [290, 250], 'white', 3, 'black'); 
   }
 
   renderStartScreen() {
@@ -482,6 +482,8 @@ export default class Render {
   render(uiEvents) {
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
+    const gameRunning = prop('gameRunning');
+    const gameOver = prop('gameOver');
     this.ctx.clearRect(0, 0, prop('width'), prop('height'));
 
     if (gameStep !== 'game' && gameStep !== 'start') {
@@ -490,8 +492,12 @@ export default class Render {
       this.renderGame();
 
       if (gameStep === 'start') {
-        this.renderOverlay(uiEvents, 'start');
+        this.renderOverlay(uiEvents);
         this.renderStartScreen();
+      } else if (!gameRunning && !gameOver) {
+        this.renderCountdown();
+      } else if (gameOver) {
+        this.renderGameOver();
       }
     }
   }
