@@ -228,7 +228,14 @@ export default class Render {
     const skyOffset = props('skyOffset');
     const hillOffset = props('hillOffset');
     const treeOffset = props('treeOffset');
-
+    const lanes = props('lanes');
+    const playerX = props('playerX');
+    const roadWidth = props('roadWidth');
+    const cameraHeight = props('cameraHeight');
+    const cameraDepth = props('cameraDepth');
+    const trackLength = props('trackLength');
+    const drawDistance = props('drawDistance');
+    const fogDensity = props('fogDensity');
     const baseSegment   = Util.findSegment(segments, segmentLength, position);
     const basePercent   = Util.percentRemaining(position, segmentLength);
     const playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
@@ -244,37 +251,38 @@ export default class Render {
     this.drawBackground(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
     this.drawBackground(background, width, height, BACKGROUND.TREES, treeOffset, resolution * treeSpeed * playerY);
 
-    // let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
+    let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
+    for (n = 0; n < drawDistance; n += 1) {
+      segment        = segments[(baseSegment.index + n) % segments.length];
+      segment.looped = segment.index < baseSegment.index;
+      segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
+      segment.clip   = maxy;
 
-    // for (n = 0 ; n < drawDistance ; n++) {
-    //   segment        = segments[(baseSegment.index + n) % segments.length];
-    //   segment.looped = segment.index < baseSegment.index;
-    //   segment.fog    = Util.exponentialFog(n/drawDistance, fogDensity);
-    //   segment.clip   = maxy;
+      Util.project(segment.p1, (playerX * roadWidth) - x, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+      Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
 
-    //   Util.project(segment.p1, (playerX * roadWidth) - x, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
-    //   Util.project(segment.p2, (playerX * roadWidth) - x - dx, playerY + cameraHeight, position - (segment.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+      x  = x + dx;
+      dx = dx + segment.curve;
 
-    //   x  = x + dx;
-    //   dx = dx + segment.curve;
+      if ((segment.p1.camera.z <= cameraDepth)         || // behind us
+          (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
+          (segment.p2.screen.y >= maxy))                  // clip by (already thised) hill
+        continue;
 
-    //   if ((segment.p1.camera.z <= cameraDepth)         || // behind us
-    //       (segment.p2.screen.y >= segment.p1.screen.y) || // back face cull
-    //       (segment.p2.screen.y >= maxy))                  // clip by (already thised) hill
-    //     continue;
+      this.drawSegment(
+        width, lanes,
+        segment.p1.screen.x,
+        segment.p1.screen.y,
+        segment.p1.screen.w,
+        segment.p2.screen.x,
+        segment.p2.screen.y,
+        segment.p2.screen.w,
+        segment.fog,
+        segment.color
+      );
 
-    //   this.drawSegment(width, lanes,
-    //                  segment.p1.screen.x,
-    //                  segment.p1.screen.y,
-    //                  segment.p1.screen.w,
-    //                  segment.p2.screen.x,
-    //                  segment.p2.screen.y,
-    //                  segment.p2.screen.w,
-    //                  segment.fog,
-    //                  segment.color);
-
-    //   maxy = segment.p1.screen.y;
-    // }
+      maxy = segment.p1.screen.y;
+    }
 
     // for (n = (drawDistance-1) ; n > 0 ; n--) {
     //   segment = segments[(baseSegment.index + n) % segments.length];

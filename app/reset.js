@@ -119,8 +119,6 @@ export default class Reset {
   }
 
   resetRoad() {
-    // const { playerZ, rumbleLength, segments, segmentLength } = this.gameInstance;
-    // const segments = [];
     const props = this.gameInstance.getValue;
     const playerZ = props('playerZ');
     const rumbleLength = props('rumbleLength');
@@ -151,8 +149,8 @@ export default class Reset {
 
     console.log('PLAYER: ', Util.findSegment(segments, playerZ), segments.length);
 
-    // segments[Util.findSegment(segments, segmentLength, playerZ).index + 2].color = COLORS.START;
-    // segments[Util.findSegment(segments, segmentLength, playerZ).index + 3].color = COLORS.START;
+    segments[Util.findSegment(segments, segmentLength, playerZ).index + 2].color = COLORS.START;
+    segments[Util.findSegment(segments, segmentLength, playerZ).index + 3].color = COLORS.START;
     
     for (let n = 0; n < rumbleLength; n++) {
       segments[segments.length-1-n].color = COLORS.FINISH;
@@ -218,7 +216,7 @@ export default class Reset {
     const totalCars = props('totalCars');
     const cars = [];
 
-    console.log('SEGMENTS: ', segments);
+    // console.log('SEGMENTS: ', segments);
 
     let car, segment, offset, z, sprite, speed;
     for (let n = 0; n < totalCars; n += 1) {
