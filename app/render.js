@@ -326,18 +326,16 @@ export default class Render {
   }
 
   renderFBShareIcon() {
-    // this.drawSprite(width, height, roadWidth, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
-    // const icon = sprites.
     const sprites = this.game.getValue('assets.sprites');
 
     this.ctx.drawImage(
       sprites,
-      SPRITES.ICON2.x,
-      SPRITES.ICON2.y,
-      SPRITES.ICON2.w,
-      SPRITES.ICON2.h,
-      350,
-      400,
+      SPRITES.ICONFB.x,
+      SPRITES.ICONFB.y,
+      SPRITES.ICONFB.w,
+      SPRITES.ICONFB.h,
+      390,
+      410,
       40,
       40,
     );
@@ -363,9 +361,9 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    png_font.drawText(TEXTS.gameOver, [170, 100], 'red', 4, 'white');
-    png_font.drawText(TEXTS.score, [200, 200], 'white', 2, 'black');
-    png_font.drawText(`${score}`, [275, 240], 'white', 2, 'black');
+    png_font.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
+    png_font.drawText(TEXTS.score, [200, 190], 'white', 2, 'black');
+    png_font.drawText(`${score}`, [275, 230], 'white', 2, 'black');
     png_font.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
 
     let color = 'white';
@@ -374,9 +372,9 @@ export default class Render {
         color = 'yellow';
       }
 
-      png_font.drawText(TEXTS.share, [200, 400], color, 2, 'black');
+      png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
     } else {
-      png_font.drawText(TEXTS.share, [200, 400], color, 2, 'black');
+      png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
       const measuredText = this.ctx.measureText(TEXTS.share);
 
       this.uiElements.game_over_overlay = {
@@ -406,25 +404,8 @@ export default class Render {
         onClick: uiEvents.fb_share_icon,
       }; 
     }
-    // if (!this.uiElements.game_over_overlay) {
-    //   this.uiElements['game_over_overlay'] = {
-    //     fullScreenClick: true,
-    //     posX: 0,
-    //     posY: 0,
-    //     width,
-    //     height,
-    //     onClick: uiEvents['game_over_overlay'],
-    //   };
 
-    //   this.uiElements['game_over_overlay'] = {
-    //     fullScreenClick: true,
-    //     posX: 0,
-    //     posY: 0,
-    //     width,
-    //     height,
-    //     onClick: uiEvents['game_over_overlay'],
-    //   };
-    // }
+    this.renderFBShareIcon()
   }
 
   renderOverlay(uiEvents) {
