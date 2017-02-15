@@ -336,6 +336,7 @@ export default class Render {
       gameOver: (localePL ? 'KONIEC GRY' : 'GAME OVER'),
       score: (localePL ? 'Twoj czas (s):' : 'Your time (s):'),
       restart: (localePL ? 'KLIKNIJ ABY ZRESTARTOWAC' : 'CLICK HERE TO RESTART'),
+      share: (localePL ? 'PODZIEL SIE NA' : 'SHARE ON YOUR'),
     };
 
     ctx.save();

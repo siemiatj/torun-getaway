@@ -28,7 +28,7 @@ function onLogin(response) {
   }
 }
  
-function shareScore(n){
+function shareScore(n, callback){
   var PL = {
     method: 'feed',
     link: 'https://apps.facebook.com/borgetaway/',
@@ -47,9 +47,9 @@ function shareScore(n){
   };
 
   if (facebookUser.locale === 'pl_PL') {
-    FB.ui(PL, function(response){});
+    FB.ui(PL, callback);
   } else {
-    FB.ui(EN, function(response){});
+    FB.ui(EN, callback);
   }
 }
 

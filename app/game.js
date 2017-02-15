@@ -86,6 +86,11 @@ export default class Game {
   }
 
   generateUIEvents() {
+    const shareOnFbHandler = (score) => {
+      shareScore(score, () => {
+        this.setValue('scoreShared', true);
+      });
+    }
     const driverSelectHandler = (num) => {
       this.setValue('driver', num);
       this.setValue('gameStep', 'start');
@@ -108,7 +113,9 @@ export default class Game {
         this.resetter.resetGame();
         this.showHud();
         this.setValue('gameOver', false);
-      }
+      },
+      share_on_fb_text: () => shareOnFbHandler(this.getValue('currentLapTime')),
+      share_on_fb_icon: () => shareOnFbHandler(this.getValue('currentLapTime')),
     };
 
     return eventsObject;
