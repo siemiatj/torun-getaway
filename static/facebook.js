@@ -38,16 +38,16 @@ function shareScore(n, callback){
     method: common.method,
     link: common.link,
     caption: 'Zagraj w BOR Getaway !',
-    name: 'Mój rekord w BOR Getaway to ' + n + '!!!',
-    description: (facebookUser.gender === 'male' ? 'Przejechałem ' : 'Przejechałam ') + n + ' w BOR Getaway bez karambolu! A ty?',
+    name: 'Mój rekord w BOR Getaway to ' + n + 's !!!',
+    description: (facebookUser.gender === 'male' ? 'Przejechałem ' : 'Przejechałam ') + n + 's w BOR Getaway bez karambolu! A ty?',
     picture: common.picture,
   };
   var EN = {
     method: common.method,
     link: common.link,
     caption: 'Play BOR Getaway !',
-    name: 'My best score in BOR Getaway is ' + n + '!!!',
-    description: 'I scored ' + n + ' in BOR Getaway without crashing! Can you beat it?',
+    name: 'My best time in BOR Getaway is ' + n + 's !!!',
+    description: 'I survived ' + n + 's in BOR Getaway without crashing! Can you beat it?',
     picture: common.picture,
   };
 
