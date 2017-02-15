@@ -27,8 +27,9 @@ export default class Render {
 
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
+    const gameOver = prop('gameOver');
 
-    if (gameStep !== 'game') {
+    if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
       let hoveredLink = false;
       let x = 0;
       let y = 0;
@@ -63,8 +64,9 @@ export default class Render {
 
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
+    const gameOver = prop('gameOver');
 
-    if (gameStep !== 'game') {
+    if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
       for (const i of Object.values(this.uiElements)) {
         if (i.hovered || i.fullScreenClick) {
           i.onClick && i.onClick();
@@ -340,14 +342,16 @@ export default class Render {
     png_font.drawText(`${score}`, [260, 270], 'white', 2, 'black');
     png_font.drawText('KLIKNIJ ABY ZRESTARTOWAC', [200, 330], 'yellow', 1, 'black');
 
-    this.uiElements['game_over_overlay'] = {
-      fullScreenClick: true,
-      posX: 0,
-      posY: 0,
-      width,
-      height,
-      onClick: uiEvents['game_over_overlay'],
-    };
+    if (!this.uiElements.game_over_overlay) {
+      this.uiElements['game_over_overlay'] = {
+        fullScreenClick: true,
+        posX: 0,
+        posY: 0,
+        width,
+        height,
+        onClick: uiEvents['game_over_overlay'],
+      };
+    }
   }
 
   renderOverlay(uiEvents) {
@@ -361,14 +365,16 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    this.uiElements['start_overlay'] = {
-      fullScreenClick: true,
-      posX: 0,
-      posY: 0,
-      width,
-      height,
-      onClick: uiEvents['start_overlay'],
-    };
+    if (!this.uiElements.start_overlay) {
+      this.uiElements['start_overlay'] = {
+        fullScreenClick: true,
+        posX: 0,
+        posY: 0,
+        width,
+        height,
+        onClick: uiEvents['start_overlay'],
+      };
+    }
   }
 
   renderCountdown() {
@@ -379,12 +385,12 @@ export default class Render {
 
   renderStartScreen() {
     const firstLine = 'JAK DALEKO DOWIEZIESZ VIPA ?';
-    const secondLine = 'NIE MOZESZ STANAC !';
-    const thirdLine = 'NIE SPOWODUJ KARAMBOLU !';
+    const secondLine = 'BEZ POSTOJU !';
+    const thirdLine = 'BEZ KARAMBOLU !';
 
     png_font.drawText(firstLine, [100, 180], 'white', 2, 'black');
-    png_font.drawText(secondLine, [170, 220], 'white', 2, 'black');
-    png_font.drawText(thirdLine, [130, 260], 'white', 2, 'black');
+    png_font.drawText(secondLine, [190, 220], 'white', 2, 'black');
+    png_font.drawText(thirdLine, [170, 260], 'white', 2, 'black');
     png_font.drawText('KLIKNIJ ABY ROZPOCZAC GRE', [200, 320], 'yellow', 1, 'black');
   }
 
@@ -462,7 +468,7 @@ export default class Render {
       }
     }
 
-    png_font.drawText('SELECT YOUR DRIVER', [170, 110], 'black', 2, 'white');
+    png_font.drawText('SELECT YOUR VIP', [180, 110], 'black', 2, 'white');
   }
 
   renderIntro(uiEvents) {
