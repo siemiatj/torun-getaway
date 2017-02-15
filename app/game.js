@@ -102,9 +102,6 @@ export default class Game {
       driver_1: () => driverSelectHandler(1),
       driver_2: () => driverSelectHandler(2),
       driver_3: () => driverSelectHandler(3),
-      driver_1_text: () => driverSelectHandler(1),
-      driver_2_text: () => driverSelectHandler(2),
-      driver_3_text: () => driverSelectHandler(3),
       start_overlay: () => {
         this.showHud();
         this.setValue('gameStep', 'game');
@@ -114,8 +111,7 @@ export default class Game {
         this.showHud();
         this.setValue('gameOver', false);
       },
-      share_on_fb_text: () => shareOnFbHandler(this.getValue('currentLapTime')),
-      share_on_fb_icon: () => shareOnFbHandler(this.getValue('currentLapTime')),
+      share_on_fb: () => shareOnFbHandler(this.getValue('currentLapTime')),
     };
 
     return eventsObject;
