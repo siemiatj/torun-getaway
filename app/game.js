@@ -384,8 +384,6 @@ export default class Game {
     const { images, canvas, step } = this.internals;
     const { update, updateCountdown, ui_events } = this;
 
-    this.hideHud();
-
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);
       this.setKeyListener();

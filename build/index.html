@@ -9,7 +9,7 @@
 <body>
   <h1 id="fb-welcome"></h1>
   <div id="racer">
-    <div id="hud">
+    <div id="hud" class="hidden">
       <span id="speed" class="hud"><span id="speed_value" class="value">0</span> km/h</span>
       <span id="current_lap_time" class="hud">Czas: <span id="current_lap_time_value" class="value">0.0</span></span> 
     </div>
@@ -19,11 +19,6 @@
     Loading...
   </div>
 
-  <audio id='music'>
-    <source src="public/music/racer.ogg">
-    <source src="public/music/racer.mp3">
-  </audio>
-  <span id="mute" style="display:none;"></span>
   <script src="public/facebook.js"></script>
   <script src="public/bundle.js"></script>
 </body> 
