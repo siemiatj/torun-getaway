@@ -3,6 +3,7 @@ import Renderer from 'render';
 import Resetter from 'reset';
 import _set from 'lodash.set';
 import _get from 'lodash.get';
+import round from 'lodash.round';
 import * as Util from 'util';
 import { KEY, SPRITES } from 'constants';
 import png_font from 'pngfont';
@@ -111,7 +112,12 @@ export default class Game {
         this.showHud();
         this.setValue('gameOver', false);
       },
-      share_on_fb: () => shareOnFbHandler(this.getValue('currentLapTime')),
+      share_on_fb: () => {
+        const time = this.getValue('currentLapTime');
+        const rounded = round(time, 2);
+
+        shareOnFbHandler(rounded);
+      }
     };
 
     return eventsObject;
