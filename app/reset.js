@@ -232,16 +232,8 @@ export default class Reset {
     const gV = this.gameInstance.getValue;
     const sV = this.gameInstance.setValue
 
-    sV('canvas.width', gV('width'));//  = Util.toInt(canvas.width, width);
-    sV('canvas.height', gV('height'));// = Util.toInt(canvas.height, height);
-    // lanes                  = Util.toInt(lanes,lanes);
-    // roadWidth              = Util.toInt(roadWidth, roadWidth);
-    // cameraHeight           = Util.toInt(cameraHeight, cameraHeight);
-    // drawDistance           = Util.toInt(drawDistance, drawDistance);
-    // fogDensity             = Util.toInt(fogDensity, fogDensity);
-    // fieldOfView            = Util.toInt(fieldOfView, fieldOfView);
-    // segmentLength          = Util.toInt(segmentLength, segmentLength);
-    // rumbleLength           = Util.toInt(rumbleLength, rumbleLength);
+    sV('canvas.width', gV('width'));
+    sV('canvas.height', gV('height'));
     sV('cameraDepth', 1 / Math.tan((gV('fieldOfView') / 2) * Math.PI / 180));
     sV('playerZ', gV('cameraHeight') * gV('cameraDepth'));
     sV('resolution', gV('height') / 480);
@@ -263,8 +255,8 @@ export default class Reset {
       gameStep: 'game',
       gameOver: false,
       gameRunning: false,
-      player: internals.player,
-      driver: game.internals.player,
+      player: game.internals.player,
+      driver: game.internals.driver,
       assets: { ...game.internals.assets },
     };
 
