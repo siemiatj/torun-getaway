@@ -29,21 +29,26 @@ function onLogin(response) {
 }
  
 function shareScore(n, callback){
-  var PL = {
+  var common = {
     method: 'feed',
     link: 'https://apps.facebook.com/borgetaway/',
+    picture: 'https://saskla.cz/games/torun_getaway/public/images/feed.png',
+  };
+  var PL = {
+    method: common.method,
+    link: common.link,
     caption: 'Zagraj w BOR Getaway !',
     name: 'Mój rekord w BOR Getaway to ' + n + '!!!',
     description: (facebookUser.gender === 'male' ? 'Przejechałem ' : 'Przejechałam ') + n + ' w BOR Getaway bez karambolu! A ty?',
-    picture: 'https://saskla.cz/games/torun_getaway/public/images/feedpic.png'
+    picture: common.picture,
   };
   var EN = {
-    method: 'feed',
-    link: 'https://apps.facebook.com/borgetaway/',
+    method: common.method,
+    link: common.link,
     caption: 'Play BOR Getaway !',
     name: 'My best score in BOR Getaway is ' + n + '!!!',
     description: 'I scored ' + n + ' in BOR Getaway without crashing! Can you beat it?',
-    picture: 'https://saskla.cz/games/torun_getaway/public/images/feedpic.png'
+    picture: common.picture,
   };
 
   if (facebookUser.locale === 'pl_PL') {
