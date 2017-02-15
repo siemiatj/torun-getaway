@@ -411,20 +411,26 @@ export default class Render {
    }
 
   renderPlayerSelection(uiEvents) {
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
+    const text = localePL ? 'WYBIERZ VIPA' : 'SELECT YOUR VIP';
     const players = [{
       name: 'MACIARENKO',
+      displayName: 'MACIARENKO',
       textPosition: [250, 200],
       iconPosition: [150, 180],
       event: uiEvents.driver_1
     },
     {
       name: 'APTEKARZ',
+      displayName: (localePL ? 'APTEKARZ' : 'PHARMACOLOGIST'),
       textPosition: [250, 300],
       iconPosition: [150, 280],
       event: uiEvents.driver_2
     },
     {
       name: 'BECIA',
+      displayName: (localePL ? 'BECIA' : 'BETTY'),
       textPosition: [250, 400],
       iconPosition: [150, 380],
       event: uiEvents.driver_3
@@ -443,10 +449,10 @@ export default class Render {
         }
 
         this.renderPlayerIcon(player, sprite);
-        png_font.drawText(player.name, player.textPosition, color, 2, 'black');
+        png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
       } else {
-        png_font.drawText(player.name, player.textPosition, color, 2, 'black');
-        const measuredText = this.ctx.measureText(player.name);
+        png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
+        const measuredText = this.ctx.measureText(player.displayName);
 
         this.uiElements[`player_${it}_text`] = {
           hovered: false,
@@ -468,11 +474,13 @@ export default class Render {
       }
     }
 
-    png_font.drawText('SELECT YOUR VIP', [180, 110], 'black', 2, 'white');
+    png_font.drawText(text, [180, 110], 'black', 2, 'white');
   }
 
   renderIntro(uiEvents) {
-    const text = 'START GAME';
+    const props = this.game.getValue;
+    const text = props('player.locale') === 'pl_PL' ? 'START GRY' : 'START GAME';
+
     const textPosition = [250, 300];
     const textSize = 2;
     let color = 'white';

@@ -263,6 +263,7 @@ export default class Reset {
       gameStep: 'game',
       gameOver: false,
       gameRunning: false,
+      player: internals.player,
       driver: game.internals.player,
       assets: { ...game.internals.assets },
     };
