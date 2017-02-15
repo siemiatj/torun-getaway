@@ -3,7 +3,7 @@ const SPRITES = {
   
     SEMI: { x: 0, y: 0, w: 122, h: 144 },
   
-    ICON2: { x: 122, y: 0, w: 128, h: 128 },
+    ICONFB: { x: 122, y: 0, w: 128, h: 128 },
   
     TRUCK: { x: 0, y: 144, w: 100, h: 78 },
   
