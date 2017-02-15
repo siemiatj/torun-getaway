@@ -41,7 +41,7 @@ export default class Render {
       x -= this.canvas.offsetLeft;
       y -= this.canvas.offsetTop;
 
-      for (const i of Object.values(this.uiElements)) {
+      for (const [k, i] of Object.entries(this.uiElements)) {
         if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
           i.hovered = true;
           hoveredLink = true;
@@ -68,7 +68,7 @@ export default class Render {
 
     if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
       for (const i of Object.values(this.uiElements)) {
-        if (i.hovered || i.fullScreenClick) {
+        if (i.hovered) {
           i.onClick && i.onClick();
           this.uiElements = {};
           document.body.style.cursor = '';
@@ -334,7 +334,7 @@ export default class Render {
       SPRITES.ICONFB.y,
       SPRITES.ICONFB.w,
       SPRITES.ICONFB.h,
-      390,
+      400,
       410,
       40,
       40,
@@ -351,7 +351,7 @@ export default class Render {
     const TEXTS = {
       gameOver: (localePL ? 'KONIEC GRY' : 'GAME OVER'),
       score: (localePL ? 'Twoj czas (s):' : 'Your time (s):'),
-      restart: (localePL ? 'KLIKNIJ ABY ZRESTARTOWAC' : 'CLICK HERE TO RESTART'),
+      restart: (localePL ? 'KLIKNIJ ABY ZRESTARTOWAC' : 'CLICK ANYWHERE TO RESTART'),
       share: (localePL ? 'PODZIEL SIE NA' : 'SHARE ON YOUR'),
     };
 
@@ -367,8 +367,8 @@ export default class Render {
     png_font.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
 
     let color = 'white';
-    if (this.uiElements.share_on_fb_icon) {
-      if (this.uiElements.share_on_fb_icon.hovered || this.uiElements.share_on_fb_text.hovered) {
+    if (this.uiElements.fb_share_icon) {
+      if (this.uiElements.fb_share_icon.hovered || this.uiElements.fb_share_text.hovered) {
         color = 'yellow';
       }
 
@@ -378,30 +378,30 @@ export default class Render {
       const measuredText = this.ctx.measureText(TEXTS.share);
 
       this.uiElements.game_over_overlay = {
-        fullScreenClick: true,
+        hovered: false,
         posX: 0,
         posY: 0,
         width,
-        height,
+        height: height - 90,
         onClick: uiEvents.game_over_overlay,
       };
 
       this.uiElements.fb_share_text = {
         hovered: false,
-        posX: 200,
-        posY: 380,
+        posX: 160,
+        posY: 410,
         width: measuredText.width * 2,
         height: 15 * 2,
-        onClick: uiEvents.fb_share_icon,
+        onClick: uiEvents.share_on_fb,
       };
 
       this.uiElements.fb_share_icon = {
         hovered: false,
-        posX: 350,
-        posY: 400,
+        posX: 400,
+        posY: 410,
         width: 40,
         height: 40,
-        onClick: uiEvents.fb_share_icon,
+        onClick: uiEvents.share_on_fb,
       }; 
     }
 
