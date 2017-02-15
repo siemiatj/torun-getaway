@@ -254,6 +254,13 @@ export default class Reset {
   }
 
   resetGame() {
-    
+    const game = this.gameInstance;
+
+    game.internals = {
+      ...game.internalsCopy,
+      driver: game.player,
+    };
+
+    this.reset();
   }
 }
