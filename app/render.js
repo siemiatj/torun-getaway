@@ -325,6 +325,24 @@ export default class Render {
     }
   }
 
+  renderFBShareIcon() {
+    // this.drawSprite(width, height, roadWidth, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
+    // const icon = sprites.
+    const sprites = this.game.getValue('assets.sprites');
+
+    this.ctx.drawImage(
+      sprites,
+      SPRITES.ICON2.x,
+      SPRITES.ICON2.y,
+      SPRITES.ICON2.w,
+      SPRITES.ICON2.h,
+      350,
+      400,
+      40,
+      40,
+    );
+  }
+
   renderGameOver(uiEvents) {
     const props = this.game.getValue;
     const localePL = props('player.locale') === 'pl_PL';
@@ -345,21 +363,68 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    png_font.drawText(TEXTS.gameOver, [170, 130], 'red', 4, 'white');
-    png_font.drawText(TEXTS.score, [200, 230], 'white', 2, 'black');
-    png_font.drawText(`${score}`, [275, 270], 'white', 2, 'black');
-    png_font.drawText(TEXTS.restart, [210, 330], 'yellow', 1, 'black');
+    png_font.drawText(TEXTS.gameOver, [170, 100], 'red', 4, 'white');
+    png_font.drawText(TEXTS.score, [200, 200], 'white', 2, 'black');
+    png_font.drawText(`${score}`, [275, 240], 'white', 2, 'black');
+    png_font.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
 
-    if (!this.uiElements.game_over_overlay) {
-      this.uiElements['game_over_overlay'] = {
+    let color = 'white';
+    if (this.uiElements.share_on_fb_icon) {
+      if (this.uiElements.share_on_fb_icon.hovered || this.uiElements.share_on_fb_text.hovered) {
+        color = 'yellow';
+      }
+
+      png_font.drawText(TEXTS.share, [200, 400], color, 2, 'black');
+    } else {
+      png_font.drawText(TEXTS.share, [200, 400], color, 2, 'black');
+      const measuredText = this.ctx.measureText(TEXTS.share);
+
+      this.uiElements.game_over_overlay = {
         fullScreenClick: true,
         posX: 0,
         posY: 0,
         width,
         height,
-        onClick: uiEvents['game_over_overlay'],
+        onClick: uiEvents.game_over_overlay,
       };
+
+      this.uiElements.fb_share_text = {
+        hovered: false,
+        posX: 200,
+        posY: 380,
+        width: measuredText.width * 2,
+        height: 15 * 2,
+        onClick: uiEvents.fb_share_icon,
+      };
+
+      this.uiElements.fb_share_icon = {
+        hovered: false,
+        posX: 350,
+        posY: 400,
+        width: 40,
+        height: 40,
+        onClick: uiEvents.fb_share_icon,
+      }; 
     }
+    // if (!this.uiElements.game_over_overlay) {
+    //   this.uiElements['game_over_overlay'] = {
+    //     fullScreenClick: true,
+    //     posX: 0,
+    //     posY: 0,
+    //     width,
+    //     height,
+    //     onClick: uiEvents['game_over_overlay'],
+    //   };
+
+    //   this.uiElements['game_over_overlay'] = {
+    //     fullScreenClick: true,
+    //     posX: 0,
+    //     posY: 0,
+    //     width,
+    //     height,
+    //     onClick: uiEvents['game_over_overlay'],
+    //   };
+    // }
   }
 
   renderOverlay(uiEvents) {
@@ -374,13 +439,13 @@ export default class Render {
     ctx.restore();
 
     if (!this.uiElements.start_overlay) {
-      this.uiElements['start_overlay'] = {
+      this.uiElements.start_overlay = {
         fullScreenClick: true,
         posX: 0,
         posY: 0,
         width,
         height,
-        onClick: uiEvents['start_overlay'],
+        onClick: uiEvents.start_overlay,
       };
     }
   }
@@ -435,14 +500,14 @@ export default class Render {
       event: uiEvents.driver_1
     },
     {
-      name: 'APTEKARZ',
+      name: 'MISIEWICZ',
       displayName: (localePL ? 'APTEKARZ' : 'PHARMACOLOGIST'),
       textPosition: [250, 300],
       iconPosition: [150, 280],
       event: uiEvents.driver_2
     },
     {
-      name: 'BECIA',
+      name: 'BEATKA',
       displayName: (localePL ? 'BECIA' : 'BETTY'),
       textPosition: [250, 400],
       iconPosition: [150, 380],
