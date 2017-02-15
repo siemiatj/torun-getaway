@@ -6,7 +6,7 @@ let _ = require('underscore');
 const template = `
 const SPRITES = {
   <% layout.images.forEach(function (image) { %>
-    <%= image.className %>: { x: <%= getCSSValue(-image.x) %>, y: <%= getCSSValue(image.y) %>, w: <%= getCSSValue(image.width) %>, h: <%= getCSSValue(image.height) %> },
+    <%= image.className %>: { x: <%= image.x %>, y: <%= image.y %>, w: <%= image.width %>, h: <%= image.height %> },
   <% }); %>
 }
 
@@ -17,7 +17,7 @@ nsg({
   src: [
     'static/images/sprites/*.png'
   ],
-  spritePath: 'static/images/spritesheet.png',
+  spritePath: 'static/images/sprites.png',
   stylesheetPath: 'static/images/spritesheet.js',
   stylesheet: function(layout, stylesheetPath, spritePath, options, callback) {
     const stylesheetTpl = _.template(template);
@@ -32,19 +32,18 @@ nsg({
     const scaledLayout = utils.getScaledLayoutForPixelRatio(layout, 1);
 
     scaledLayout.images = scaledLayout.images.map(function (image) {
-        let imageName = options.nameMapping(image.path),
-            className = utils.prefixString(imageName, options).toUpperCase();
+      let imageName = options.nameMapping(image.path),
+        className = utils.prefixString(imageName, options).toUpperCase();
 
-        return _.extend(image, { className: className });
+      return _.extend(image, { className: className });
     });
 
     fs.writeFile(stylesheetPath, stylesheetTpl({
-        getCSSValue: utils.getCSSValue,
-        options: options,
-        layout: scaledLayout,
+      getCSSValue: utils.getCSSValue,
+      options: options,
+      layout: scaledLayout,
     }), callback);
   },
-  // stylesheet: 'css',
   layout: 'packed',
 }, function (err) {
   console.log('Sprite generated!');

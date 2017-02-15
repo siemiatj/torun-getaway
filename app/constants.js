@@ -1,3 +1,5 @@
+import SPRITES from '../static/images/spritesheet'
+
 //=============================================================================
 // RACING GAME CONSTANTS
 //=============================================================================
@@ -73,23 +75,23 @@ const BACKGROUND = {
   TITLE: { x:   0, y:   0, w: 870,  h: 52 },
 };
 
-const SPRITES = {
-  SEMI: { x: 0, y: 0, w: 122, h: 144 },
-  TRUCK: { x: 122, y:  0, w: 100, h: 78 },
-  BECIA: { x: 222, y:  0, w: 80, h: 80 },
-  APTEKARZ: { x: 0, y: 144, w: 80, h: 80 },
-  MACIARENKO: { x: 80, y: 144, w: 80, h: 80 },
-  CAR03: { x: 122, y: 78, w: 88, h: 55 },
-  CAR02: { x: 222, y: 80, w: 80, h: 59 },
-  CAR04: { x: 160, y: 144, w: 80, h: 57 },
-  CAR01: { x: 0, y: 224, w: 80, h: 56 },
-  PLAYER_UPHILL_LEFT: { x: 80, y: 224, w: 80, h: 45 },
-  PLAYER_UPHILL_RIGHT: { x: 160, y: 224, w: 80, h: 45 },
-  PLAYER_UPHILL_STRAIGHT: { x: 302, y: 0, w: 80, h: 45 },
-  PLAYER_RIGHT: { x: 302, y: 45, w: 80, h: 41 },
-  PLAYER_STRAIGHT: { x: 302, y: 86, w: 80, h: 41 },
-  PLAYER_LEFT: { x: 302, y: 127, w: 80, h: 41 },
-};
+// const SPRITES = {
+//   SEMI: { x: 0, y: 0, w: 122, h: 144 },
+//   TRUCK: { x: 122, y:  0, w: 100, h: 78 },
+//   BECIA: { x: 222, y:  0, w: 80, h: 80 },
+//   APTEKARZ: { x: 0, y: 144, w: 80, h: 80 },
+//   MACIARENKO: { x: 80, y: 144, w: 80, h: 80 },
+//   CAR03: { x: 122, y: 78, w: 88, h: 55 },
+//   CAR02: { x: 222, y: 80, w: 80, h: 59 },
+//   CAR04: { x: 160, y: 144, w: 80, h: 57 },
+//   CAR01: { x: 0, y: 224, w: 80, h: 56 },
+//   PLAYER_UPHILL_LEFT: { x: 80, y: 224, w: 80, h: 45 },
+//   PLAYER_UPHILL_RIGHT: { x: 160, y: 224, w: 80, h: 45 },
+//   PLAYER_UPHILL_STRAIGHT: { x: 302, y: 0, w: 80, h: 45 },
+//   PLAYER_RIGHT: { x: 302, y: 45, w: 80, h: 41 },
+//   PLAYER_STRAIGHT: { x: 302, y: 86, w: 80, h: 41 },
+//   PLAYER_LEFT: { x: 302, y: 127, w: 80, h: 41 },
+// };
 
 SPRITES.SCALE = 0.3 * (1/SPRITES.PLAYER_STRAIGHT.w) // the reference sprite width should be 1/3rd the (half-)roadWidth
 SPRITES.BILLBOARDS = [SPRITES.BILLBOARD01, SPRITES.BILLBOARD02, SPRITES.BILLBOARD03, SPRITES.BILLBOARD04, SPRITES.BILLBOARD05, SPRITES.BILLBOARD06, SPRITES.BILLBOARD07, SPRITES.BILLBOARD08, SPRITES.BILLBOARD09];
