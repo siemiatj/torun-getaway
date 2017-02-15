@@ -30,12 +30,10 @@ export default class Render {
 
     if (gameStep !== 'game') {
       let hoveredLink = false;
-
       let x = 0;
       let y = 0;
 
-      // Get the mouse position relative to the canvas element.
-      if (e.layerX || e.layerX == 0) { //for firefox
+      if (e.layerX || e.layerX == 0) {
         x = e.layerX;
         y = e.layerY;
       }
@@ -337,9 +335,10 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    png_font.drawText(`GAME OVER`, [200, 180], 'red', 3, 'white');
-    png_font.drawText(`Your time (s):`, [200, 250], 'white', 2, 'black');
-    png_font.drawText(`${score}`, [260, 290], 'white', 2, 'black');
+    png_font.drawText(`GAME OVER`, [170, 130], 'red', 4, 'white');
+    png_font.drawText(`Your time (s):`, [200, 230], 'white', 2, 'black');
+    png_font.drawText(`${score}`, [260, 270], 'white', 2, 'black');
+    png_font.drawText('KLIKNIJ ABY ZRESTARTOWAC', [200, 330], 'yellow', 1, 'black');
 
     this.uiElements['game_over_overlay'] = {
       fullScreenClick: true,

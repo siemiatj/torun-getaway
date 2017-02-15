@@ -28,6 +28,10 @@ export default class Game {
       lastLapTime: null, // last lap time
       driver: null,
       startCounter: 3,
+      keyLeft: false,
+      keyRight: false,
+      keyFaster: false,
+      keySlower: false,
     };
 
     this.keys = [
@@ -41,6 +45,7 @@ export default class Game {
       { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.internals.keySlower = false; } }
     ];
 
+    this.internalsCopy = { ...this.internals };
     this.ui_events = this.generateUIEvents();
 
     this.renderer = new Renderer(this, this.internals.canvas);

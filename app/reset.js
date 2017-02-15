@@ -252,4 +252,8 @@ export default class Reset {
       this.resetRoad();
     }
   }
+
+  resetGame() {
+    
+  }
 }
