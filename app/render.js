@@ -339,8 +339,8 @@ export default class Render {
 
     png_font.drawText(`GAME OVER`, [170, 130], 'red', 4, 'white');
     png_font.drawText(`Your time (s):`, [200, 230], 'white', 2, 'black');
-    png_font.drawText(`${score}`, [260, 270], 'white', 2, 'black');
-    png_font.drawText('KLIKNIJ ABY ZRESTARTOWAC', [200, 330], 'yellow', 1, 'black');
+    png_font.drawText(`${score}`, [275, 270], 'white', 2, 'black');
+    png_font.drawText('KLIKNIJ ABY ZRESTARTOWAC', [210, 330], 'yellow', 1, 'black');
 
     if (!this.uiElements.game_over_overlay) {
       this.uiElements['game_over_overlay'] = {
@@ -389,9 +389,9 @@ export default class Render {
     const thirdLine = 'BEZ KARAMBOLU !';
 
     png_font.drawText(firstLine, [100, 180], 'white', 2, 'black');
-    png_font.drawText(secondLine, [190, 220], 'white', 2, 'black');
-    png_font.drawText(thirdLine, [170, 260], 'white', 2, 'black');
-    png_font.drawText('KLIKNIJ ABY ROZPOCZAC GRE', [200, 320], 'yellow', 1, 'black');
+    png_font.drawText(secondLine, [200, 220], 'white', 2, 'black');
+    png_font.drawText(thirdLine, [185, 260], 'white', 2, 'black');
+    png_font.drawText('KLIKNIJ ABY ROZPOCZAC GRE', [205, 320], 'yellow', 1, 'black');
   }
 
   renderPlayerIcon(playerData, spriteData) {

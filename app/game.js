@@ -407,7 +407,7 @@ export default class Game {
               counterTimestamp = now;
             }
           } else if (gameOver) {
-            // this.hideHud();
+            this.hideHud();
           } else {
             dt  = Math.min(1, (now - last) / 1000); // using requestAnimationFrame have to be able to handle large delta's caused when it 'hibernates' in a background or non-visible tab
             gdt = gdt + dt;

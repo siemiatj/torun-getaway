@@ -258,7 +258,13 @@ export default class Reset {
 
     game.internals = {
       ...game.internalsCopy,
-      driver: game.player,
+      segments: [],
+      cars: [],
+      gameStep: 'game',
+      gameOver: false,
+      gameRunning: false,
+      driver: game.internals.player,
+      assets: { ...game.internals.assets },
     };
 
     this.reset();
