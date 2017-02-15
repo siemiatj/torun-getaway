@@ -1,17 +1,16 @@
 <!DOCTYPE html> 
-
 <html>
 <head>
-  <title>Torun Getaway</title>
+  <title>BOR Getaway</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <link href="../static/common.css" rel="stylesheet" type="text/css" />
+  <link href="public/common.css" rel="stylesheet" type="text/css" />
 </head> 
 
 <body> 
   <div id="racer">
     <div id="hud">
-      <span id="speed"            class="hud"><span id="speed_value" class="value">0</span> hm/h</span>
-      <span id="current_lap_time" class="hud">Time: <span id="current_lap_time_value" class="value">0.0</span></span> 
+      <span id="speed" class="hud"><span id="speed_value" class="value">0</span> km/h</span>
+      <span id="current_lap_time" class="hud">Czas: <span id="current_lap_time_value" class="value">0.0</span></span> 
     </div>
     <canvas id="canvas">
       Sorry, this game cannot be run because your browser does not support the &lt;canvas&gt; element
@@ -20,10 +19,10 @@
   </div>
 
   <audio id='music'>
-    <source src="../static/music/racer.ogg">
-    <source src="../static/music/racer.mp3">
+    <source src="public/music/racer.ogg">
+    <source src="public/music/racer.mp3">
   </audio>
-  <span id="mute"></span>
-  <script src="bundle.js"></script>
+  <span id="mute" style="display:none;"></span>
+  <script src="public/bundle.js"></script>
 </body> 
 </html>

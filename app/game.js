@@ -369,7 +369,7 @@ export default class Game {
     };
 
     Promise.all(names.map(url => {
-      const imgUrl = `../static/images/${url}.png`;
+      const imgUrl = `public/images/${url}.png`;
       return preloadImage(url, imgUrl);
     }))
     .then(images => {

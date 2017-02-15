@@ -1,10 +1,8 @@
-const path              = require('path');
-const webpack           = require('webpack');
+const path = require('path');
 const PATHS = {
   app: path.join(__dirname, 'app'),
-  public: path.resolve(__dirname, 'public'),
+  static: path.resolve(__dirname, 'static'),
   build: path.resolve(__dirname, "build"),
-  // assets: path.join(__dirname, 'assets')
 };
 
 const config = {
@@ -12,16 +10,9 @@ const config = {
     app: './app/common.js'
   },
   output: {
-    // path: PATHS.public,
-    path: PATHS.build,
-    // publicPath: '/assets/',
+    path: PATHS.static,
     filename: 'bundle.js'
   },
-  // devServer: {
-  //   contentBase: './public',
-  //   // historyApiFallback: true
-  // },
-  // devtool: 'eval-source-map',
   devtool: "source-map",
   noInfo: true,
   module: {
@@ -31,25 +22,12 @@ const config = {
         exclude: /node_modules/,
         loader: 'babel'
       },
-      // {
-      //   test: /\.css$/,
-      //   loader: 'style!css'
-      // },
     ]
   },
   resolve: {
-    // alias: {
-    //   'react': path.join(__dirname, 'node_modules', 'react')
-    // },
     modulesDirectories: ['app', 'node_modules'],
     extensions: ['', '.js'],
   }
-  // plugins: [
-  //   new webpack.ProvidePlugin({
-  //     $: 'jquery',
-  //     jQuery: 'jquery'
-  //   })
-  // ]
 };
 
 module.exports = config;
