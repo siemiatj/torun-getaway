@@ -7,7 +7,6 @@ window.fbAsyncInit = function() {
     version    : 'v2.8'
   });
 
-  // ADD ADDITIONAL FACEBOOK CODE HERE
   FB.getLoginStatus(function(response) {
     if (response.status == 'connected') {
       onLogin(response);
@@ -30,14 +29,28 @@ function onLogin(response) {
 }
  
 function shareScore(n){
-  FB.ui({
+  var PL = {
     method: 'feed',
     link: 'https://apps.facebook.com/borgetaway/',
     caption: 'Zagraj w BOR Getaway !',
-    name: 'Moj rekord w BOR Getaway to ' + n + '!!!!',
-    description: 'Przejechałem ' + n + ' w BOR Getaway bez karambolu! A ty?',
-    picture: 'https://www.feronato.com/facebook/risky-steps/assets/pictures/feedpic.png'
-  }, function(response){});
+    name: 'Mój rekord w BOR Getaway to ' + n + '!!!',
+    description: (facebookUser.gender === 'male' ? 'Przejechałem ' : 'Przejechałam ') + n + ' w BOR Getaway bez karambolu! A ty?',
+    picture: 'https://saskla.cz/games/torun_getaway/public/images/feedpic.png'
+  };
+  var EN = {
+    method: 'feed',
+    link: 'https://apps.facebook.com/borgetaway/',
+    caption: 'Play BOR Getaway !',
+    name: 'My best score in BOR Getaway is ' + n + '!!!',
+    description: 'I scored ' + n + ' in BOR Getaway without crashing! Can you beat it?',
+    picture: 'https://saskla.cz/games/torun_getaway/public/images/feedpic.png'
+  };
+
+  if (facebookUser.locale === 'pl_PL') {
+    FB.ui(PL, function(response){});
+  } else {
+    FB.ui(EN, function(response){});
+  }
 }
 
 (function(d, s, id){
