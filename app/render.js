@@ -326,10 +326,17 @@ export default class Render {
   }
 
   renderGameOver(uiEvents) {
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
     const { ctx } = this;
-    const width = this.game.getValue('width');
-    const height = this.game.getValue('height');
-    const score = round(this.game.getValue('currentLapTime'), 2);
+    const width = props('width');
+    const height = props('height');
+    const score = round(props('currentLapTime'), 2);
+    const TEXTS = {
+      gameOver: (localePL ? 'KONIEC GRY' : 'GAME OVER'),
+      score: (localePL ? 'Twoj czas (s):' : 'Your time (s):'),
+      restart: (localePL ? 'KLIKNIJ ABY ZRESTARTOWAC' : 'CLICK HERE TO RESTART'),
+    };
 
     ctx.save();
     ctx.globalAlpha = 0.8;
@@ -337,10 +344,10 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    png_font.drawText(`GAME OVER`, [170, 130], 'red', 4, 'white');
-    png_font.drawText(`Your time (s):`, [200, 230], 'white', 2, 'black');
+    png_font.drawText(TEXTS.gameOver, [170, 130], 'red', 4, 'white');
+    png_font.drawText(TEXTS.score, [200, 230], 'white', 2, 'black');
     png_font.drawText(`${score}`, [275, 270], 'white', 2, 'black');
-    png_font.drawText('KLIKNIJ ABY ZRESTARTOWAC', [210, 330], 'yellow', 1, 'black');
+    png_font.drawText(TEXTS.restart, [210, 330], 'yellow', 1, 'black');
 
     if (!this.uiElements.game_over_overlay) {
       this.uiElements['game_over_overlay'] = {
@@ -384,14 +391,19 @@ export default class Render {
   }
 
   renderStartScreen() {
-    const firstLine = 'JAK DALEKO DOWIEZIESZ VIPA ?';
-    const secondLine = 'BEZ POSTOJU !';
-    const thirdLine = 'BEZ KARAMBOLU !';
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
+    const TEXTS = {
+      first: (localePL ? ' JAK DALEKO DOWIEZIESZ VIPA ?' : 'HOW FAR CAN YOU DRIVE A VIP ?'),
+      second: (localePL ? 'BEZ POSTOJU !' : 'NO STOPPING !'),
+      third: (localePL ? 'BEZ KARAMBOLU !' : ' NO CRASHING !'),
+      start: (localePL ? 'KLIKNIJ ABY ROZPOCZAC GRE' : ' CLICK TO START THE GAME')
+    };
 
-    png_font.drawText(firstLine, [100, 180], 'white', 2, 'black');
-    png_font.drawText(secondLine, [200, 220], 'white', 2, 'black');
-    png_font.drawText(thirdLine, [185, 260], 'white', 2, 'black');
-    png_font.drawText('KLIKNIJ ABY ROZPOCZAC GRE', [205, 320], 'yellow', 1, 'black');
+    png_font.drawText(TEXTS.first, [100, 180], 'white', 2, 'black');
+    png_font.drawText(TEXTS.second, [200, 220], 'white', 2, 'black');
+    png_font.drawText(TEXTS.third, [185, 260], 'white', 2, 'black');
+    png_font.drawText(TEXTS.start, [205, 320], 'yellow', 1, 'black');
   }
 
   renderPlayerIcon(playerData, spriteData) {
