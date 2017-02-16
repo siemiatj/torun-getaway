@@ -214,6 +214,13 @@ export default class Game {
       }
     }
 
+    if (speed === 0) {
+      this.internals.gameRunning = false;
+      this.internals.gameOver = true;
+
+      return;
+    }
+
     this.setValue('position', position);
     this.setValue('playerX', Util.limit(playerX, -3, 3));     // dont ever var it go too far out of bounds
     this.setValue('speed', Util.limit(speed, 0, maxSpeed)); // or exceed maxSpeed
