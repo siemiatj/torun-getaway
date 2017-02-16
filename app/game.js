@@ -3,6 +3,7 @@ import Renderer from 'render';
 import Resetter from 'reset';
 import _set from 'lodash.set';
 import _get from 'lodash.get';
+import round from 'lodash.round';
 import * as Util from 'util';
 import { KEY, SPRITES } from 'constants';
 import png_font from 'pngfont';
@@ -23,7 +24,7 @@ export default class Game {
       playerX: 0, // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
       playerZ: null, // player relative z distance from camera (computed)
       position: 0, // current camera Z position (add playerZ to get player's absolute Z position)
-      speed: 0, // current speed
+      speed: (opts.maxSpeed / 2), // current speed
       currentLapTime: 0, // current lap time
       lastLapTime: null, // last lap time
       driver: null,
@@ -86,6 +87,11 @@ export default class Game {
   }
 
   generateUIEvents() {
+    const shareOnFbHandler = (score) => {
+      shareScore(score, () => {
+        this.setValue('scoreShared', true);
+      });
+    }
     const driverSelectHandler = (num) => {
       this.setValue('driver', num);
       this.setValue('gameStep', 'start');
@@ -97,9 +103,6 @@ export default class Game {
       driver_1: () => driverSelectHandler(1),
       driver_2: () => driverSelectHandler(2),
       driver_3: () => driverSelectHandler(3),
-      driver_1_text: () => driverSelectHandler(1),
-      driver_2_text: () => driverSelectHandler(2),
-      driver_3_text: () => driverSelectHandler(3),
       start_overlay: () => {
         this.showHud();
         this.setValue('gameStep', 'game');
@@ -108,6 +111,12 @@ export default class Game {
         this.resetter.resetGame();
         this.showHud();
         this.setValue('gameOver', false);
+      },
+      share_on_fb: () => {
+        const time = this.getValue('currentLapTime');
+        const rounded = round(time, 2);
+
+        shareOnFbHandler(rounded);
       }
     };
 
@@ -203,6 +212,13 @@ export default class Game {
           break;
         }
       }
+    }
+
+    if (speed === 0) {
+      this.internals.gameRunning = false;
+      this.internals.gameOver = true;
+
+      return;
     }
 
     this.setValue('position', position);
@@ -369,7 +385,7 @@ export default class Game {
     };
 
     Promise.all(names.map(url => {
-      const imgUrl = `../static/images/${url}.png`;
+      const imgUrl = `public/images/${url}.png`;
       return preloadImage(url, imgUrl);
     }))
     .then(images => {
@@ -380,8 +396,6 @@ export default class Game {
   run() {
     const { images, canvas, step } = this.internals;
     const { update, updateCountdown, ui_events } = this;
-
-    this.hideHud();
 
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);

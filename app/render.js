@@ -41,7 +41,7 @@ export default class Render {
       x -= this.canvas.offsetLeft;
       y -= this.canvas.offsetTop;
 
-      for (const i of Object.values(this.uiElements)) {
+      for (const [k, i] of Object.entries(this.uiElements)) {
         if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
           i.hovered = true;
           hoveredLink = true;
@@ -68,7 +68,7 @@ export default class Render {
 
     if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
       for (const i of Object.values(this.uiElements)) {
-        if (i.hovered || i.fullScreenClick) {
+        if (i.hovered) {
           i.onClick && i.onClick();
           this.uiElements = {};
           document.body.style.cursor = '';
@@ -203,7 +203,7 @@ export default class Render {
   }
 
   rumbleWidth(projectedRoadWidth, lanes) {
-    return projectedRoadWidth/Math.max(6,  2*lanes);
+    return projectedRoadWidth/Math.max(32, 8*lanes);
   }
 
   laneMarkerWidth(projectedRoadWidth, lanes) {
@@ -325,11 +325,35 @@ export default class Render {
     }
   }
 
+  renderFBShareIcon() {
+    const sprites = this.game.getValue('assets.sprites');
+
+    this.ctx.drawImage(
+      sprites,
+      SPRITES.ICONFB.x,
+      SPRITES.ICONFB.y,
+      SPRITES.ICONFB.w,
+      SPRITES.ICONFB.h,
+      400,
+      410,
+      40,
+      40,
+    );
+  }
+
   renderGameOver(uiEvents) {
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
     const { ctx } = this;
-    const width = this.game.getValue('width');
-    const height = this.game.getValue('height');
-    const score = round(this.game.getValue('currentLapTime'), 2);
+    const width = props('width');
+    const height = props('height');
+    const score = round(props('currentLapTime'), 2);
+    const TEXTS = {
+      gameOver: (localePL ? 'KONIEC GRY' : 'GAME OVER'),
+      score: (localePL ? 'Twoj czas (s):' : 'Your time (s):'),
+      restart: (localePL ? 'KLIKNIJ ABY ZRESTARTOWAC' : 'CLICK ANYWHERE TO RESTART'),
+      share: (localePL ? 'PODZIEL SIE NA' : 'SHARE ON YOUR'),
+    };
 
     ctx.save();
     ctx.globalAlpha = 0.8;
@@ -337,21 +361,51 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    png_font.drawText(`GAME OVER`, [170, 130], 'red', 4, 'white');
-    png_font.drawText(`Your time (s):`, [200, 230], 'white', 2, 'black');
-    png_font.drawText(`${score}`, [275, 270], 'white', 2, 'black');
-    png_font.drawText('KLIKNIJ ABY ZRESTARTOWAC', [210, 330], 'yellow', 1, 'black');
+    png_font.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
+    png_font.drawText(TEXTS.score, [200, 190], 'white', 2, 'black');
+    png_font.drawText(`${score}`, [275, 230], 'white', 2, 'black');
+    png_font.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
 
-    if (!this.uiElements.game_over_overlay) {
-      this.uiElements['game_over_overlay'] = {
-        fullScreenClick: true,
+    let color = 'white';
+    if (this.uiElements.fb_share_icon) {
+      if (this.uiElements.fb_share_icon.hovered || this.uiElements.fb_share_text.hovered) {
+        color = 'yellow';
+      }
+
+      png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
+    } else {
+      png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
+      const measuredText = this.ctx.measureText(TEXTS.share);
+
+      this.uiElements.game_over_overlay = {
+        hovered: false,
         posX: 0,
         posY: 0,
         width,
-        height,
-        onClick: uiEvents['game_over_overlay'],
+        height: height - 90,
+        onClick: uiEvents.game_over_overlay,
       };
+
+      this.uiElements.fb_share_text = {
+        hovered: false,
+        posX: 160,
+        posY: 410,
+        width: measuredText.width * 2,
+        height: 15 * 2,
+        onClick: uiEvents.share_on_fb,
+      };
+
+      this.uiElements.fb_share_icon = {
+        hovered: false,
+        posX: 400,
+        posY: 410,
+        width: 40,
+        height: 40,
+        onClick: uiEvents.share_on_fb,
+      }; 
     }
+
+    this.renderFBShareIcon()
   }
 
   renderOverlay(uiEvents) {
@@ -366,13 +420,13 @@ export default class Render {
     ctx.restore();
 
     if (!this.uiElements.start_overlay) {
-      this.uiElements['start_overlay'] = {
+      this.uiElements.start_overlay = {
         fullScreenClick: true,
         posX: 0,
         posY: 0,
         width,
         height,
-        onClick: uiEvents['start_overlay'],
+        onClick: uiEvents.start_overlay,
       };
     }
   }
@@ -384,14 +438,19 @@ export default class Render {
   }
 
   renderStartScreen() {
-    const firstLine = 'JAK DALEKO DOWIEZIESZ VIPA ?';
-    const secondLine = 'BEZ POSTOJU !';
-    const thirdLine = 'BEZ KARAMBOLU !';
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
+    const TEXTS = {
+      first: (localePL ? ' JAK DALEKO DOWIEZIESZ VIPA ?' : 'HOW FAR CAN YOU DRIVE A VIP ?'),
+      second: (localePL ? 'BEZ POSTOJU !' : 'NO STOPPING !'),
+      third: (localePL ? 'BEZ KARAMBOLU !' : ' NO CRASHING !'),
+      start: (localePL ? 'KLIKNIJ ABY ROZPOCZAC GRE' : ' CLICK TO START THE GAME')
+    };
 
-    png_font.drawText(firstLine, [100, 180], 'white', 2, 'black');
-    png_font.drawText(secondLine, [200, 220], 'white', 2, 'black');
-    png_font.drawText(thirdLine, [185, 260], 'white', 2, 'black');
-    png_font.drawText('KLIKNIJ ABY ROZPOCZAC GRE', [205, 320], 'yellow', 1, 'black');
+    png_font.drawText(TEXTS.first, [100, 180], 'white', 2, 'black');
+    png_font.drawText(TEXTS.second, [200, 220], 'white', 2, 'black');
+    png_font.drawText(TEXTS.third, [185, 260], 'white', 2, 'black');
+    png_font.drawText(TEXTS.start, [205, 320], 'yellow', 1, 'black');
   }
 
   renderPlayerIcon(playerData, spriteData) {
@@ -411,20 +470,26 @@ export default class Render {
    }
 
   renderPlayerSelection(uiEvents) {
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
+    const text = localePL ? 'WYBIERZ VIPA' : 'SELECT YOUR VIP';
     const players = [{
-      name: 'MACIARENKO',
+      name: 'MONISTER',
+      displayName: 'MONISTER',
       textPosition: [250, 200],
       iconPosition: [150, 180],
       event: uiEvents.driver_1
     },
     {
       name: 'APTEKARZ',
+      displayName: (localePL ? 'APTEKARZ' : 'PHARMACOLOGIST'),
       textPosition: [250, 300],
       iconPosition: [150, 280],
       event: uiEvents.driver_2
     },
     {
-      name: 'BECIA',
+      name: 'CIOCIA',
+      displayName: (localePL ? 'CIOCIA' : 'BETTY'),
       textPosition: [250, 400],
       iconPosition: [150, 380],
       event: uiEvents.driver_3
@@ -443,10 +508,10 @@ export default class Render {
         }
 
         this.renderPlayerIcon(player, sprite);
-        png_font.drawText(player.name, player.textPosition, color, 2, 'black');
+        png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
       } else {
-        png_font.drawText(player.name, player.textPosition, color, 2, 'black');
-        const measuredText = this.ctx.measureText(player.name);
+        png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
+        const measuredText = this.ctx.measureText(player.displayName);
 
         this.uiElements[`player_${it}_text`] = {
           hovered: false,
@@ -468,11 +533,13 @@ export default class Render {
       }
     }
 
-    png_font.drawText('SELECT YOUR VIP', [180, 110], 'black', 2, 'white');
+    png_font.drawText(text, [180, 110], 'black', 2, 'white');
   }
 
   renderIntro(uiEvents) {
-    const text = 'START GAME';
+    const props = this.game.getValue;
+    const text = props('player.locale') === 'pl_PL' ? 'START GRY' : 'START GAME';
+
     const textPosition = [250, 300];
     const textSize = 2;
     let color = 'white';

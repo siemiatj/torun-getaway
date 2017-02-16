@@ -4,7 +4,6 @@ const PATHS = {
   app: path.join(__dirname, 'app'),
   public: path.resolve(__dirname, 'public'),
   build: path.resolve(__dirname, "build"),
-  // assets: path.join(__dirname, 'assets')
 };
 
 const config = {
@@ -12,7 +11,6 @@ const config = {
     app: './app/common.js'
   },
   output: {
-    // path: PATHS.public,
     path: PATHS.build,
     // publicPath: '/assets/',
     filename: 'bundle.js'
@@ -37,18 +35,9 @@ const config = {
     ]
   },
   resolve: {
-    // alias: {
-    //   'react': path.join(__dirname, 'node_modules', 'react')
-    // },
     modulesDirectories: ['app', 'node_modules'],
     extensions: ['', '.js'],
   }
-  // plugins: [
-  //   new webpack.ProvidePlugin({
-  //     $: 'jquery',
-  //     jQuery: 'jquery'
-  //   })
-  // ]
 };
 
 module.exports = config;

@@ -39,6 +39,7 @@ const newGame = new Game({
   gameStep: 'intro',
   gameRunning: false,
   gameOver: false,
+  player: facebookUser,
   images: ['intro', 'title', 'background', 'sprites', 'unifont'],
 });
 
