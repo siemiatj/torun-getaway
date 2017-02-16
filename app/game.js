@@ -24,7 +24,7 @@ export default class Game {
       playerX: 0, // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
       playerZ: null, // player relative z distance from camera (computed)
       position: 0, // current camera Z position (add playerZ to get player's absolute Z position)
-      speed: 0, // current speed
+      speed: (opts.maxSpeed / 2), // current speed
       currentLapTime: 0, // current lap time
       lastLapTime: null, // last lap time
       driver: null,

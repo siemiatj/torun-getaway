@@ -203,7 +203,7 @@ export default class Render {
   }
 
   rumbleWidth(projectedRoadWidth, lanes) {
-    return projectedRoadWidth/Math.max(6,  2*lanes);
+    return projectedRoadWidth/Math.max(32, 8*lanes);
   }
 
   laneMarkerWidth(projectedRoadWidth, lanes) {

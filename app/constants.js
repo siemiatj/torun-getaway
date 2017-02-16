@@ -3,7 +3,6 @@ import SPRITES from '../static/images/spritesheet'
 //=============================================================================
 // RACING GAME CONSTANTS
 //=============================================================================
-
 const GAME_SETTINGS = {
   GAME_STATES: ['intro', 'players', 'start', 'game'],
   fps: 60,                      // how many 'update' frames per second
@@ -33,11 +32,10 @@ const GAME_SETTINGS = {
 
 GAME_SETTINGS.maxSpeed = (GAME_SETTINGS.segmentLength / GAME_SETTINGS.step) * 1.5;
 GAME_SETTINGS.accel = GAME_SETTINGS.maxSpeed/5;
-GAME_SETTINGS.accel = GAME_SETTINGS.maxSpeed/5;
 GAME_SETTINGS.breaking = -GAME_SETTINGS.maxSpeed;
-GAME_SETTINGS.decel = -GAME_SETTINGS.maxSpeed/5;
+GAME_SETTINGS.decel = -GAME_SETTINGS.maxSpeed/4;
 GAME_SETTINGS.offRoadDecel = -GAME_SETTINGS.maxSpeed/2;
-GAME_SETTINGS.offRoadLimit =  GAME_SETTINGS.maxSpeed/4;
+GAME_SETTINGS.offRoadLimit =  0;
 
 const ROAD = {
   LENGTH: { NONE: 0, SHORT:  25, MEDIUM:   50, LONG:  100 },
@@ -61,37 +59,19 @@ const COLORS = {
   TREE: '#005108',
   FOG:  '#005108',
   OVERLAY: '#343D54',
-  LIGHT:  { road: '#6B6B6B', grass: '#10AA10', rumble: '#555555', lane: '#CCCCCC'  },
-  DARK:   { road: '#696969', grass: '#009A00', rumble: '#BBBBBB'                   },
-  START:  { road: 'white',   grass: 'white',   rumble: 'white'                     },
-  FINISH: { road: 'black',   grass: 'black',   rumble: 'black'                     }
+  LIGHT: { road: '#2b2b2b', grass: '#089308', rumble: '#DADADA', lane: '#DADADA' },
+  DARK: { road: '#282828', grass: '#078E07', rumble: '#DADADA' }, 
+  START: { road: 'white',   grass: 'white', rumble: 'white' },
+  FINISH: { road: 'black',   grass: 'black', rumble: 'black' }
 };
 
 const BACKGROUND = {
   HILLS: { x:   5, y:   5, w: 1280, h: 480 },
-  SKY:   { x:   5, y: 495, w: 1280, h: 480 },
+  SKY:   { x:   5, y: 610, w: 1280, h: 480 },
   TREES: { x:   5, y: 985, w: 1280, h: 480 },
   MENU:  { x:   0, y:   0, w: 1280, h: 480 },
   TITLE: { x:   0, y:   0, w: 870,  h: 52 },
 };
-
-// const SPRITES = {
-//   SEMI: { x: 0, y: 0, w: 122, h: 144 },
-//   TRUCK: { x: 122, y:  0, w: 100, h: 78 },
-//   BECIA: { x: 222, y:  0, w: 80, h: 80 },
-//   APTEKARZ: { x: 0, y: 144, w: 80, h: 80 },
-//   MACIARENKO: { x: 80, y: 144, w: 80, h: 80 },
-//   CAR03: { x: 122, y: 78, w: 88, h: 55 },
-//   CAR02: { x: 222, y: 80, w: 80, h: 59 },
-//   CAR04: { x: 160, y: 144, w: 80, h: 57 },
-//   CAR01: { x: 0, y: 224, w: 80, h: 56 },
-//   PLAYER_UPHILL_LEFT: { x: 80, y: 224, w: 80, h: 45 },
-//   PLAYER_UPHILL_RIGHT: { x: 160, y: 224, w: 80, h: 45 },
-//   PLAYER_UPHILL_STRAIGHT: { x: 302, y: 0, w: 80, h: 45 },
-//   PLAYER_RIGHT: { x: 302, y: 45, w: 80, h: 41 },
-//   PLAYER_STRAIGHT: { x: 302, y: 86, w: 80, h: 41 },
-//   PLAYER_LEFT: { x: 302, y: 127, w: 80, h: 41 },
-// };
 
 SPRITES.SCALE = 0.3 * (1/SPRITES.PLAYER_STRAIGHT.w) // the reference sprite width should be 1/3rd the (half-)roadWidth
 SPRITES.BILLBOARDS = [SPRITES.BILLBOARD01, SPRITES.BILLBOARD02, SPRITES.BILLBOARD03, SPRITES.BILLBOARD04, SPRITES.BILLBOARD05, SPRITES.BILLBOARD06, SPRITES.BILLBOARD07, SPRITES.BILLBOARD08, SPRITES.BILLBOARD09];
