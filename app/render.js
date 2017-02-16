@@ -474,22 +474,22 @@ export default class Render {
     const localePL = props('player.locale') === 'pl_PL';
     const text = localePL ? 'WYBIERZ VIPA' : 'SELECT YOUR VIP';
     const players = [{
-      name: 'MACIARENKO',
-      displayName: 'MACIARENKO',
+      name: 'MONISTER',
+      displayName: 'MONISTER',
       textPosition: [250, 200],
       iconPosition: [150, 180],
       event: uiEvents.driver_1
     },
     {
-      name: 'MISIEWICZ',
+      name: 'APTEKARZ',
       displayName: (localePL ? 'APTEKARZ' : 'PHARMACOLOGIST'),
       textPosition: [250, 300],
       iconPosition: [150, 280],
       event: uiEvents.driver_2
     },
     {
-      name: 'BEATKA',
-      displayName: (localePL ? 'BECIA' : 'BETTY'),
+      name: 'CIOCIA',
+      displayName: (localePL ? 'CIOCIA' : 'BETTY'),
       textPosition: [250, 400],
       iconPosition: [150, 380],
       event: uiEvents.driver_3
