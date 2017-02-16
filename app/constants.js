@@ -34,8 +34,8 @@ GAME_SETTINGS.maxSpeed = (GAME_SETTINGS.segmentLength / GAME_SETTINGS.step) * 1.
 GAME_SETTINGS.accel = GAME_SETTINGS.maxSpeed/5;
 GAME_SETTINGS.breaking = -GAME_SETTINGS.maxSpeed;
 GAME_SETTINGS.decel = -GAME_SETTINGS.maxSpeed/4;
-GAME_SETTINGS.offRoadDecel = -GAME_SETTINGS.maxSpeed/2;
-GAME_SETTINGS.offRoadLimit =  0;
+GAME_SETTINGS.offRoadDecel = -GAME_SETTINGS.maxSpeed/1.2;
+GAME_SETTINGS.offRoadLimit = 0;
 
 const ROAD = {
   LENGTH: { NONE: 0, SHORT:  25, MEDIUM:   50, LONG:  100 },
