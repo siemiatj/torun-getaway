@@ -45,6 +45,9 @@ nsg({
     }), callback);
   },
   layout: 'packed',
+  layoutOptions: {
+    padding: 1,
+  }
 }, function (err) {
   console.log('Sprite generated!');
 });
