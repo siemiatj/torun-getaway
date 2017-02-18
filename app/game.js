@@ -49,13 +49,19 @@ export default class Game {
     this.internalsCopy = { ...this.internals };
     this.ui_events = this.generateUIEvents();
 
-    this.renderer = new Renderer(this, this.internals.canvas);
+    this.renderer = new Renderer(this, this.internals.canvases.game);
     this.resetter = new Resetter(this);
 
     this.getValue = this.getValue.bind(this);
     this.setValue = this.setValue.bind(this);
     this.update = this.update.bind(this);
     this.updateCountdown = this.updateCountdown.bind(this);
+    this.orientationChanged = this.orientationChanged.bind(this);
+
+    // mobile sorcery
+    this.orientationChangeListener = new opts.orientationListener();
+    this.orientationChangeListener.on('change', this.orientationChanged);
+    this.orientationChanged(this.orientationChangeListener.orientation());
   }
 
   setValue(name, value) {
@@ -64,6 +70,28 @@ export default class Game {
 
   getValue(name) {
     return _get(this.internals, name);
+  }
+
+  orientationChanged(orientation) {
+    const canvas = Dom.get('canvas');
+    const leftTouch = Dom.get('left-touch');
+    const rightTouch = Dom.get('right-touch');
+
+    if (orientation === 'portrait') {
+      Dom.addClassName(canvas, 'portrait');
+      Dom.addClassName(leftTouch, 'portrait');
+      Dom.addClassName(rightTouch, 'portrait');
+
+      this.internals.orientation = 'portrait';
+      this.internalsCopy.orientation = 'portrait';
+    } else {
+      Dom.removeClassName(canvas, 'portrait');
+      Dom.removeClassName(leftTouch, 'portrait');
+      Dom.removeClassName(rightTouch, 'portrait');
+
+      this.internals.orientation = 'landscape';
+      this.internalsCopy.orientation = 'landscape';
+    }
   }
 
   setKeyListener() {
@@ -380,7 +408,7 @@ export default class Game {
     });
     this.setValue('assets', { ...assetsObject });
 
-    png_font.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
+    png_font.setup(this.getValue('canvases.game').getContext('2d'), this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }
@@ -405,7 +433,7 @@ export default class Game {
   }
 
   run() {
-    const { images, canvas, step } = this.internals;
+    const { images, canvases, step } = this.internals;
     const { update, updateCountdown, ui_events } = this;
 
     this.loadImages(images, (loadedImages) => {
@@ -447,7 +475,7 @@ export default class Game {
         this.renderer.render(ui_events);
         
         last = now;
-        window.requestAnimationFrame(frame, canvas);
+        window.requestAnimationFrame(frame, canvases.game);
       }
       frame(); // lets get this party started
       

@@ -1,6 +1,7 @@
 import 'babel-polyfill';
 import Game from 'game';
 import Dom from 'dom';
+import Listener from 'orientation-listener';
 import { GAME_SETTINGS } from 'constants';
 
 //=========================================================================
@@ -21,12 +22,15 @@ if (!window.requestAnimationFrame) {
 //=========================================================================
 
 const canvas = Dom.get('canvas');
+const leftTouch = Dom.get('left-touch');
+const rightTouch = Dom.get('right-touch');
 const hud = {
   speed:            { value: null, dom: Dom.get('speed_value')            },
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
   // last_lap_time:    { value: null, dom: Dom.get('last_lap_time_value')    },
   // fast_lap_time:    { value: null, dom: Dom.get('fast_lap_time_value')    }
 }
+const orientationListener = Listener;
 
 
 //=========================================================================
@@ -35,7 +39,12 @@ const hud = {
 
 const newGame = new Game({
   ...GAME_SETTINGS,
-  canvas,
+  canvases: {
+    game: canvas,
+    left: leftTouch,
+    right: rightTouch,
+  },
+  orientationListener, 
   hud,
   gameStep: 'intro',
   gameRunning: false,
