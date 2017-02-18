@@ -7,14 +7,42 @@ body          { font-family: Arial, Helvetica, sans-serif; margin: 0; }
 #racer        { position: relative; z-index: 0; width: 640px; height: 480px; margin: 0; border: none; }
 #canvas       {
   position: absolute;
+  left: 100px;
   z-index: 0;
   width: 640px;
   height: 480px;
-  z-index: 0;
   background-color: transparent;
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-crisp-edges;
   image-rendering: pixelated;
+}
+
+#canvas.portrait {
+  left: 0;
+}
+
+#left-touch {
+  position: absolute;
+  left: 0;
+  z-index: 0;
+  width: 100px;
+  height: 100%;
+}
+
+#left-touch.portrait {
+  display: none;
+}
+
+#right-touch {
+  position: absolute;
+  right: 0;
+  z-index: 0;
+  width: 100px;
+  height: 100%;
+}
+
+#right-touch.portrait {
+  display: none;
 }
 
 /**************************************************/
