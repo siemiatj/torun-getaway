@@ -157,7 +157,8 @@ export default class Game {
     let { position, speed, playerX } = this.internals;
     let n, car, carW, sprite, spriteW;
     let playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
-    //TODO
+
+    //TODO Should we alter this ?
     let playerW       = SPRITES.PLAYER_1_STRAIGHT.w * SPRITES.SCALE;
     let speedPercent  = speed / maxSpeed;
     let dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
@@ -215,7 +216,7 @@ export default class Game {
       }
     }
 
-    if (speed === 0) {
+    if (speed <= 0) {
       this.internals.gameRunning = false;
       this.internals.gameOver = true;
 
@@ -347,6 +348,15 @@ export default class Game {
 
   showHud() {
     const hud = Dom.get('hud');
+
+    if (this.internals.player.locale !== 'pl_PL' && !this.internalsCopy.hudUpdated) {
+      const speedElement = Dom.get('current_lap_time').firstElementChild;
+      const textContent = speedElement.textContent;
+      
+      speedElement.textContent = textContent.replace('Czas', 'Time');
+      this.internalsCopy.hudUpdated = true;
+    }
+
     Dom.removeClassName(hud, 'hidden');
   }
 
