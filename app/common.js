@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import Game from 'game';
 import Dom from 'dom';
 import { GAME_SETTINGS } from 'constants';
