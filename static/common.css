@@ -2,12 +2,36 @@
 /****************************************/
 /* common styles used for v1 through v4 */
 /****************************************/
+html {
+  width: 100%;
+  height: 100%;
+}
 
-body          { font-family: Arial, Helvetica, sans-serif; margin: 0; }
-#racer        { position: relative; z-index: 0; width: 640px; height: 480px; margin: 0; border: none; }
-#canvas       {
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#racer {
+  position: relative;
+  z-index: 0;
+  width: 940px;
+  height: 100%;
+  margin: 0;
+  border: none;
+  overflow: hidden;
+}
+#racer.portrait {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+}
+
+#canvas {
   position: absolute;
-  left: 100px;
+  left: 150px;
   z-index: 0;
   width: 640px;
   height: 480px;
@@ -16,7 +40,6 @@ body          { font-family: Arial, Helvetica, sans-serif; margin: 0; }
   image-rendering: -webkit-crisp-edges;
   image-rendering: pixelated;
 }
-
 #canvas.portrait {
   left: 0;
 }
@@ -25,11 +48,10 @@ body          { font-family: Arial, Helvetica, sans-serif; margin: 0; }
   position: absolute;
   left: 0;
   z-index: 0;
-  width: 100px;
+  width: 150px;
   height: 100%;
-  background-color: #ddd;
+  background-color: #171717;
 }
-
 #left-touch.portrait {
   display: none;
 }
@@ -38,11 +60,10 @@ body          { font-family: Arial, Helvetica, sans-serif; margin: 0; }
   position: absolute;
   right: 0;
   z-index: 0;
-  width: 100px;
+  width: 150px;
   height: 100%;
-  background-color: #ddd;
+  background-color: #171717;
 }
-
 #right-touch.portrait {
   display: none;
 }

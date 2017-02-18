@@ -73,11 +73,13 @@ export default class Game {
   }
 
   orientationChanged(orientation) {
+    const view = Dom.get('racer');
     const canvas = Dom.get('canvas');
     const leftTouch = Dom.get('left-touch');
     const rightTouch = Dom.get('right-touch');
 
     if (orientation === 'portrait') {
+      Dom.addClassName(view, 'portrait');
       Dom.addClassName(canvas, 'portrait');
       Dom.addClassName(leftTouch, 'portrait');
       Dom.addClassName(rightTouch, 'portrait');
@@ -85,6 +87,7 @@ export default class Game {
       this.internals.orientation = 'portrait';
       this.internalsCopy.orientation = 'portrait';
     } else {
+      Dom.removeClassName(view, 'portrait');
       Dom.removeClassName(canvas, 'portrait');
       Dom.removeClassName(leftTouch, 'portrait');
       Dom.removeClassName(rightTouch, 'portrait');
