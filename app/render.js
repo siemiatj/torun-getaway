@@ -583,14 +583,31 @@ export default class Render {
     }
   }
 
+  renderRotate() {
+    const { ctx } = this;
+    const props = this.game.getValue;
+    const width = props('width');
+    const height = props('height');
+    const text = props('player.locale') === 'pl_PL' ? '  OBROC TELEFON  ' : 'ROTATE YOUR PHONE';
+
+    ctx.fillStyle = COLORS.OVERLAY;
+    ctx.fillRect(0, 0, width, height);
+
+    png_font.drawText(text, [20, 20], 'white', 3, 'black');
+  }
+
   render(uiEvents) {
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
     const gameRunning = prop('gameRunning');
     const gameOver = prop('gameOver');
+    const orientation = prop('orientation');
+
     this.ctx.clearRect(0, 0, prop('width'), prop('height'));
 
-    if (gameStep !== 'game' && gameStep !== 'start') {
+    if (orientation === 'portrait') {
+      this.renderRotate();
+    } else if (gameStep !== 'game' && gameStep !== 'start') {
       this.renderScreens(uiEvents);
     } else {
       this.renderGame();
