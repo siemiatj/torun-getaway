@@ -157,7 +157,8 @@ export default class Game {
     let { position, speed, playerX } = this.internals;
     let n, car, carW, sprite, spriteW;
     let playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
-    let playerW       = SPRITES.PLAYER_STRAIGHT.w * SPRITES.SCALE;
+    //TODO
+    let playerW       = SPRITES.PLAYER_1_STRAIGHT.w * SPRITES.SCALE;
     let speedPercent  = speed / maxSpeed;
     let dx            = dt * 2 * speedPercent; // at top speed, should be able to cross from left to right (-1 to 1) in 1 second
     let startPosition = position;

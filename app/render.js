@@ -177,15 +177,20 @@ export default class Render {
   }
 
   drawPlayer(width, height, resolution, roadWidth, speedPercent, scale, destX, destY, steer, updown) {
+    const props = this.game.getValue;
+    const player = props('driver');
     const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
     let sprite;
 
     if (steer < 0) {
-      sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_LEFT : SPRITES.PLAYER_LEFT;
+      // sprite = (updown > 0) ? SPRITES.[`PLAYER_UPHILL_LEFT`] : SPRITES.PLAYER_LEFT;
+      sprite = SPRITES[`PLAYER_${player}_LEFT`];
     } else if (steer > 0) {
-      sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
+      // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
+      sprite = SPRITES[`PLAYER_${player}_RIGHT`];
     } else {
-      sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
+      // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
+      sprite = SPRITES[`PLAYER_${player}_STRAIGHT`];
     }
 
     this.drawSprite(width, height, roadWidth, sprite, scale, destX, destY + bounce, -0.5, -1);
@@ -301,13 +306,13 @@ export default class Render {
         this.drawSprite(width, height, roadWidth, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
       }
 
-      // for(i = 0 ; i < segment.sprites.length ; i++) {
-      //   sprite      = segment.sprites[i];
-      //   spriteScale = segment.p1.screen.scale;
-      //   spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
-      //   spriteY     = segment.p1.screen.y;
-      //   this.drawSprite(width, height, roadWidth, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
-      // }
+      for(i = 0; i < segment.sprites.length; i += 1) {
+        sprite      = segment.sprites[i];
+        spriteScale = segment.p1.screen.scale;
+        spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
+        spriteY     = segment.p1.screen.y;
+        this.drawSprite(width, height, roadWidth, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
+      }
 
       if (segment == playerSegment) {
         this.drawPlayer(
