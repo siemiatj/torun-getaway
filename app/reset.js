@@ -159,6 +159,8 @@ export default class Reset {
   }
 
   resetSprites() {
+    const props = this.gameInstance.getValue;
+    const segments = props('segments');
     let n, i;
 
     // addSprite(20,  SPRITES.BILLBOARD07, -1);
@@ -177,7 +179,7 @@ export default class Reset {
     // addSprite(segments.length - 25, SPRITES.BILLBOARD06,  1.2);
 
     // for(n = 10 ; n < 200 ; n += 4 + Math.floor(n/100)) {
-    //   addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
+    //   // addSprite(n, SPRITES.PALM_TREE, 0.5 + Math.random()*0.5);
     //   addSprite(n, SPRITES.PALM_TREE,   1 + Math.random()*2);
     // }
 
@@ -187,9 +189,9 @@ export default class Reset {
     //   addSprite(n + Util.randomInt(0,5), SPRITES.TREE2, -1 - (Math.random() * 2));
     // }
 
-    // for(n = 200 ; n < segments.length ; n += 3) {
-    //   addSprite(n, Util.randomChoice(SPRITES.PLANTS), Util.randomChoice([1,-1]) * (2 + Math.random() * 5));
-    // }
+    for (n = 200; n < segments.length; n += 5) {
+      this.addSprite(n, Util.randomChoice(SPRITES.PLANTS), Util.randomChoice([1,-1]) * (2 + Math.random() * 5));
+    }
 
     // var side, sprite, offset;
     // for(n = 1000 ; n < (segments.length-50) ; n += 100) {
@@ -200,7 +202,6 @@ export default class Reset {
     //     offset = side * (1.5 + Math.random());
     //     addSprite(n + Util.randomInt(0, 50), sprite, offset);
     //   }
-        
     // }
 
   }
