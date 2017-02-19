@@ -89,7 +89,7 @@ export default class Render {
 
   handleTouch(e) {
     // me.Touch.onTap(event.gesture);
-    console.log('E: ', e);
+    // console.log('E: ', e.pointers[0].clientX, e.pointers[0].clientY);
 
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
@@ -97,17 +97,22 @@ export default class Render {
 
     if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
       // let hoveredLink = false;
-      let x = 0;
-      let y = 0;
+      let x = e.pointers[0].clientX;
+      let y = e.pointers[0].clientY;
 
-      if (e.layerX || e.layerX == 0) {
-        x = e.layerX;
-        y = e.layerY;
-      }
+      // if (e.layerX || e.layerX == 0) {
+      //   x = e.layerX;
+      //   y = e.layerY;
+      // }
+
       x -= this.canvas.offsetLeft;
       y -= this.canvas.offsetTop;
 
+          // console.log('E: ', e.pointers[0].clientX, e.pointers[0].clientY);
+      // console.log('XY: ', x, y);
+
       for (const i of Object.values(this.uiElements)) {
+        // console.log('i: ', i.posX, i.width, i.posY, i.height, )
         if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
           // i.hovered = true;
           // hoveredLink = true;
