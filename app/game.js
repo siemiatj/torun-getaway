@@ -49,7 +49,7 @@ export default class Game {
     this.internalsCopy = { ...this.internals };
     this.ui_events = this.generateUIEvents();
 
-    this.renderer = new Renderer(this, this.internals.canvases.game);
+    this.renderer = new Renderer(this, this.internals.canvas);
     this.resetter = new Resetter(this);
 
     this.getValue = this.getValue.bind(this);
@@ -411,7 +411,7 @@ export default class Game {
     });
     this.setValue('assets', { ...assetsObject });
 
-    png_font.setup(this.getValue('canvases.game').getContext('2d'), this.getValue('assets.unifont'));
+    png_font.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }
@@ -436,7 +436,7 @@ export default class Game {
   }
 
   run() {
-    const { images, canvases, step } = this.internals;
+    const { images, canvas, step } = this.internals;
     const { update, updateCountdown, ui_events } = this;
 
     this.loadImages(images, (loadedImages) => {
@@ -478,7 +478,7 @@ export default class Game {
         this.renderer.render(ui_events);
         
         last = now;
-        window.requestAnimationFrame(frame, canvases.game);
+        window.requestAnimationFrame(frame, canvas);
       }
       frame(); // lets get this party started
       

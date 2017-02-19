@@ -42,11 +42,14 @@ const orientationListener = Listener;
 
 const newGame = new Game({
   ...GAME_SETTINGS,
-  canvases: {
-    game: canvas,
-    left: leftTouch,
-    right: rightTouch,
-  },
+  // canvases: {
+  //   game: canvas,
+  //   left: leftTouch,
+  //   right: rightTouch,
+  // },
+  canvas,
+  leftTouch,
+  rightTouch,
   orientationListener, 
   hud,
   gameStep: 'intro',

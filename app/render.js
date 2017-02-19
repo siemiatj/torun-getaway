@@ -1,7 +1,10 @@
 import round from 'lodash.round';
+import png_font from 'pngfont';
+
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
-import png_font from 'pngfont';
+
+
 
 //=========================================================================
 // canvas rendering helpers
