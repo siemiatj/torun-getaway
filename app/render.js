@@ -1,6 +1,6 @@
 import round from 'lodash.round';
 import png_font from 'pngfont';
-
+import Hammer from 'hammerjs';
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
 
@@ -16,24 +16,87 @@ export default class Render {
     this.ctx = canvas.getContext('2d');
     this.uiElements = {};
 
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    // this.handleMouseMove = this.handleMouseMove.bind(this);
+    // this.handleClick = this.handleClick.bind(this);
+    this.handleTouch = this.handleTouch.bind(this);
     this.renderGame = this.renderGame.bind(this);
 
-    canvas.addEventListener('mousemove', this.handleMouseMove, false);
-    canvas.addEventListener('click', this.handleClick, false);
+    // canvas.addEventListener('mousemove', this.handleMouseMove, false);
+    // canvas.addEventListener('click', this.handleClick, false);
+
+    // var mc = new Hammer(myElement);
+    const gameCanvasTouch = new Hammer(this.canvas);
+    gameCanvasTouch.on('tap', this.handleTouch);
   }
 
-  handleMouseMove(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  // handleMouseMove(e) {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   const prop = this.game.getValue;
+  //   const gameStep = prop('gameStep');
+  //   const gameOver = prop('gameOver');
+
+  //   if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
+  //     let hoveredLink = false;
+  //     let x = 0;
+  //     let y = 0;
+
+  //     if (e.layerX || e.layerX == 0) {
+  //       x = e.layerX;
+  //       y = e.layerY;
+  //     }
+  //     x -= this.canvas.offsetLeft;
+  //     y -= this.canvas.offsetTop;
+
+  //     for (const [k, i] of Object.entries(this.uiElements)) {
+  //       if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
+  //         i.hovered = true;
+  //         hoveredLink = true;
+  //       } else {
+  //         i.hovered = false;
+  //       }
+  //     }
+
+  //     if (hoveredLink) {
+  //       document.body.style.cursor = 'pointer';
+  //     } else {
+  //       document.body.style.cursor = '';
+  //     }
+  //   }
+  // }
+
+  // handleClick(e) {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+
+  //   const prop = this.game.getValue;
+  //   const gameStep = prop('gameStep');
+  //   const gameOver = prop('gameOver');
+
+  //   if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
+  //     for (const i of Object.values(this.uiElements)) {
+  //       if (i.hovered) {
+  //         i.onClick && i.onClick();
+  //         this.uiElements = {};
+  //         document.body.style.cursor = '';
+
+  //         break;
+  //       }
+  //     }  
+  //   }
+  // }
+
+  handleTouch(e) {
+    // me.Touch.onTap(event.gesture);
+    console.log('E: ', e);
 
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
     const gameOver = prop('gameOver');
 
     if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
-      let hoveredLink = false;
+      // let hoveredLink = false;
       let x = 0;
       let y = 0;
 
@@ -44,41 +107,24 @@ export default class Render {
       x -= this.canvas.offsetLeft;
       y -= this.canvas.offsetTop;
 
-      for (const [k, i] of Object.entries(this.uiElements)) {
-        if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
-          i.hovered = true;
-          hoveredLink = true;
-        } else {
-          i.hovered = false;
-        }
-      }
-
-      if (hoveredLink) {
-        document.body.style.cursor = 'pointer';
-      } else {
-        document.body.style.cursor = '';
-      }
-    }
-  }
-
-  handleClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const prop = this.game.getValue;
-    const gameStep = prop('gameStep');
-    const gameOver = prop('gameOver');
-
-    if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
       for (const i of Object.values(this.uiElements)) {
-        if (i.hovered) {
+        if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
+          // i.hovered = true;
+          // hoveredLink = true;
+        // } else {
+          // i.hovered = false;
           i.onClick && i.onClick();
           this.uiElements = {};
-          document.body.style.cursor = '';
 
           break;
         }
-      }  
+      }
+
+      // if (hoveredLink) {
+      //   document.body.style.cursor = 'pointer';
+      // } else {
+      //   document.body.style.cursor = '';
+      // }
     }
   }
 
@@ -376,9 +422,9 @@ export default class Render {
 
     let color = 'white';
     if (this.uiElements.fb_share_icon) {
-      if (this.uiElements.fb_share_icon.hovered || this.uiElements.fb_share_text.hovered) {
-        color = 'yellow';
-      }
+      // if (this.uiElements.fb_share_icon.hovered || this.uiElements.fb_share_text.hovered) {
+      //   color = 'yellow';
+      // }
 
       png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
     } else {
@@ -386,7 +432,7 @@ export default class Render {
       const measuredText = this.ctx.measureText(TEXTS.share);
 
       this.uiElements.game_over_overlay = {
-        hovered: false,
+        // hovered: false,
         posX: 0,
         posY: 0,
         width,
@@ -395,7 +441,7 @@ export default class Render {
       };
 
       this.uiElements.fb_share_text = {
-        hovered: false,
+        // hovered: false,
         posX: 160,
         posY: 410,
         width: measuredText.width * 2,
@@ -404,7 +450,7 @@ export default class Render {
       };
 
       this.uiElements.fb_share_icon = {
-        hovered: false,
+        // hovered: false,
         posX: 400,
         posY: 410,
         width: 40,
@@ -429,7 +475,7 @@ export default class Render {
 
     if (!this.uiElements.start_overlay) {
       this.uiElements.start_overlay = {
-        fullScreenClick: true,
+        // fullScreenClick: true,
         posX: 0,
         posY: 0,
         width,
@@ -503,17 +549,18 @@ export default class Render {
       event: uiEvents.driver_3
     }];
     const textSize = 2;
+    let color = 'white';
 
     for (let i = 0; i < players.length; i += 1) {
       const it = i + 1;
       const player = players[i];
       const sprite = SPRITES[player.name];
-      let color = 'white';
+      // let color = 'white';
 
       if (this.uiElements[`player_${it}_icon`]) {
-        if (this.uiElements[`player_${it}_icon`].hovered || this.uiElements[`player_${it}_text`].hovered) {
-          color = 'yellow';
-        }
+        // if (this.uiElements[`player_${it}_icon`].hovered || this.uiElements[`player_${it}_text`].hovered) {
+        //   color = 'yellow';
+        // }
 
         this.renderPlayerIcon(player, sprite);
         png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
@@ -522,7 +569,7 @@ export default class Render {
         const measuredText = this.ctx.measureText(player.displayName);
 
         this.uiElements[`player_${it}_text`] = {
-          hovered: false,
+          // hovered: false,
           posX: player.textPosition[0],
           posY: player.textPosition[1],
           width: measuredText.width * textSize,
@@ -531,7 +578,7 @@ export default class Render {
         }
 
         this.uiElements[`player_${it}_icon`] = {
-          hovered: false,
+          // hovered: false,
           posX: player.iconPosition[0],
           posY: player.iconPosition[1],
           width: 80,
@@ -552,23 +599,38 @@ export default class Render {
     const textSize = 2;
     let color = 'white';
 
-    if (this.uiElements.start_game_text) {
-      if (this.uiElements.start_game_text.hovered) {
-        color = 'yellow';
-      }
-      png_font.drawText(text, textPosition, color, 2, 'black');
-    } else {
+    // if (this.uiElements.start_game_text) {
+    //   if (this.uiElements.start_game_text.hovered) {
+    //     color = 'yellow';
+    //   }
+    //   png_font.drawText(text, textPosition, color, 2, 'black');
+    // } else {
+    //   png_font.drawText(text, textPosition, color, 2, 'black');
+    //   const measuredText = this.ctx.measureText(text);
+
+    //   this.uiElements.start_game_text = {
+    //     hovered: false,
+    //     posX: textPosition[0],
+    //     posY: textPosition[1],
+    //     width: measuredText.width * textSize,
+    //     height: 15 * textSize,
+    //     onClick: uiEvents.start_game_text,
+    //   }
+    // }
+    if (!this.uiElements.start_game_text) {
       png_font.drawText(text, textPosition, color, 2, 'black');
       const measuredText = this.ctx.measureText(text);
 
       this.uiElements.start_game_text = {
-        hovered: false,
+        // hovered: false,
         posX: textPosition[0],
         posY: textPosition[1],
         width: measuredText.width * textSize,
         height: 15 * textSize,
         onClick: uiEvents.start_game_text,
       }
+    } else {
+      png_font.drawText(text, textPosition, color, 2, 'black');
     }
   }
 
@@ -591,12 +653,14 @@ export default class Render {
     const props = this.game.getValue;
     const width = props('width');
     const height = props('height');
-    const text = props('player.locale') === 'pl_PL' ? '  OBROC TELEFON  ' : 'ROTATE YOUR PHONE';
+    const localePol = props('player.locale') === 'pl_PL';
+    const text = localePol ? 'MUSISZ OBROCIC TELEFON' : 'ROTATE YOUR PHONE';
+    const textPos = localePol ? [50, 200] : [100, 200];
 
     ctx.fillStyle = COLORS.OVERLAY;
     ctx.fillRect(0, 0, width, height);
 
-    png_font.drawText(text, [20, 20], 'white', 3, 'black');
+    png_font.drawText(text, textPos, 'white', 3, 'black');
   }
 
   render(uiEvents) {
