@@ -131,18 +131,28 @@ export default class Game {
   // }
   setTouchListeners() {
     const leftTouch = new Hammer(this.internals.leftTouch);
-    leftTouch.on('press pressup', this.handleLeftTouch);
+    leftTouch.on('press pressup pan', this.handleLeftTouch);
 
     const rightTouch = new Hammer(this.internals.rightTouch);
-    rightTouch.on('press pressup', this.handleRightTouch); 
+    rightTouch.on('press pressup pan', this.handleRightTouch); 
   }
 
   handleLeftTouch(event) {
-    console.log('LEFT TOUCH: ', event);
+    console.log('LEFT TOUCH: ', event.type);
+    if (event.type === 'press') {
+      this.internals.keyLeft = false;
+    } else {
+      this.internals.keyLeft = true;
+    }
   }
 
   handleRightTouch(event) {
-    console.log('RIGHT TOUCH: ', event);
+    // console.log('RIGHT TOUCH: ', event);
+    if (event.type === 'press') {
+      this.internals.keyRight = false;
+    } else {
+      this.internals.keyRight = true;
+    }
   }
 
   generateUIEvents() {
