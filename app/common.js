@@ -22,6 +22,10 @@ if (!window.requestAnimationFrame) {
 document.addEventListener('gesturestart', function (e) {
     e.preventDefault();
 });
+
+// Fuck you Google
+window.scrollTo(0, 1);
+
 //=========================================================================
 
 const canvas = Dom.get('canvas');

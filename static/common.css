@@ -13,6 +13,7 @@ body {
   margin: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 #racer {
@@ -22,7 +23,6 @@ body {
   height: 100%;
   margin: 0;
   border: none;
-  overflow: hidden;
 }
 #racer.portrait {
   width: 100%;
