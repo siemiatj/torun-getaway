@@ -1,3 +1,4 @@
+import Hammer from 'hammerjs';
 import Dom from 'dom';
 import Renderer from 'render';
 import Resetter from 'reset';
@@ -5,7 +6,8 @@ import _set from 'lodash.set';
 import _get from 'lodash.get';
 import round from 'lodash.round';
 import * as Util from 'util';
-import { KEY, SPRITES } from 'constants';
+// import { KEY, SPRITES } from 'constants';
+import { SPRITES } from 'constants';
 import png_font from 'pngfont';
 
 export default class Game {
@@ -35,21 +37,22 @@ export default class Game {
       keySlower: false,
     };
 
-    this.keys = [
-      { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: () => { this.internals.keyLeft   = true;  } },
-      { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: () => { this.internals.keyRight  = true;  } },
-      { keys: [KEY.UP,    KEY.W], mode: 'down', action: () => { this.internals.keyFaster = true;  } },
-      { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: () => { this.internals.keySlower = true;  } },
-      { keys: [KEY.LEFT,  KEY.A], mode: 'up',   action: () => { this.internals.keyLeft   = false; } },
-      { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: () => { this.internals.keyRight  = false; } },
-      { keys: [KEY.UP,    KEY.W], mode: 'up',   action: () => { this.internals.keyFaster = false; } },
-      { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.internals.keySlower = false; } }
-    ];
+    // this.keys = [
+    //   { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: () => { this.internals.keyLeft   = true;  } },
+    //   { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: () => { this.internals.keyRight  = true;  } },
+    //   { keys: [KEY.UP,    KEY.W], mode: 'down', action: () => { this.internals.keyFaster = true;  } },
+    //   { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: () => { this.internals.keySlower = true;  } },
+    //   { keys: [KEY.LEFT,  KEY.A], mode: 'up',   action: () => { this.internals.keyLeft   = false; } },
+    //   { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: () => { this.internals.keyRight  = false; } },
+    //   { keys: [KEY.UP,    KEY.W], mode: 'up',   action: () => { this.internals.keyFaster = false; } },
+    //   { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.internals.keySlower = false; } }
+    // ];
 
     this.internalsCopy = { ...this.internals };
     this.ui_events = this.generateUIEvents();
 
-    this.renderer = new Renderer(this, this.internals.canvas);
+    this.renderer = new Renderer(this, this.internals.canvas,
+      this.internals.leftTouch, this.internals.rightTouch);
     this.resetter = new Resetter(this);
 
     this.getValue = this.getValue.bind(this);
@@ -57,11 +60,21 @@ export default class Game {
     this.update = this.update.bind(this);
     this.updateCountdown = this.updateCountdown.bind(this);
     this.orientationChanged = this.orientationChanged.bind(this);
+    this.handleLeftTouch = this.handleLeftTouch.bind(this);
+    this.handleRightTouch = this.handleRightTouch.bind(this);
+    this.setTouchListeners = this.setTouchListeners.bind(this);
 
     // mobile sorcery
     this.orientationChangeListener = new opts.orientationListener();
     this.orientationChangeListener.on('change', this.orientationChanged);
     this.orientationChanged(this.orientationChangeListener.orientation());
+
+
+    // const leftTouch = new Hammer(this.internals.leftTouch);
+    // leftTouch.on('press pressup', this.handleLeftTouch);
+
+    // const rightTouch = new Hammer(this.internals.rightTouch);
+    // rightTouch.on('press pressup', this.handleRightTouch);
   }
 
   setValue(name, value) {
@@ -97,24 +110,39 @@ export default class Game {
     }
   }
 
-  setKeyListener() {
-    const onkey = (keyCode, mode) => {
-      const { keys } = this;
+  // setKeyListener() {
+  //   const onkey = (keyCode, mode) => {
+  //     const { keys } = this;
 
-      for (let n = 0; n < keys.length; n += 1) {
-        const k = keys[n];
-        k.mode = k.mode || 'up';
+  //     for (let n = 0; n < keys.length; n += 1) {
+  //       const k = keys[n];
+  //       k.mode = k.mode || 'up';
 
-        if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
-          if (k.mode == mode) {
-            k.action.call();
-          }
-        }
-      }
-    };
+  //       if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
+  //         if (k.mode == mode) {
+  //           k.action.call();
+  //         }
+  //       }
+  //     }
+  //   };
 
-    Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); });
-    Dom.on(document, 'keyup', function(ev) { onkey(ev.keyCode, 'up'); });
+  //   Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); });
+  //   Dom.on(document, 'keyup', function(ev) { onkey(ev.keyCode, 'up'); });
+  // }
+  setTouchListeners() {
+    const leftTouch = new Hammer(this.internals.leftTouch);
+    leftTouch.on('press pressup', this.handleLeftTouch);
+
+    const rightTouch = new Hammer(this.internals.rightTouch);
+    rightTouch.on('press pressup', this.handleRightTouch); 
+  }
+
+  handleLeftTouch(event) {
+    console.log('LEFT TOUCH: ', event);
+  }
+
+  handleRightTouch(event) {
+    console.log('RIGHT TOUCH: ', event);
   }
 
   generateUIEvents() {
@@ -441,7 +469,8 @@ export default class Game {
 
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);
-      this.setKeyListener();
+      // this.setKeyListener();
+      this.setTouchListeners();
 
       let now = null;
       let last = Util.timestamp();
