@@ -18,7 +18,10 @@ if (!window.requestAnimationFrame) {
                                  }
 }
 
-
+// Fuck you Apple
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
 //=========================================================================
 
 const canvas = Dom.get('canvas');
