@@ -1,7 +1,7 @@
 import round from 'lodash.round';
-import png_font from 'pngfont';
-// import png_font_r from 'pngfont';
-// import png_font_l from 'pngfont';
+// import this.game.gameFont from 'pngfont';
+// import this.game.gameFont_r from 'pngfont';
+// import this.game.gameFont_l from 'pngfont';
 import Hammer from 'hammerjs';
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
@@ -388,21 +388,21 @@ export default class Render {
     }
   }
 
-  renderTouchHelpers() {
-    const props = this.game.getValue;
-    const localePL = props('player.locale') === 'pl_PL';
-    const leftCtx = this.leftTouch.getContext('2d');
-    const rightCtx = this.rightTouch.getContext('2d');
-    const TEXTS = {
-      accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
-      brake: localePL ? 'HAMUJ' : 'BRAKE',
-      turnL: localePL ? 'LEWO' : 'LEFT',
-      turnR: localePL ? 'PRAWO' : 'RIGHT',
-    }
+  // renderTouchHelpers() {
+  //   const props = this.game.getValue;
+  //   const localePL = props('player.locale') === 'pl_PL';
+  //   const leftCtx = this.leftTouch.getContext('2d');
+  //   const rightCtx = this.rightTouch.getContext('2d');
+  //   const TEXTS = {
+  //     accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
+  //     brake: localePL ? 'HAMUJ' : 'BRAKE',
+  //     turnL: localePL ? 'LEWO' : 'LEFT',
+  //     turnR: localePL ? 'PRAWO' : 'RIGHT',
+  //   }
 
-    // png_font_l.drawText(TEXTS., [170, 90], 'red', 4, 'white');
-    // png_font_r.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
-  }
+  //   // this.game.gameFont_l.drawText(TEXTS., [170, 90], 'red', 4, 'white');
+  //   // this.game.gameFont_r.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
+  // }
 
   renderFBShareIcon() {
     const sprites = this.game.getValue('assets.sprites');
@@ -440,10 +440,10 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    png_font.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
-    png_font.drawText(TEXTS.score, [200, 190], 'white', 2, 'black');
-    png_font.drawText(`${score}`, [275, 230], 'white', 2, 'black');
-    png_font.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
+    this.game.gameFont.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
+    this.game.gameFont.drawText(TEXTS.score, [200, 190], 'white', 2, 'black');
+    this.game.gameFont.drawText(`${score}`, [275, 230], 'white', 2, 'black');
+    this.game.gameFont.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
 
     let color = 'white';
     if (this.uiElements.fb_share_icon) {
@@ -451,9 +451,9 @@ export default class Render {
       //   color = 'yellow';
       // }
 
-      png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
+      this.game.gameFont.drawText(TEXTS.share, [160, 410], color, 2, 'black');
     } else {
-      png_font.drawText(TEXTS.share, [160, 410], color, 2, 'black');
+      this.game.gameFont.drawText(TEXTS.share, [160, 410], color, 2, 'black');
       const measuredText = this.ctx.measureText(TEXTS.share);
 
       this.uiElements.game_over_overlay = {
@@ -513,7 +513,7 @@ export default class Render {
   renderCountdown() {
     const tick = this.game.getValue('startCounter') || 'GO !';
 
-    png_font.drawText(`${tick}`, [290, 250], 'white', 3, 'black'); 
+    this.game.gameFont.drawText(`${tick}`, [290, 250], 'white', 3, 'black'); 
   }
 
   renderStartScreen() {
@@ -526,10 +526,10 @@ export default class Render {
       start: (localePL ? 'KLIKNIJ ABY ROZPOCZAC GRE' : ' CLICK TO START THE GAME')
     };
 
-    png_font.drawText(TEXTS.first, [100, 180], 'white', 2, 'black');
-    png_font.drawText(TEXTS.second, [200, 220], 'white', 2, 'black');
-    png_font.drawText(TEXTS.third, [185, 260], 'white', 2, 'black');
-    png_font.drawText(TEXTS.start, [205, 320], 'yellow', 1, 'black');
+    this.game.gameFont.drawText(TEXTS.first, [100, 180], 'white', 2, 'black');
+    this.game.gameFont.drawText(TEXTS.second, [200, 220], 'white', 2, 'black');
+    this.game.gameFont.drawText(TEXTS.third, [185, 260], 'white', 2, 'black');
+    this.game.gameFont.drawText(TEXTS.start, [205, 320], 'yellow', 1, 'black');
   }
 
   renderPlayerIcon(playerData, spriteData) {
@@ -588,9 +588,9 @@ export default class Render {
         // }
 
         this.renderPlayerIcon(player, sprite);
-        png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
+        this.game.gameFont.drawText(player.displayName, player.textPosition, color, 2, 'black');
       } else {
-        png_font.drawText(player.displayName, player.textPosition, color, 2, 'black');
+        this.game.gameFont.drawText(player.displayName, player.textPosition, color, 2, 'black');
         const measuredText = this.ctx.measureText(player.displayName);
 
         this.uiElements[`player_${it}_text`] = {
@@ -613,7 +613,7 @@ export default class Render {
       }
     }
 
-    png_font.drawText(text, [180, 110], 'black', 2, 'white');
+    this.game.gameFont.drawText(text, [180, 110], 'black', 2, 'white');
   }
 
   renderIntro(uiEvents) {
@@ -628,9 +628,9 @@ export default class Render {
     //   if (this.uiElements.start_game_text.hovered) {
     //     color = 'yellow';
     //   }
-    //   png_font.drawText(text, textPosition, color, 2, 'black');
+    //   this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
     // } else {
-    //   png_font.drawText(text, textPosition, color, 2, 'black');
+    //   this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
     //   const measuredText = this.ctx.measureText(text);
 
     //   this.uiElements.start_game_text = {
@@ -643,7 +643,7 @@ export default class Render {
     //   }
     // }
     if (!this.uiElements.start_game_text) {
-      png_font.drawText(text, textPosition, color, 2, 'black');
+      this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
       const measuredText = this.ctx.measureText(text);
 
       this.uiElements.start_game_text = {
@@ -655,8 +655,20 @@ export default class Render {
         onClick: uiEvents.start_game_text,
       }
     } else {
-      png_font.drawText(text, textPosition, color, 2, 'black');
+      this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
     }
+
+    const localePL = props('player.locale') === 'pl_PL';
+    const TEXTS = {
+      accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
+      brake: localePL ? 'HAMUJ' : 'BRAKE',
+      turnL: localePL ? 'LEWO' : 'LEFT',
+      turnR: localePL ? 'PRAWO' : 'RIGHT',
+    }
+
+    this.game.lTouchFont.drawText(TEXTS.accelerate, [30, 20], 'white', 2);
+    this.game.lTouchFont.drawText(TEXTS.turnL, [30, 210], 'white', 2);
+    this.game.lTouchFont.drawText(TEXTS.brake, [30, 400], 'white', 2);
 
     if (!props('leftTouchHeight')) {
       this.game.setTouchCanvasHeights();
@@ -689,7 +701,7 @@ export default class Render {
     ctx.fillStyle = COLORS.OVERLAY;
     ctx.fillRect(0, 0, width, height);
 
-    png_font.drawText(text, textPos, 'white', 3, 'black');
+    this.game.gameFont.drawText(text, textPos, 'white', 3, 'black');
   }
 
   render(uiEvents) {
@@ -707,7 +719,7 @@ export default class Render {
       this.renderScreens(uiEvents);
     } else {
       this.renderGame();
-      this.renderTouchHelpers();
+      // this.renderTouchHelpers();
 
       if (gameStep === 'start') {
         this.renderOverlay(uiEvents);

@@ -7,7 +7,7 @@ import _get from 'lodash.get';
 import round from 'lodash.round';
 import * as Util from 'util';
 import { SPRITES } from 'constants';
-import png_font from 'pngfont';
+import PNGFont from 'pngfont';
 
 export default class Game {
   constructor(opts) {
@@ -93,6 +93,9 @@ export default class Game {
   setTouchCanvasHeights() {
     this.setValue('leftTouchHeight', this.getValue('leftTouch').getBoundingClientRect().height);
     this.setValue('rightTouchHeight', this.getValue('rightTouch').getBoundingClientRect().height);
+
+    this.getValue('leftTouch').height = this.getValue('leftTouchHeight');
+    this.getValue('rightTouch').height = this.getValue('rightTouchHeight');
   }
 
   setTouchListeners() {
@@ -107,12 +110,8 @@ export default class Game {
 
   handleLeftTouch(event) {
     if (event.type === 'pressup') {
-    // if (event.type === 'press' ) {
-    //   this.internals.keyLeft = true;
-    // } else if (event.type === 'pressup') {
       this.internals.keyLeft = false;
     } else {
-
       const leftTouchHeight = this.internals.leftTouchHeight;
 
       if (event.center.y < leftTouchHeight / 2) {
@@ -129,9 +128,6 @@ export default class Game {
 
   handleRightTouch(event) {
     if (event.type === 'pressup') {
-    // if (event.type === 'press') {
-    //   this.internals.keyRight = true;
-    // } else if (event.type === 'pressup') {
       this.internals.keyRight = false;
     } else {
       const rightTouchHeight = this.internals.rightTouchHeight;
@@ -231,13 +227,12 @@ export default class Game {
     position = Util.increase(position, dt * speed, trackLength);
 
     if (keyLeft && keyRight) {
+      // console.log('BOTH ', keyFaster.right, keyFaster.left, keySlower.left, keySlower.right);
+    } else if (keyLeft && !keyRight) {
+      playerX = playerX - dx;
+    } else if (keyRight && !keyLeft) {
+      playerX = playerX + dx;
     }
-      else if (keyLeft) {
-        playerX = playerX - dx;
-      } else if (keyRight) {
-        playerX = playerX + dx;
-      }
-    // }
 
     playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
@@ -447,7 +442,11 @@ export default class Game {
     this.internalsCopy = { ...this.internals };
     this.orientationChanged(this.orientationChangeListener.orientation());
 
-    png_font.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
+    this.gameFont = new PNGFont();
+    this.gameFont.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
+    
+    this.lTouchFont = new PNGFont();
+    this.lTouchFont.setup(this.getValue('leftTouch').getContext('2d'), this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }
