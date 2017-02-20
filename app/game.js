@@ -54,7 +54,6 @@ export default class Game {
     // mobile sorcery
     this.orientationChangeListener = new opts.orientationListener();
     this.orientationChangeListener.on('change', this.orientationChanged);
-    // this.orientationChanged(this.orientationChangeListener.orientation());
   }
 
   setValue(name, value) {
@@ -107,11 +106,13 @@ export default class Game {
   }
 
   handleLeftTouch(event) {
-    if (event.type === 'press') {
+    if (event.type === 'pressup') {
+    // if (event.type === 'press' ) {
+    //   this.internals.keyLeft = true;
+    // } else if (event.type === 'pressup') {
       this.internals.keyLeft = false;
-    } else if (event.type === 'pressup') {
-      this.internals.keyLeft = true;
     } else {
+
       const leftTouchHeight = this.internals.leftTouchHeight;
 
       if (event.center.y < leftTouchHeight / 2) {
@@ -122,16 +123,16 @@ export default class Game {
         this.setValue('keySlower.left', event.center.y);
       }
 
-      console.log('LEFT TOUCH: ', leftTouchHeight, this.internals.keyFaster, this.internals.keySlower);
+      this.internals.keyLeft = true;
     }
   }
 
   handleRightTouch(event) {
-    // console.log('RIGHT TOUCH: ', event);
-    if (event.type === 'press') {
+    if (event.type === 'pressup') {
+    // if (event.type === 'press') {
+    //   this.internals.keyRight = true;
+    // } else if (event.type === 'pressup') {
       this.internals.keyRight = false;
-    } else if (event.type === 'pressup') {
-      this.internals.keyRight = true;
     } else {
       const rightTouchHeight = this.internals.rightTouchHeight;
 
@@ -142,7 +143,8 @@ export default class Game {
         this.setValue('keyFaster.right', null);
         this.setValue('keySlower.right', event.center.y);
       }
-      // console.log('right TOUCH: ', rightTouch.height, rightTouch.width, event.type, event.center.y);
+
+      this.internals.keyRight = true;
     }
   }
 
@@ -228,17 +230,20 @@ export default class Game {
 
     position = Util.increase(position, dt * speed, trackLength);
 
-    if (keyLeft) {
-      playerX = playerX - dx;
-    } else if (keyRight) {
-      playerX = playerX + dx;
+    if (keyLeft && keyRight) {
     }
+      else if (keyLeft) {
+        playerX = playerX - dx;
+      } else if (keyRight) {
+        playerX = playerX + dx;
+      }
+    // }
 
     playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
-    if (keyFaster) {
+    if (keyFaster.left || keyFaster.right) {
       speed = Util.accelerate(speed, accel, dt);
-    } else if (keySlower) {
+    } else if (keySlower.left || keySlower.right) {
       speed = Util.accelerate(speed, breaking, dt);
     } else {
       speed = Util.accelerate(speed, decel, dt);
