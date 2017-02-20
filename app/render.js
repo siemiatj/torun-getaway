@@ -657,6 +657,10 @@ export default class Render {
     } else {
       png_font.drawText(text, textPosition, color, 2, 'black');
     }
+
+    if (!props('leftTouchHeight')) {
+      this.game.setTouchCanvasHeights();
+    }
   }
 
   renderScreens(uiEvents) {
