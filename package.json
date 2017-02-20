@@ -1,6 +1,6 @@
 {
   "name": "torun-getaway",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "description": "Game about getting from Torun to Warsaw as fast as possible",
   "main": "dist/min-cut.js",
   "bin": "bin/min-cut.js",
@@ -42,9 +42,13 @@
   },
   "dependencies": {
     "babel-loader": "^6.2.10",
+    "hammerjs": "^2.0.8",
     "lodash.get": "^4.4.2",
     "lodash.round": "^4.0.4",
     "lodash.set": "^4.3.2",
+    "orientation-listener": "^1.0.5",
+    "orientationchangeend": "^1.1.2",
+    "screenfull": "^3.0.2",
     "webpack": "^1.14.0",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-dev-server": "^1.16.2"

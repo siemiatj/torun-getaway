@@ -1,3 +1,4 @@
+import Hammer from 'hammerjs';
 import Dom from 'dom';
 import Renderer from 'render';
 import Resetter from 'reset';
@@ -5,8 +6,8 @@ import _set from 'lodash.set';
 import _get from 'lodash.get';
 import round from 'lodash.round';
 import * as Util from 'util';
-import { KEY, SPRITES } from 'constants';
-import png_font from 'pngfont';
+import { SPRITES } from 'constants';
+import PNGFont from 'pngfont';
 
 export default class Game {
   constructor(opts) {
@@ -29,33 +30,30 @@ export default class Game {
       lastLapTime: null, // last lap time
       driver: null,
       startCounter: 3,
-      keyLeft: false,
-      keyRight: false,
-      keyFaster: false,
-      keySlower: false,
+      keyLeft: null,
+      keyRight: null,
+      keyFaster: { left: null, right: null },
+      keySlower: { left: null, right: null },
     };
 
-    this.keys = [
-      { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: () => { this.internals.keyLeft   = true;  } },
-      { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: () => { this.internals.keyRight  = true;  } },
-      { keys: [KEY.UP,    KEY.W], mode: 'down', action: () => { this.internals.keyFaster = true;  } },
-      { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: () => { this.internals.keySlower = true;  } },
-      { keys: [KEY.LEFT,  KEY.A], mode: 'up',   action: () => { this.internals.keyLeft   = false; } },
-      { keys: [KEY.RIGHT, KEY.D], mode: 'up',   action: () => { this.internals.keyRight  = false; } },
-      { keys: [KEY.UP,    KEY.W], mode: 'up',   action: () => { this.internals.keyFaster = false; } },
-      { keys: [KEY.DOWN,  KEY.S], mode: 'up',   action: () => { this.internals.keySlower = false; } }
-    ];
-
-    this.internalsCopy = { ...this.internals };
     this.ui_events = this.generateUIEvents();
 
-    this.renderer = new Renderer(this, this.internals.canvas);
+    this.renderer = new Renderer(this, this.internals.canvas,
+      this.internals.leftTouch, this.internals.rightTouch);
     this.resetter = new Resetter(this);
 
     this.getValue = this.getValue.bind(this);
     this.setValue = this.setValue.bind(this);
     this.update = this.update.bind(this);
     this.updateCountdown = this.updateCountdown.bind(this);
+    this.orientationChanged = this.orientationChanged.bind(this);
+    this.handleLeftTouch = this.handleLeftTouch.bind(this);
+    this.handleRightTouch = this.handleRightTouch.bind(this);
+    this.setTouchListeners = this.setTouchListeners.bind(this);
+
+    // mobile sorcery
+    this.orientationChangeListener = new opts.orientationListener();
+    this.orientationChangeListener.on('change', this.orientationChanged);
   }
 
   setValue(name, value) {
@@ -66,24 +64,84 @@ export default class Game {
     return _get(this.internals, name);
   }
 
-  setKeyListener() {
-    const onkey = (keyCode, mode) => {
-      const { keys } = this;
+  orientationChanged(orientation) {
+    const view = Dom.get('racer');
+    const canvas = this.internals.canvas;
+    const leftTouch = this.internals.leftTouch;
+    const rightTouch = this.internals.rightTouch;
 
-      for (let n = 0; n < keys.length; n += 1) {
-        const k = keys[n];
-        k.mode = k.mode || 'up';
+    if (orientation === 'portrait') {
+      Dom.addClassName(view, 'portrait');
+      Dom.addClassName(canvas, 'portrait');
+      Dom.addClassName(leftTouch, 'portrait');
+      Dom.addClassName(rightTouch, 'portrait');
 
-        if ((k.key == keyCode) || (k.keys && (k.keys.indexOf(keyCode) >= 0))) {
-          if (k.mode == mode) {
-            k.action.call();
-          }
-        }
+      this.internals.orientation = 'portrait';
+      this.internalsCopy.orientation = 'portrait';
+    } else {
+      Dom.removeClassName(view, 'portrait');
+      Dom.removeClassName(canvas, 'portrait');
+      Dom.removeClassName(leftTouch, 'portrait');
+      Dom.removeClassName(rightTouch, 'portrait');
+
+      this.internals.orientation = 'landscape';
+      this.internalsCopy.orientation = 'landscape';
+    }
+  }
+
+  // get touch canvases height
+  setTouchCanvasHeights() {
+    this.setValue('leftTouchHeight', this.getValue('leftTouch').getBoundingClientRect().height);
+    this.setValue('rightTouchHeight', this.getValue('rightTouch').getBoundingClientRect().height);
+
+    this.getValue('leftTouch').height = this.getValue('leftTouchHeight');
+    this.getValue('rightTouch').height = this.getValue('rightTouchHeight');
+  }
+
+  setTouchListeners() {
+    const leftTouch = new Hammer(this.internals.leftTouch);
+    leftTouch.on('press pressup pan', this.handleLeftTouch);
+    leftTouch.get('pan').set({ direction: Hammer.DIRECTION_VERTICAL, threshold: 10 });
+
+    const rightTouch = new Hammer(this.internals.rightTouch);
+    rightTouch.on('press pressup pan', this.handleRightTouch); 
+    rightTouch.get('pan').set({ direction: Hammer.DIRECTION_VERTICAL, threshold: 10 });
+  }
+
+  handleLeftTouch(event) {
+    if (event.type === 'pressup') {
+      this.internals.keyLeft = false;
+    } else {
+      const leftTouchHeight = this.internals.leftTouchHeight;
+
+      if (event.center.y < leftTouchHeight / 2) {
+        this.setValue('keyFaster.left', event.center.y)
+        this.setValue('keySlower.left', null);
+      } else {
+        this.setValue('keyFaster.left', null);
+        this.setValue('keySlower.left', event.center.y);
       }
-    };
 
-    Dom.on(document, 'keydown', function(ev) { onkey(ev.keyCode, 'down'); });
-    Dom.on(document, 'keyup', function(ev) { onkey(ev.keyCode, 'up'); });
+      this.internals.keyLeft = true;
+    }
+  }
+
+  handleRightTouch(event) {
+    if (event.type === 'pressup') {
+      this.internals.keyRight = false;
+    } else {
+      const rightTouchHeight = this.internals.rightTouchHeight;
+
+      if (event.center.y < rightTouchHeight / 2) {
+        this.setValue('keyFaster.right', event.center.y)
+        this.setValue('keySlower.right', null);
+      } else {
+        this.setValue('keyFaster.right', null);
+        this.setValue('keySlower.right', event.center.y);
+      }
+
+      this.internals.keyRight = true;
+    }
   }
 
   generateUIEvents() {
@@ -168,17 +226,19 @@ export default class Game {
 
     position = Util.increase(position, dt * speed, trackLength);
 
-    if (keyLeft) {
+    if (keyLeft && keyRight) {
+      // console.log('BOTH ', keyFaster.right, keyFaster.left, keySlower.left, keySlower.right);
+    } else if (keyLeft && !keyRight) {
       playerX = playerX - dx;
-    } else if (keyRight) {
+    } else if (keyRight && !keyLeft) {
       playerX = playerX + dx;
     }
 
     playerX = playerX - (dx * speedPercent * playerSegment.curve * centrifugal);
 
-    if (keyFaster) {
+    if (keyFaster.left || keyFaster.right) {
       speed = Util.accelerate(speed, accel, dt);
-    } else if (keySlower) {
+    } else if (keySlower.left || keySlower.right) {
       speed = Util.accelerate(speed, breaking, dt);
     } else {
       speed = Util.accelerate(speed, decel, dt);
@@ -379,8 +439,14 @@ export default class Game {
       assetsObject[image.name] = image.image;
     });
     this.setValue('assets', { ...assetsObject });
+    this.internalsCopy = { ...this.internals };
+    this.orientationChanged(this.orientationChangeListener.orientation());
 
-    png_font.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
+    this.gameFont = new PNGFont();
+    this.gameFont.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
+    
+    this.lTouchFont = new PNGFont();
+    this.lTouchFont.setup(this.getValue('leftTouch').getContext('2d'), this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }
@@ -410,7 +476,8 @@ export default class Game {
 
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);
-      this.setKeyListener();
+      // this.setKeyListener();
+      this.setTouchListeners();
 
       let now = null;
       let last = Util.timestamp();

@@ -23,10 +23,11 @@
 *
 */
 
-const png_font = {
-  textDrawed : [],
-  textUTF8Array : [],
-  fontUrl : null,
+export default class PNGFont {
+// const png_font = {
+//   textDrawed : [],
+//   textUTF8Array : [],
+//   fontUrl : null,
 
   /** to start the png_font writer
   * png_font.setup must be ran before any write to the canvas, passing a valid
@@ -35,26 +36,26 @@ const png_font = {
   * callback function.
   *
   */
-  setup : function(drawingContext, fontImage){
+  setup(drawingContext, fontImage){
     this.ctx = drawingContext;
     this.fontImage = fontImage;
-  },
+  }
 
   /** to convert str with possible unicode to array of unicode chars
   */
-  toCharCodeArray: function(str) {
+  toCharCodeArray(str) {
     var arrCharCode = [];
     for (var i=0; i < str.length; i++) {
         var charcode = str.charCodeAt(i);
         arrCharCode.push(charcode)
     }
     return arrCharCode;
-  },
+  }
 
   /** Where each character width information is taken from.
   *   It's working for unifont.png as is, but code seems a bit hacky.
   */
-  getCharwidthFromCharcode: function(chr){
+  getCharwidthFromCharcode(chr){
     var xchr = (chr % 256);
     var ychr = parseInt(chr/256);
     var charWidth = 16;
@@ -62,9 +63,9 @@ const png_font = {
       charWidth = 8;
     }
     return charWidth
-  },
+  }
 
-  getTextWidth: function(text, size){
+  getTextWidth(text, size){
     if(typeof size === 'undefined'){
       size=1;
     }
@@ -74,17 +75,17 @@ const png_font = {
       textWidth+=this.getCharwidthFromCharcode(charCodeArray[i]);
     }
     return textWidth*size
-  },
+  }
 
   /** get text/char height when needed.
   */
-  getHeight: function(size){
+  getHeight(size){
     return size*16
-  },
+  }
 
   /** function to draw a single char
   */
-  drawChr : function(ctx, img, chr,pos){
+  drawChr(ctx, img, chr,pos){
     // I assume that each char is a 16x16px square in a big 4096x4096px Image
     // Than I crop this image and draw in the canvas.
     var xchar = parseInt(16 * (chr % 256));
@@ -97,12 +98,12 @@ const png_font = {
         pos[0], pos[1],
         16, 16);
     return charWidth
-  },
+  }
 
   /** creates pixel art friendly canvas and return it
   *   it's going to be used to create intermediate buffers
   */
-  createBufferCanvas: function(width,height){
+  createBufferCanvas(width,height){
     var buffer = document.createElement('canvas');
     buffer.style['image-rendering']='pixelated'
     buffer.width = width;
@@ -112,12 +113,12 @@ const png_font = {
     //bx.webkitImageSmoothingEnabled = false;
     bx.imageSmoothingEnabled = false;
     return buffer
-  },
+  }
 
   /** function to draw text in a canvas.
   *    the user should access drawText as entry point though
   */
-  drawTextCanvas : function(ctx,utf8Array,pos, color,size){
+  drawTextCanvas(ctx,utf8Array,pos, color,size){
     var width = 16*utf8Array.length;
     var height = 16;
     var buffer = this.createBufferCanvas(width,height);
@@ -150,11 +151,11 @@ const png_font = {
       ctx.drawImage(bufferSize,pos[0],pos[1]);
     }
     return charTotalWidth
-  },
+  }
 
   /** allows drawing text with shadows
   */
-  drawTextShadow: function(utf8Array, color, size, shadowcolor){
+  drawTextShadow(utf8Array, color, size, shadowcolor){
 
     if(typeof size === 'undefined' || size === null){
       size = 1
@@ -169,11 +170,10 @@ const png_font = {
 
     return [buffer,charTotalWidth+size]
   }
-  ,
 
   /* temporary fix for disabling word wrapping but account new lines.
   */
-  getWrapFromText : function(text, size, pos) {
+  getWrapFromText(text, size, pos) {
     var lines = text.split(/\r|\r\n|\n/);
     var linesCount = lines.length;
     var longestLine = 0;
@@ -182,11 +182,10 @@ const png_font = {
      }
     return [(longestLine * size * 16) + pos[0], (linesCount * size * 16 ) + pos[1], 0];
   }
-  ,
 
   /* simple word wrapping
   */
-  wrapText: function(text, wrap, size){
+  wrapText(text, wrap, size){
     if(this.textDrawed!==text){
       this.textUTF8Array = this.toCharCodeArray(text);
       this.textDrawed = text;
@@ -272,7 +271,7 @@ const png_font = {
     }
 
     return [wrapped2DArray,missing,maxwidth, (line+1)*this.getHeight(size) ];
-  },
+  }
   /** How to draw texts in a canvas
   *
   * examples:
@@ -281,7 +280,7 @@ const png_font = {
   * png_font.drawText("한국어!",[48,64],"#559")
   * png_font.drawText("hello world!",[4,4],'blue',2,'red')
   */
-  drawText: function(text, pos, color, size, shadow,  wrap, tightenCanvas){
+  drawText(text, pos, color, size, shadow,  wrap, tightenCanvas){
     //I will define the defaults for each parameter
     //The color default is the natural png color, unifont.png is #000000
     if(typeof size === 'undefined' || size === null){
@@ -336,6 +335,4 @@ const png_font = {
 
     return missing;
   }
-};
-
-export default png_font;
+}

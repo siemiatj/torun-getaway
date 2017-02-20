@@ -3,18 +3,21 @@
 <head>
   <title>BOR Getaway</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="user-scalable=no" />
   <link href="public/common.css" rel="stylesheet" type="text/css" />
 </head> 
 
 <body>
-  <div id="racer">
+  <div id="racer" class="portrait">
     <div id="hud" class="hidden">
       <span id="speed" class="hud"><span id="speed_value" class="value">0</span> km/h</span>
       <span id="current_lap_time" class="hud"><span>Czas: </span><span id="current_lap_time_value" class="value">0.0</span></span> 
     </div>
-    <canvas id="canvas">
+    <canvas id="left-touch" class="portrait"></canvas>
+    <canvas id="canvas" class="portrait">
       Sorry, this game cannot be run because your browser does not support the &lt;canvas&gt; element
     </canvas>
+    <canvas id="right-touch" class="portrait"></canvas>
     <span class="loading">Loading...</span>
   </div>
   <h1 id="fb-welcome"></h1>

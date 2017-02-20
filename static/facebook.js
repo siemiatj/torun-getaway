@@ -6,6 +6,8 @@ window.fbAsyncInit = function() {
     xfbml      : true,
     version    : 'v2.8'
   });
+  
+  FB.Canvas.setAutoGrow();
 
   FB.getLoginStatus(function(response) {
     if (response.status == 'connected') {
