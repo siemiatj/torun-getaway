@@ -1,5 +1,7 @@
 import round from 'lodash.round';
 import png_font from 'pngfont';
+// import png_font_r from 'pngfont';
+// import png_font_l from 'pngfont';
 import Hammer from 'hammerjs';
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
@@ -10,9 +12,11 @@ import { COLORS, BACKGROUND, SPRITES } from 'constants';
 // canvas rendering helpers
 //=========================================================================
 export default class Render {
-  constructor(gameInstance, canvas) {
+  constructor(gameInstance, canvas, leftTouch, rightTouch) {
     this.game = gameInstance;
     this.canvas = canvas;
+    this.leftTouch = leftTouch;
+    this.rightTouch = rightTouch;
     this.ctx = canvas.getContext('2d');
     this.uiElements = {};
 
@@ -384,6 +388,22 @@ export default class Render {
     }
   }
 
+  renderTouchHelpers() {
+    const props = this.game.getValue;
+    const localePL = props('player.locale') === 'pl_PL';
+    const leftCtx = this.leftTouch.getContext('2d');
+    const rightCtx = this.rightTouch.getContext('2d');
+    const TEXTS = {
+      accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
+      brake: localePL ? 'HAMUJ' : 'BRAKE',
+      turnL: localePL ? 'LEWO' : 'LEFT',
+      turnR: localePL ? 'PRAWO' : 'RIGHT',
+    }
+
+    // png_font_l.drawText(TEXTS., [170, 90], 'red', 4, 'white');
+    // png_font_r.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
+  }
+
   renderFBShareIcon() {
     const sprites = this.game.getValue('assets.sprites');
 
@@ -683,6 +703,7 @@ export default class Render {
       this.renderScreens(uiEvents);
     } else {
       this.renderGame();
+      this.renderTouchHelpers();
 
       if (gameStep === 'start') {
         this.renderOverlay(uiEvents);
