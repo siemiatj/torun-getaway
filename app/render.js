@@ -1,7 +1,4 @@
 import round from 'lodash.round';
-// import this.game.gameFont from 'pngfont';
-// import this.game.gameFont_r from 'pngfont';
-// import this.game.gameFont_l from 'pngfont';
 import Hammer from 'hammerjs';
 import * as Util from 'util';
 import { COLORS, BACKGROUND, SPRITES } from 'constants';
@@ -20,120 +17,33 @@ export default class Render {
     this.ctx = canvas.getContext('2d');
     this.uiElements = {};
 
-    // this.handleMouseMove = this.handleMouseMove.bind(this);
-    // this.handleClick = this.handleClick.bind(this);
     this.handleTouch = this.handleTouch.bind(this);
     this.renderGame = this.renderGame.bind(this);
 
-    // canvas.addEventListener('mousemove', this.handleMouseMove, false);
-    // canvas.addEventListener('click', this.handleClick, false);
-
-    // var mc = new Hammer(myElement);
     const gameCanvasTouch = new Hammer(this.canvas);
     gameCanvasTouch.on('tap', this.handleTouch);
   }
 
-  // handleMouseMove(e) {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   const prop = this.game.getValue;
-  //   const gameStep = prop('gameStep');
-  //   const gameOver = prop('gameOver');
-
-  //   if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
-  //     let hoveredLink = false;
-  //     let x = 0;
-  //     let y = 0;
-
-  //     if (e.layerX || e.layerX == 0) {
-  //       x = e.layerX;
-  //       y = e.layerY;
-  //     }
-  //     x -= this.canvas.offsetLeft;
-  //     y -= this.canvas.offsetTop;
-
-  //     for (const [k, i] of Object.entries(this.uiElements)) {
-  //       if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
-  //         i.hovered = true;
-  //         hoveredLink = true;
-  //       } else {
-  //         i.hovered = false;
-  //       }
-  //     }
-
-  //     if (hoveredLink) {
-  //       document.body.style.cursor = 'pointer';
-  //     } else {
-  //       document.body.style.cursor = '';
-  //     }
-  //   }
-  // }
-
-  // handleClick(e) {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   const prop = this.game.getValue;
-  //   const gameStep = prop('gameStep');
-  //   const gameOver = prop('gameOver');
-
-  //   if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
-  //     for (const i of Object.values(this.uiElements)) {
-  //       if (i.hovered) {
-  //         i.onClick && i.onClick();
-  //         this.uiElements = {};
-  //         document.body.style.cursor = '';
-
-  //         break;
-  //       }
-  //     }  
-  //   }
-  // }
-
   handleTouch(e) {
-    // me.Touch.onTap(event.gesture);
-    // console.log('E: ', e.pointers[0].clientX, e.pointers[0].clientY);
-
     const prop = this.game.getValue;
     const gameStep = prop('gameStep');
     const gameOver = prop('gameOver');
 
     if (gameStep !== 'game' || (gameStep === 'game' && gameOver)) {
-      // let hoveredLink = false;
       let x = e.pointers[0].clientX;
       let y = e.pointers[0].clientY;
-
-      // if (e.layerX || e.layerX == 0) {
-      //   x = e.layerX;
-      //   y = e.layerY;
-      // }
 
       x -= this.canvas.offsetLeft;
       y -= this.canvas.offsetTop;
 
-          // console.log('E: ', e.pointers[0].clientX, e.pointers[0].clientY);
-      // console.log('XY: ', x, y);
-
       for (const i of Object.values(this.uiElements)) {
-        // console.log('i: ', i.posX, i.width, i.posY, i.height, )
         if (x >= i.posX && x < (i.posX + i.width) && y >= i.posY && y <= (i.posY + i.height)) {
-          // i.hovered = true;
-          // hoveredLink = true;
-        // } else {
-          // i.hovered = false;
           i.onClick && i.onClick();
           this.uiElements = {};
 
           break;
         }
       }
-
-      // if (hoveredLink) {
-      //   document.body.style.cursor = 'pointer';
-      // } else {
-      //   document.body.style.cursor = '';
-      // }
     }
   }
 
@@ -164,19 +74,20 @@ export default class Render {
     
     this.drawPolygon(x1-w1-r1, y1, x1-w1, y1, x2-w2, y2, x2-w2-r2, y2, color.rumble);
     this.drawPolygon(x1+w1+r1, y1, x1+w1, y1, x2+w2, y2, x2+w2+r2, y2, color.rumble);
-    this.drawPolygon(x1-w1,    y1, x1+w1, y1, x2+w2, y2, x2-w2,    y2, color.road);
+    this.drawPolygon(x1-w1, y1, x1+w1, y1, x2+w2, y2, x2-w2, y2, color.road);
     
     if (color.lane) {
       lanew1 = w1*2/lanes;
       lanew2 = w2*2/lanes;
       lanex1 = x1 - w1 + lanew1;
       lanex2 = x2 - w2 + lanew2;
+
       for (lane = 1; lane < lanes; lanex1 += lanew1, lanex2 += lanew2, lane++) {
         this.drawPolygon(lanex1 - l1/2, y1, lanex1 + l1/2, y1, lanex2 + l2/2, y2, lanex2 - l2/2, y2, color.lane);
       }
     }
     
-    this.drawFog(0, y1, width, y2-y1, fog);
+    // this.drawFog(0, y1, width, y2-y1, fog);
   }
 
   drawBackground(background, width, height, layer, rotation, offset) {
@@ -237,6 +148,7 @@ export default class Render {
   drawPlayer(width, height, resolution, roadWidth, speedPercent, scale, destX, destY, steer, updown) {
     const props = this.game.getValue;
     const player = props('driver');
+    // const steer = speed * (keyLeft ? -1 : keyRight ? 1 : 0);
     const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
     let sprite;
 
@@ -315,6 +227,7 @@ export default class Render {
     let n, i, segment, car, sprite, spriteScale, spriteX, spriteY;
 
     this.ctx.clearRect(0, 0, width, height);
+    // this.canvas.width = width;
 
     this.drawBackground(background, width, height, BACKGROUND.SKY,   skyOffset,  resolution * skySpeed  * playerY);
     this.drawBackground(background, width, height, BACKGROUND.HILLS, hillOffset, resolution * hillSpeed * playerY);
@@ -352,7 +265,8 @@ export default class Render {
       maxy = segment.p1.screen.y;
     }
 
-    for (n = (drawDistance - 1); n > 0; n -= 1) {
+    n = drawDistance - 1;
+    for (; n > 0; n -= 1) {
       segment = segments[(baseSegment.index + n) % segments.length];
 
       for(i = 0; i < segment.cars.length; i++) {
@@ -372,7 +286,7 @@ export default class Render {
         this.drawSprite(width, height, roadWidth, sprite.source, spriteScale, spriteX, spriteY, (sprite.offset < 0 ? -1 : 0), -1, segment.clip);
       }
 
-      if (segment == playerSegment) {
+      if (segment === playerSegment) {
         this.drawPlayer(
           width,
           height,
@@ -382,27 +296,11 @@ export default class Render {
           cameraDepth / playerZ, width / 2,
           (height / 2) - (cameraDepth / playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height / 2),
           speed * (keyLeft ? -1 : keyRight ? 1 : 0),
-          playerSegment.p2.world.y - playerSegment.p1.world.y
+          // playerSegment.p2.world.y - playerSegment.p1.world.y
         );
       }
     }
   }
-
-  // renderTouchHelpers() {
-  //   const props = this.game.getValue;
-  //   const localePL = props('player.locale') === 'pl_PL';
-  //   const leftCtx = this.leftTouch.getContext('2d');
-  //   const rightCtx = this.rightTouch.getContext('2d');
-  //   const TEXTS = {
-  //     accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
-  //     brake: localePL ? 'HAMUJ' : 'BRAKE',
-  //     turnL: localePL ? 'LEWO' : 'LEFT',
-  //     turnR: localePL ? 'PRAWO' : 'RIGHT',
-  //   }
-
-  //   // this.game.gameFont_l.drawText(TEXTS., [170, 90], 'red', 4, 'white');
-  //   // this.game.gameFont_r.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
-  // }
 
   renderFBShareIcon() {
     const sprites = this.game.getValue('assets.sprites');
@@ -719,7 +617,6 @@ export default class Render {
       this.renderScreens(uiEvents);
     } else {
       this.renderGame();
-      // this.renderTouchHelpers();
 
       if (gameStep === 'start') {
         this.renderOverlay(uiEvents);
