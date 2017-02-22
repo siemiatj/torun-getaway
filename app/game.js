@@ -181,19 +181,6 @@ export default class Game {
     return eventsObject;
   }
 
-  // playMusic: function() {
-  //   var music = Dom.get('music');
-  //   music.loop = true;
-  //   music.volume = 0.05; // shhhh! annoying music!
-  //   music.muted = (Dom.storage.muted === "true");
-  //   music.play();
-  //   Dom.toggleClassName('mute', 'on', music.muted);
-  //   Dom.on('mute', 'click', function() {
-  //     Dom.storage.muted = music.muted = !music.muted;
-  //     Dom.toggleClassName('mute', 'on', music.muted);
-  //   });
-  // }
-
 //=========================================================================
 // UPDATE THE GAME WORLD
 //=========================================================================
@@ -266,22 +253,22 @@ export default class Game {
       carW = car.sprite.w * SPRITES.SCALE;
       if (speed > car.speed) {
         if (Util.overlap(playerX, playerW, car.offset, carW, 0.8)) {
-          // speed    = car.speed * (car.speed/speed);
-          // position = Util.increase(car.z, -playerZ, trackLength);
-          this.internals.gameRunning = false;
-          this.internals.gameOver = true;
+          speed    = car.speed * (car.speed/speed);
+          position = Util.increase(car.z, -playerZ, trackLength);
+          // this.internals.gameRunning = false;
+          // this.internals.gameOver = true;
 
-          break;
+          // break;
         }
       }
     }
 
-    if (speed <= 0) {
-      this.internals.gameRunning = false;
-      this.internals.gameOver = true;
+    // if (speed <= 0) {
+    //   this.internals.gameRunning = false;
+    //   this.internals.gameOver = true;
 
-      return;
-    }
+    //   return;
+    // }
 
     this.setValue('position', position);
     this.setValue('playerX', Util.limit(playerX, -3, 3));     // dont ever var it go too far out of bounds
@@ -476,7 +463,6 @@ export default class Game {
 
     this.loadImages(images, (loadedImages) => {
       this.ready(loadedImages);
-      // this.setKeyListener();
       this.setTouchListeners();
 
       let now = null;
