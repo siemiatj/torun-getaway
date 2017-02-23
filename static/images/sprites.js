@@ -5,9 +5,7 @@ let _ = require('underscore');
 
 const template = `
 const SPRITES = {
-  <% layout.images.forEach(function (image) { %>
-    <%= image.className %>: { x: <%= image.x %>, y: <%= image.y %>, w: <%= image.width %>, h: <%= image.height %> },
-  <% }); %>
+  <% layout.images.forEach(function (image, idx) { if (image.className.indexOf('-') >= 0) { %>'<%= image.className %>'<% } else { %><%= image.className %><% } %>: { x: <%= image.x %>, y: <%= image.y %>, w: <%= image.width %>, h: <%= image.height %> }<% if (idx !== layout.images.length - 1) { %>, \n  <% } %><% }); %>
 }
 
 export default SPRITES;
