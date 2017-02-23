@@ -93,6 +93,8 @@ export default class Game {
   setTouchCanvasHeights() {
     this.setValue('leftTouchHeight', this.getValue('leftTouch').getBoundingClientRect().height);
     this.setValue('rightTouchHeight', this.getValue('rightTouch').getBoundingClientRect().height);
+    this.internalsCopy.leftTouchHeight = this.getValue('leftTouchHeight');
+    this.internalsCopy.rightTouchHeight = this.getValue('rightTouchHeight');
 
     this.getValue('leftTouch').height = this.getValue('leftTouchHeight');
     this.getValue('rightTouch').height = this.getValue('rightTouchHeight');
@@ -263,12 +265,12 @@ export default class Game {
       }
     }
 
-    // if (speed <= 0) {
-    //   this.internals.gameRunning = false;
-    //   this.internals.gameOver = true;
+    if (speed <= 0) {
+      this.internals.gameRunning = false;
+      this.internals.gameOver = true;
 
-    //   return;
-    // }
+      return;
+    }
 
     this.setValue('position', position);
     this.setValue('playerX', Util.limit(playerX, -3, 3));     // dont ever var it go too far out of bounds
@@ -434,6 +436,9 @@ export default class Game {
     
     this.lTouchFont = new PNGFont();
     this.lTouchFont.setup(this.getValue('leftTouch').getContext('2d'), this.getValue('assets.unifont'));
+
+    this.rTouchFont = new PNGFont();
+    this.rTouchFont.setup(this.getValue('rightTouch').getContext('2d'), this.getValue('assets.unifont'));
 
     this.resetter.reset();
   }
