@@ -90,7 +90,7 @@ export default class Game {
   }
 
   // get touch canvases height
-  setTouchCanvasHeights() {
+  setTouchCanvasHeights(callback) {
     this.setValue('leftTouchHeight', this.getValue('leftTouch').getBoundingClientRect().height);
     this.setValue('rightTouchHeight', this.getValue('rightTouch').getBoundingClientRect().height);
     this.internalsCopy.leftTouchHeight = this.getValue('leftTouchHeight');
@@ -98,6 +98,8 @@ export default class Game {
 
     this.getValue('leftTouch').height = this.getValue('leftTouchHeight');
     this.getValue('rightTouch').height = this.getValue('rightTouchHeight');
+
+    callback();
   }
 
   setTouchListeners() {

@@ -325,6 +325,7 @@ export default class Render {
     const width = props('width');
     const height = props('height');
     const score = round(props('currentLapTime'), 2);
+    let color = 'white';
     const TEXTS = {
       gameOver: (localePL ? 'KONIEC GRY' : 'GAME OVER'),
       score: (localePL ? 'Twoj czas (s):' : 'Your time (s):'),
@@ -338,24 +339,16 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    this.game.gameFont.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
+    this.game.gameFont.drawText(TEXTS.gameOver, [170, 90], color, 4, 'white');
     this.game.gameFont.drawText(TEXTS.score, [200, 190], 'white', 2, 'black');
     this.game.gameFont.drawText(`${score}`, [275, 230], 'white', 2, 'black');
     this.game.gameFont.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
+    this.game.gameFont.drawText(TEXTS.share, [160, 410], color, 2, 'black');
 
-    let color = 'white';
-    if (this.uiElements.fb_share_icon) {
-      // if (this.uiElements.fb_share_icon.hovered || this.uiElements.fb_share_text.hovered) {
-      //   color = 'yellow';
-      // }
-
-      this.game.gameFont.drawText(TEXTS.share, [160, 410], color, 2, 'black');
-    } else {
-      this.game.gameFont.drawText(TEXTS.share, [160, 410], color, 2, 'black');
+    if (!this.uiElements.fb_share_icon) {
       const measuredText = this.ctx.measureText(TEXTS.share);
 
       this.uiElements.game_over_overlay = {
-        // hovered: false,
         posX: 0,
         posY: 0,
         width,
@@ -364,7 +357,6 @@ export default class Render {
       };
 
       this.uiElements.fb_share_text = {
-        // hovered: false,
         posX: 160,
         posY: 410,
         width: measuredText.width * 2,
@@ -373,7 +365,6 @@ export default class Render {
       };
 
       this.uiElements.fb_share_icon = {
-        // hovered: false,
         posX: 400,
         posY: 410,
         width: 40,
@@ -398,7 +389,6 @@ export default class Render {
 
     if (!this.uiElements.start_overlay) {
       this.uiElements.start_overlay = {
-        // fullScreenClick: true,
         posX: 0,
         posY: 0,
         width,
@@ -478,21 +468,14 @@ export default class Render {
       const it = i + 1;
       const player = players[i];
       const sprite = SPRITES[player.name];
-      // let color = 'white';
 
+      this.game.gameFont.drawText(player.displayName, player.textPosition, color, 2, 'black');
       if (this.uiElements[`player_${it}_icon`]) {
-        // if (this.uiElements[`player_${it}_icon`].hovered || this.uiElements[`player_${it}_text`].hovered) {
-        //   color = 'yellow';
-        // }
-
         this.renderPlayerIcon(player, sprite);
-        this.game.gameFont.drawText(player.displayName, player.textPosition, color, 2, 'black');
       } else {
-        this.game.gameFont.drawText(player.displayName, player.textPosition, color, 2, 'black');
         const measuredText = this.ctx.measureText(player.displayName);
 
         this.uiElements[`player_${it}_text`] = {
-          // hovered: false,
           posX: player.textPosition[0],
           posY: player.textPosition[1],
           width: measuredText.width * textSize,
@@ -501,7 +484,6 @@ export default class Render {
         }
 
         this.uiElements[`player_${it}_icon`] = {
-          // hovered: false,
           posX: player.iconPosition[0],
           posY: player.iconPosition[1],
           width: 80,
@@ -522,30 +504,11 @@ export default class Render {
     const textSize = 2;
     let color = 'white';
 
-    // if (this.uiElements.start_game_text) {
-    //   if (this.uiElements.start_game_text.hovered) {
-    //     color = 'yellow';
-    //   }
-    //   this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
-    // } else {
-    //   this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
-    //   const measuredText = this.ctx.measureText(text);
-
-    //   this.uiElements.start_game_text = {
-    //     hovered: false,
-    //     posX: textPosition[0],
-    //     posY: textPosition[1],
-    //     width: measuredText.width * textSize,
-    //     height: 15 * textSize,
-    //     onClick: uiEvents.start_game_text,
-    //   }
-    // }
     if (!this.uiElements.start_game_text) {
       this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
       const measuredText = this.ctx.measureText(text);
 
       this.uiElements.start_game_text = {
-        // hovered: false,
         posX: textPosition[0],
         posY: textPosition[1],
         width: measuredText.width * textSize,
@@ -556,21 +519,79 @@ export default class Render {
       this.game.gameFont.drawText(text, textPosition, color, 2, 'black');
     }
 
-    const localePL = props('player.locale') === 'pl_PL';
-    const TEXTS = {
-      accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
-      brake: localePL ? 'HAMUJ' : 'BRAKE',
-      turnL: localePL ? 'LEWO' : 'LEFT',
-      turnR: localePL ? 'PRAWO' : 'RIGHT',
-    }
+    // console.log('ABLABLA: ', props('leftTouchHeight'));
+    // if (!props('leftTouchHeight')) {
+      // const localePL = props('player.locale') === 'pl_PL';
+      // const TEXTS = {
+      //   accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
+      //   brake: localePL ? 'HAMUJ' : 'BRAKE',
+      //   turnL: localePL ? 'LEWO' : 'LEFT',
+      //   turnR: localePL ? 'PRAWO' : 'RIGHT',
+      // }
 
-    this.game.lTouchFont.drawText(TEXTS.accelerate, [30, 20], 'white', 2);
-    this.game.lTouchFont.drawText(TEXTS.turnL, [30, 210], 'white', 2);
-    this.game.lTouchFont.drawText(TEXTS.brake, [30, 400], 'white', 2);
+      // let colorLA = 'white';
+      // let colorRA = 'white';
+      // let colorLS = 'white';
+      // let colorRS = 'white';
+      // if (props('keyFaster.left')) {
+      //   colorLA = 'red';
+      // }
+      // if (props('keyFaster.right')) {
+      //   colorRA = 'red';
+      // }
+      // if (props('keySlower.left')) {
+      //   colorLS = 'red';
+      // }
+      // if (props('keySlower.right')) {
+      //   colorRS = 'red';
+      // }
 
-    if (!props('leftTouchHeight')) {
-      this.game.setTouchCanvasHeights();
-    }
+      // this.game.lTouchFont.drawText(TEXTS.accelerate, [30, 20], colorLA, 3);
+      // this.game.lTouchFont.drawText(TEXTS.turnL, [30, 210], 'white', 3);
+      // this.game.lTouchFont.drawText(TEXTS.brake, [30, 400], colorLS, 3);
+
+      // this.game.rTouchFont.drawText(TEXTS.accelerate, [30, 20], colorRA, 3);
+      // this.game.rTouchFont.drawText(TEXTS.turnR, [30, 210], 'white', 3);
+      // this.game.rTouchFont.drawText(TEXTS.brake, [30, 400], colorRS, 3);
+
+      if (!props('leftTouchHeight')) {
+        this.game.setTouchCanvasHeights(() => {
+          console.log('DRAAAAW ');
+          const localePL = props('player.locale') === 'pl_PL';
+          const TEXTS = {
+            accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
+            brake: localePL ? 'HAMUJ' : 'BRAKE',
+            turnL: localePL ? 'LEWO' : 'LEFT',
+            turnR: localePL ? 'PRAWO' : 'RIGHT',
+          }
+
+          let colorLA = 'white';
+          let colorRA = 'white';
+          let colorLS = 'white';
+          let colorRS = 'white';
+          if (props('keyFaster.left')) {
+            colorLA = 'red';
+          }
+          if (props('keyFaster.right')) {
+            colorRA = 'red';
+          }
+          if (props('keySlower.left')) {
+            colorLS = 'red';
+          }
+          if (props('keySlower.right')) {
+            colorRS = 'red';
+          }
+
+          this.game.lTouchFont.drawText(TEXTS.accelerate, [30, 20], colorLA, 3);
+          this.game.lTouchFont.drawText(TEXTS.turnL, [30, 210], 'white', 3);
+          this.game.lTouchFont.drawText(TEXTS.brake, [30, 400], colorLS, 3);
+
+          this.game.rTouchFont.drawText(TEXTS.accelerate, [30, 20], colorRA, 3);
+          this.game.rTouchFont.drawText(TEXTS.turnR, [30, 210], 'white', 3);
+          this.game.rTouchFont.drawText(TEXTS.brake, [30, 400], colorRS, 3); 
+        });
+      }
+    // }
   }
 
   renderScreens(uiEvents) {
