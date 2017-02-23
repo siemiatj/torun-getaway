@@ -104,14 +104,18 @@ export default class Game {
     const leftTouch = new Hammer(this.internals.leftTouch);
     leftTouch.on('press pressup pan', this.handleLeftTouch);
     leftTouch.get('pan').set({ direction: Hammer.DIRECTION_VERTICAL, threshold: 10 });
+    leftTouch.get('press').set({ time: 200 });
 
     const rightTouch = new Hammer(this.internals.rightTouch);
     rightTouch.on('press pressup pan', this.handleRightTouch); 
     rightTouch.get('pan').set({ direction: Hammer.DIRECTION_VERTICAL, threshold: 10 });
+    leftTouch.get('press').set({ time: 200 });
   }
 
   handleLeftTouch(event) {
     if (event.type === 'pressup') {
+      this.setValue('keyFaster.left', null)
+      this.setValue('keySlower.left', null);
       this.internals.keyLeft = false;
     } else {
       const leftTouchHeight = this.internals.leftTouchHeight;
@@ -130,6 +134,8 @@ export default class Game {
 
   handleRightTouch(event) {
     if (event.type === 'pressup') {
+      this.setValue('keyFaster.right', null)
+      this.setValue('keySlower.right', null);
       this.internals.keyRight = false;
     } else {
       const rightTouchHeight = this.internals.rightTouchHeight;
