@@ -118,6 +118,30 @@ export default class Reset {
     this.addRoad(num, num, num, -ROAD.CURVE.EASY, - this.lastY() / segmentLength);
   }
 
+  randomRoad() {
+    const props = this.gameInstance.getValue;
+    // const playerZ = props('playerZ');
+    // const rumbleLength = props('rumbleLength');
+    const segments = props('segments');
+    // const segmentLength = props('segmentLength');
+
+    // this.addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
+    // this.addBumps();
+    // this.addLowRollingHills();
+    // this.addCurve(ROAD.LENGTH.LONG * 2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+    // this.addStraight();
+    // this.addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
+    // this.addSCurves();
+    // this.addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
+    // this.addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
+    // this.addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
+    // this.addBumps();
+    // this.addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
+    // this.addStraight();
+    // this.addSCurves();
+    // this.addDownhillToEnd();
+  }
+
   resetRoad() {
     const props = this.gameInstance.getValue;
     const playerZ = props('playerZ');
@@ -128,21 +152,23 @@ export default class Reset {
     this.addStraight(ROAD.LENGTH.SHORT);
     this.addLowRollingHills();
     this.addSCurves();
-    this.addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
-    this.addBumps();
-    this.addLowRollingHills();
-    this.addCurve(ROAD.LENGTH.LONG * 2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
-    this.addStraight();
-    this.addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
-    this.addSCurves();
-    this.addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
-    this.addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
-    this.addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
-    this.addBumps();
-    this.addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
-    this.addStraight();
-    this.addSCurves();
-    this.addDownhillToEnd();
+    // this.addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
+    // this.addBumps();
+    // this.addLowRollingHills();
+    // this.addCurve(ROAD.LENGTH.LONG * 2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+    // this.addStraight();
+    // this.addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
+    // this.addSCurves();
+    // this.addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
+    // this.addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
+    // this.addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
+    // this.addBumps();
+    // this.addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
+    // this.addStraight();
+    // this.addSCurves();
+    // this.addDownhillToEnd();
+
+    console.log('LENGTh ! :', segments.length);
 
     this.resetSprites();
     this.resetCars();

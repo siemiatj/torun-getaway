@@ -72,8 +72,8 @@ export default class Render {
     ctx.fillStyle = color.grass;
     ctx.fillRect(0, y2, width, y1 - y2);
     
-    this.drawPolygon(x1-w1-r1, y1, x1-w1, y1, x2-w2, y2, x2-w2-r2, y2, color.rumble);
-    this.drawPolygon(x1+w1+r1, y1, x1+w1, y1, x2+w2, y2, x2+w2+r2, y2, color.rumble);
+    // this.drawPolygon(x1-w1-r1, y1, x1-w1, y1, x2-w2, y2, x2-w2-r2, y2, color.rumble);
+    // this.drawPolygon(x1+w1+r1, y1, x1+w1, y1, x2+w2, y2, x2+w2+r2, y2, color.rumble);
     this.drawPolygon(x1-w1, y1, x1+w1, y1, x2+w2, y2, x2-w2, y2, color.road);
     
     if (color.lane) {
@@ -87,6 +87,7 @@ export default class Render {
       }
     }
     
+    // TODO: turned off for mobile
     // this.drawFog(0, y1, width, y2-y1, fog);
   }
 
@@ -339,7 +340,7 @@ export default class Render {
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
 
-    this.game.gameFont.drawText(TEXTS.gameOver, [170, 90], color, 4, 'white');
+    this.game.gameFont.drawText(TEXTS.gameOver, [170, 90], 'red', 4, 'white');
     this.game.gameFont.drawText(TEXTS.score, [200, 190], 'white', 2, 'black');
     this.game.gameFont.drawText(`${score}`, [275, 230], 'white', 2, 'black');
     this.game.gameFont.drawText(TEXTS.restart, [210, 310], 'yellow', 1, 'black');
