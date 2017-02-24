@@ -16,7 +16,7 @@ const GAME_SETTINGS = {
   roadWidth   : 2000,                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
   segmentLength: 200,                     // length of a single segment
   rumbleLength: 3,                       // number of segments per red/white rumble strip
-  drawDistance: 150,                     // number of segments to draw
+  drawDistance: 100,                     // number of segments to draw
   lanes       : 3,                       // number of lanes
   fieldOfView : 100,                     // angle (degrees) for field of view
   cameraHeight: 1000,                    // z height of camera
@@ -27,7 +27,7 @@ const GAME_SETTINGS = {
   decel       : null,            // 'natural' deceleration rate when neither accelerating, nor braking
   offRoadDecel: null,             // off road deceleration is somewhere in between
   offRoadLimit:  null,             // limit when off road deceleration no longer applies (e.g. you can always go at least this speed even when off road)
-  totalCars: 200,                     // total number of cars on the road
+  totalCars: 50,                     // total number of cars on the road
 };
 
 GAME_SETTINGS.maxSpeed = (GAME_SETTINGS.segmentLength / GAME_SETTINGS.step) * 1.5;

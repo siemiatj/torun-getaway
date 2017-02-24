@@ -202,7 +202,7 @@ export default class Reset {
     sV('resolution', gV('height') / 480);
     // refreshTweakUI();
 
-    if (gV('gameState') === 'game' && (gV('segments').length==0) ||
+    if (gV('gameState') === 'game' && (gV('segments').length === 0) ||
       gV('segmentLength') || gV('rumbleLength')) {
       this.resetRoad();
     }
@@ -226,8 +226,6 @@ export default class Reset {
       keyFaster: { left: null, right: null },
       keySlower: { left: null, right: null },
     };
-
-    console.log('GAME INTERNALS: ', game.internalsCopy);
 
     this.reset();
   }
