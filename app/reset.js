@@ -62,21 +62,35 @@ export default class Reset {
   }
 
   addStraight() {
-    num = num || ROAD.LENGTH.MEDIUM;
+    const lenChoices = [ ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM, 75, ROAD.LENGTH.LONG];
+    const num = Util.randomChoice(lenChoices);
+
     this.addRoad(num, num, num, 0, 0);
   }
 
   addHill() {
-    num    = num    || ROAD.LENGTH.MEDIUM;
-    height = height || ROAD.HILL.MEDIUM;
+    const lenChoices = [ ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM, 75, ROAD.LENGTH.LONG];
+    const hillHeightChoices = [
+      ROAD.HILL.LOW, -ROAD.HILL.LOW, ROAD.HILL.MEDIUM,
+      -ROAD.HILL.MEDIUM, ROAD.HILL.LONG
+    ];
+    const num = Util.randomChoice(lenChoices);
+    const height = Util.randomChoice(hillHeightChoices);
 
     this.addRoad(num, num, num, 0, height);
   }
 
   addCurve() {
-    num    = num    || ROAD.LENGTH.MEDIUM;
-    curve  = curve  || ROAD.CURVE.MEDIUM;
-    height = height || ROAD.HILL.NONE;
+    const lenChoices = [ ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM];
+    const hillHeightChoices = [
+      ROAD.HILL.NONE, -ROAD.HILL.LOW / 2, ROAD.HILL.LOW / 2,
+      ROAD.HILL.LOW, -ROAD.HILL.LOW,
+      ROAD.HILL.MEDIUM, -ROAD.HILL.MEDIUM
+    ];
+    const curveOptions = [ROAD.CURVE.EASY, -ROAD.CURVE.EASY, ROAD.CURVE.MEDIUM, -ROAD.CURVE.MEDIUM];
+    const num    = Util.randomChoice(lenChoices);
+    const curve  = Util.randomChoice(curveOptions);
+    const height = Util.randomChoice(hillHeightChoices);
 
     this.addRoad(num, num, num, curve, height);
   }
@@ -86,7 +100,7 @@ export default class Reset {
     const hillHeightChoices = [
       -ROAD.HILL.LOW / 2, ROAD.HILL.LOW / 2,
       ROAD.HILL.LOW, -ROAD.HILL.LOW,
-      ROAD.HILL.MEDIUM, -ROAD.HILL.MEDIUM,
+      ROAD.HILL.MEDIUM, -ROAD.HILL.MEDIUM
     ];
     const curveOptions = [0, 0, ROAD.CURVE.EASY, 0, -ROAD.CURVE.EASY, 0, 0];
     const amountRand = Util.randomInt(3, 6);
