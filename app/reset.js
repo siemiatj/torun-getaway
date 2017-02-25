@@ -82,15 +82,22 @@ export default class Reset {
   }
       
   addLowRollingHills() {
-    num    = num    || ROAD.LENGTH.SHORT;
-    height = height || ROAD.HILL.LOW;
+    const lenChoices = [ ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM];
+    const hillHeightChoices = [
+      -ROAD.HILL.LOW / 2, ROAD.HILL.LOW / 2,
+      ROAD.HILL.LOW, -ROAD.HILL.LOW,
+      ROAD.HILL.MEDIUM, -ROAD.HILL.MEDIUM,
+    ];
+    const curveOptions = [0, 0, ROAD.CURVE.EASY, 0, -ROAD.CURVE.EASY, 0, 0];
+    const amountRand = Util.randomInt(3, 6);
 
-    this.addRoad(num, num, num, 0, height / 2);
-    this.addRoad(num, num, num, 0, -height);
-    this.addRoad(num, num, num, ROAD.CURVE.EASY, height);
-    this.addRoad(num, num, num, 0, 0);
-    this.addRoad(num, num, num, -ROAD.CURVE.EASY, height / 2);
-    this.addRoad(num, num, num, 0, 0);
+    for (let i = 0; i < amountRand; i += 1) {
+      let len = Util.randomChoice(lenChoices);
+      let hillHeight = Util.randomChoice(hillHeightChoices);
+      let curve = Util.randomChoice(curveOptions);
+
+      this.addRoad(len, len, len, curve, hillHeight);
+    }
   }
 
   addSCurves() {
@@ -124,11 +131,14 @@ export default class Reset {
     }
   }
 
-  addDownhill(num) {
+  addDownhill() {
     const segmentLength = this.gameInstance.getValue('segmentLength');
+    const options = [ ROAD.LENGTH.SHORT, ROAD.LENGTH.MEDIUM, 75, ROAD.LENGTH.LONG];
+    const curvatureOptions = [ROAD.CURVE.NONE, ROAD.CURVE.EASY, -ROAD.CURVE.EASY];
+    const num = Util.randomChoice(options);
+    const curve = Util.randomChoice(curvatureOptions);
 
-    num = num || 100;
-    this.addRoad(num, num, num, -ROAD.CURVE.EASY, - this.lastY() / segmentLength);
+    this.addRoad(num, num, num, curve, - this.lastY() / segmentLength);
   }
 
   randomRoad() {
