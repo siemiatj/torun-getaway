@@ -159,12 +159,13 @@ export default class Reset {
     const props = this.gameInstance.getValue;
     const segments = props('segments');
     const segmentsLimit = props('segmentsLimit');
+    const segmentLength = props('segmentLength');
     const roadTypes = [
-      { weight: 25, id: 'straight' },
-      { weight: 20, id: 's_curves' },
-      { weight: 15, id: 'bumps' },
-      { weight: 15, id: 'lr_hills' },
-      { weight: 12, id: 'hill' },
+      { weight: 10, id: 'straight' },
+      { weight: 25, id: 's_curves' },
+      { weight: 17, id: 'bumps' },
+      { weight: 20, id: 'lr_hills' },
+      { weight: 15, id: 'hill' },
       { weight: 10, id: 'curve' },
       { weight: 3, id: 'downhill' },
     ];
@@ -197,28 +198,31 @@ export default class Reset {
           break;
       }
     }
-  }
-
-  resetRoad() {
-    const props = this.gameInstance.getValue;
-    const segments = props('segments');
-    const segmentLength = props('segmentLength');
-
-    this.randomRoad();
-
-    console.log('LENGTh ! :', segments.length);
-
-    this.resetSprites();
-    this.resetCars();
 
     this.gameInstance.setValue('segments', [...segments]);
     this.gameInstance.setValue('trackLength', (segments.length * segmentLength));
   }
 
+  resetRoad() {
+    // const props = this.gameInstance.getValue;
+    // const segments = props('segments');
+    // const segmentLength = props('segmentLength');
+
+    this.randomRoad();
+
+    // console.log('LENGTh ! :', segments.length);
+
+    this.resetSprites();
+    this.resetCars();
+
+    // this.gameInstance.setValue('segments', [...segments]);
+    // this.gameInstance.setValue('trackLength', (segments.length * segmentLength));
+  }
+
   resetSprites() {
-    const props = this.gameInstance.getValue;
-    const segments = props('segments');
-    let n, i;
+    // const props = this.gameInstance.getValue;
+    // const segments = props('segments');
+    // let n, i;
 
     // for (n = 200; n < segments.length; n += 5) {
     //   this.addSprite(n, Util.randomChoice(SPRITES.PLANTS), Util.randomChoice([1,-1]) * (2 + Math.random() * 5));

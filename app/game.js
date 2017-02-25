@@ -20,14 +20,18 @@ export default class Game {
       cars: [], // array of cars on the road
       assets: {},
       resolution: null, // scaling factor to provide resolution independence (computed)
+
       trackLength: null,  // z length of entire track (computed)
+
       cameraDepth: null, // z distance camera is from screen (computed)
       playerX: 0, // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
       playerZ: null, // player relative z distance from camera (computed)
       position: 0, // current camera Z position (add playerZ to get player's absolute Z position)
       speed: (opts.maxSpeed / 2), // current speed
       currentLapTime: 0, // current lap time
-      lastLapTime: null, // last lap time
+
+      // lastLapTime: null, // last lap time
+
       driver: null,
       startCounter: 3,
       keyLeft: null,
@@ -208,7 +212,7 @@ export default class Game {
       keyRight, keyFaster, keySlower, centrifugal, accel, breaking,
       decel, segmentLength, offRoadLimit, offRoadDecel, skyOffset,
       hillOffset, treeOffset, skySpeed, hillSpeed, treeSpeed,
-      currentLapTime } = this.internals;
+      currentLapTime, segmentsLowerLimit } = this.internals;
     let { position, speed, playerX } = this.internals;
     let n, car, carW, sprite, spriteW;
     let playerSegment = Util.findSegment(segments, segmentLength, position + playerZ);
@@ -289,28 +293,32 @@ export default class Game {
     this.setValue('treeOffset', Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition) / segmentLength, 1));
 
     if (position > playerZ) {
-      if (currentLapTime && (startPosition < playerZ)) {
-        // lastLapTime    = currentLapTime;
-        // currentLapTime = 0;
-        // if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
-        //   Dom.storage.fast_lap_time = lastLapTime;
-        //   updateHud('fast_lap_time', formatTime(lastLapTime));
-        //   Dom.addClassName('fast_lap_time', 'fastest');
-        //   Dom.addClassName('last_lap_time', 'fastest');
-        // }
-        // else {
-        //   Dom.removeClassName('fast_lap_time', 'fastest');
-        //   Dom.removeClassName('last_lap_time', 'fastest');
-        // }
-        // updateHud('last_lap_time', formatTime(lastLapTime));
-        // Dom.show('last_lap_time');
-      } else {
+      // if (currentLapTime && (startPosition < playerZ)) {
+      //   // lastLapTime    = currentLapTime;
+      //   // currentLapTime = 0;
+      //   // if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
+      //   //   Dom.storage.fast_lap_time = lastLapTime;
+      //   //   updateHud('fast_lap_time', formatTime(lastLapTime));
+      //   //   Dom.addClassName('fast_lap_time', 'fastest');
+      //   //   Dom.addClassName('last_lap_time', 'fastest');
+      //   // }
+      //   // else {
+      //   //   Dom.removeClassName('fast_lap_time', 'fastest');
+      //   //   Dom.removeClassName('last_lap_time', 'fastest');
+      //   // }
+      //   // updateHud('last_lap_time', formatTime(lastLapTime));
+      //   // Dom.show('last_lap_time');
+      // } else {
         this.setValue('currentLapTime',  currentLapTime + dt);
-      }
+      // }
     }
 
     this.updateHud('speed', 5 * Math.round(speed/500));
     this.updateHud('current_lap_time', this.formatTime(currentLapTime));
+
+    if (segments.length <= segmentsLowerLimit) {
+      this.resetter.randomRoad();
+    }
   }
 
   updateCars(dt, playerSegment, playerW) {
