@@ -1,5 +1,6 @@
 import * as Util from 'util';
 import { COLORS, SPRITES, ROAD } from 'constants';
+import RWC from 'random-weighted-choice';
 
 //=========================================================================
 // game reset helpers
@@ -13,7 +14,7 @@ export default class Reset {
   lastY() {
     const segments = this.gameInstance.getValue('segments');
 
-    return (segments.length == 0) ? 0 : segments[segments.length-1].p2.world.y;
+    return (segments.length === 0) ? 0 : segments[segments.length - 1].p2.world.y;
   }
 
   addSegment(curve, y) {
@@ -84,16 +85,55 @@ export default class Reset {
     num    = num    || ROAD.LENGTH.SHORT;
     height = height || ROAD.HILL.LOW;
 
-    this.addRoad(num, num, num, 0, height/2);
+    this.addRoad(num, num, num, 0, height / 2);
     this.addRoad(num, num, num, 0, -height);
     this.addRoad(num, num, num, ROAD.CURVE.EASY, height);
     this.addRoad(num, num, num, 0, 0);
-    this.addRoad(num, num, num, -ROAD.CURVE.EASY, height/2);
+    this.addRoad(num, num, num, -ROAD.CURVE.EASY, height / 2);
     this.addRoad(num, num, num, 0, 0);
   }
 
   addSCurves() {
-    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.EASY, ROAD.HILL.NONE);
+    const curveRand = ~~(Math.random()*4);
+    switch (curveAngle) {
+      case 1:
+        curveAngle = ROAD.CURVE.MEDIUM;
+        break;
+      case 2:
+        curveAngle = -ROAD.CURVE.EASY;
+        break;
+      case 3:
+        curveAngle = -ROAD.CURVE.MEDIUM;
+        break;
+      default:
+        curveAngle = ROAD.CURVE.EASY;
+        break;
+    }
+
+    const hillRand = ~~(Math.random()*5);
+    let hillHeight = ROAD.HILL.NONE;
+    switch (hillRand) {
+      case 1:
+        hillHeight = ROAD.HILL.LOW;
+        break;
+      case 2:
+        hillHeight = ROAD.HILL.LOW;
+        break;
+      case 3:
+        hillHeight = ROAD.HILL.LOW;
+        break;
+      case 4:
+        hillHeight = ROAD.HILL.LOW;
+        break;
+      default:
+        hillHeight = ROAD.HILL.NONE;
+        break;
+    }
+
+    const amountRand = ~~(Math.random()*10);
+
+
+    this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.EASY, ROAD.HILL.NONE);
     this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
     this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.EASY, -ROAD.HILL.LOW);
     this.addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.EASY, ROAD.HILL.MEDIUM);
@@ -114,7 +154,7 @@ export default class Reset {
   addDownhillToEnd(num) {
     const segmentLength = this.gameInstance.getValue('segmentLength');
 
-    num = num || 200;
+    num = num || 100;
     this.addRoad(num, num, num, -ROAD.CURVE.EASY, - this.lastY() / segmentLength);
   }
 
@@ -123,8 +163,30 @@ export default class Reset {
     // const playerZ = props('playerZ');
     // const rumbleLength = props('rumbleLength');
     const segments = props('segments');
+    const segmentsLimit = props('segmentsLimit');
     // const segmentLength = props('segmentLength');
+    // let rand = ~~(Math.random() * 100);
+    const roadTypes = [
+      { weight: 30, id: 'straight' },
 
+    ];
+
+    //straight
+    //hill
+    //bumps
+    //low rolling hills
+    // curve
+    // s curve
+    // downhill 
+
+    while (segments.length < segmentsLimit) {
+      // if ( rand < 2 || rand >= 99) {
+
+      // }
+      // if (rand < 10 || rand > 90) {
+      //   this.addStraight(ROAD.LENGTH.SHORT);
+      // } else if ()
+    }
     // this.addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
     // this.addBumps();
     // this.addLowRollingHills();
@@ -145,13 +207,14 @@ export default class Reset {
   resetRoad() {
     const props = this.gameInstance.getValue;
     const playerZ = props('playerZ');
-    const rumbleLength = props('rumbleLength');
+    // const rumbleLength = props('rumbleLength');
     const segments = props('segments');
-    const segmentLength = props('segmentLength');
+    // const segmentLength = props('segmentLength');
 
-    this.addStraight(ROAD.LENGTH.SHORT);
-    this.addLowRollingHills();
-    this.addSCurves();
+
+    // this.addStraight(ROAD.LENGTH.SHORT);
+    // this.addLowRollingHills();
+    // this.addSCurves();
     // this.addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
     // this.addBumps();
     // this.addLowRollingHills();
@@ -173,12 +236,12 @@ export default class Reset {
     this.resetSprites();
     this.resetCars();
 
-    segments[Util.findSegment(segments, segmentLength, playerZ).index + 2].color = COLORS.START;
-    segments[Util.findSegment(segments, segmentLength, playerZ).index + 3].color = COLORS.START;
+    // segments[Util.findSegment(segments, segmentLength, playerZ).index + 2].color = COLORS.START;
+    // segments[Util.findSegment(segments, segmentLength, playerZ).index + 3].color = COLORS.START;
     
-    for (let n = 0; n < rumbleLength; n++) {
-      segments[segments.length-1-n].color = COLORS.FINISH;
-    }
+    // for (let n = 0; n < rumbleLength; n++) {
+    //   segments[segments.length-1-n].color = COLORS.FINISH;
+    // }
 
     this.gameInstance.setValue('segments', [...segments]);
     this.gameInstance.setValue('trackLength', (segments.length * segmentLength));

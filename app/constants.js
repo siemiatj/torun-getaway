@@ -17,7 +17,8 @@ const GAME_SETTINGS = {
   segmentLength: 200,                     // length of a single segment
   rumbleLength: 3,                       // number of segments per red/white rumble strip
   drawDistance: 100,                     // number of segments to draw
-  segmentsLimit: 1000,
+  segmentsLimit: 1500,
+  segmentsLowerLimit: 500,
   lanes       : 3,                       // number of lanes
   fieldOfView : 100,                     // angle (degrees) for field of view
   cameraHeight: 1000,                    // z height of camera
