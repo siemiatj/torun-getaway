@@ -146,29 +146,14 @@ export default class Render {
     this.ctx.drawImage(image, ((width / 2) - (435 / 2)), 50, 435, 52);
   }
 
-  drawPlayer(width, height, resolution, roadWidth, speedPercent, scale, destX, destY, steer, updown) {
+  drawPlayer(width, height, resolution, roadWidth, speedPercent, scale, destX, destY, updown) {
     const props = this.game.getValue;
     const player = props('driver');
-    // const steer = speed * (keyLeft ? -1 : keyRight ? 1 : 0);
     const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
 
     const keyLeft = props('keyLeft');
     const keyRight = props('keyRight');
     let sprite;
-
-    // const steer = speed * (keyLeft ? -1 : keyRight ? 1 : 0);
-
-
-    // if (steer < 0) {
-    //   // sprite = (updown > 0) ? SPRITES.[`PLAYER_UPHILL_LEFT`] : SPRITES.PLAYER_LEFT;
-    //   sprite = SPRITES[`PLAYER_${player}_LEFT`];
-    // } else if (steer > 0) {
-    //   // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
-    //   sprite = SPRITES[`PLAYER_${player}_RIGHT`];
-    // } else {
-    //   // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
-    //   sprite = SPRITES[`PLAYER_${player}_STRAIGHT`];
-    // }
 
     if ((keyLeft && keyRight) || (!keyLeft && !keyRight)) {
       // sprite = (updown > 0) ? SPRITES.[`PLAYER_UPHILL_LEFT`] : SPRITES.PLAYER_LEFT;
@@ -208,8 +193,6 @@ export default class Render {
   //=========================================================================
   renderGame() {
     const props = this.game.getValue;
-    // const keyLeft = props('keyLeft');
-    // const keyRight = props('keyRight');
     const segments = props('segments');
     const segmentLength = props('segmentLength');
     const position = props('position');
@@ -287,7 +270,7 @@ export default class Render {
     for (; n > 0; n -= 1) {
       segment = segments[(baseSegment.index + n) % segments.length];
 
-      for(i = 0; i < segment.cars.length; i++) {
+      for (i = 0; i < segment.cars.length; i += 1) {
         car         = segment.cars[i];
         sprite      = car.sprite;
         spriteScale = Util.interpolate(segment.p1.screen.scale, segment.p2.screen.scale, car.percent);
@@ -296,7 +279,7 @@ export default class Render {
         this.drawSprite(width, height, roadWidth, car.sprite, spriteScale, spriteX, spriteY, -0.5, -1, segment.clip);
       }
 
-      for(i = 0; i < segment.sprites.length; i += 1) {
+      for (i = 0; i < segment.sprites.length; i += 1) {
         sprite      = segment.sprites[i];
         spriteScale = segment.p1.screen.scale;
         spriteX     = segment.p1.screen.x + (spriteScale * sprite.offset * roadWidth * width/2);
@@ -313,7 +296,6 @@ export default class Render {
           speed / maxSpeed,
           cameraDepth / playerZ, width / 2,
           (height / 2) - (cameraDepth / playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height / 2),
-          // speed * (keyLeft ? -1 : keyRight ? 1 : 0),
           // playerSegment.p2.world.y - playerSegment.p1.world.y
         );
       }

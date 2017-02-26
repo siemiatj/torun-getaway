@@ -287,39 +287,19 @@ export default class Game {
     this.setValue('treeOffset', Util.increase(treeOffset, treeSpeed * playerSegment.curve * (position-startPosition) / segmentLength, 1));
 
     if (position > playerZ) {
-      // if (currentLapTime && (startPosition < playerZ)) {
-      //   // lastLapTime    = currentLapTime;
-      //   // currentLapTime = 0;
-      //   // if (lastLapTime <= Util.toFloat(Dom.storage.fast_lap_time)) {
-      //   //   Dom.storage.fast_lap_time = lastLapTime;
-      //   //   updateHud('fast_lap_time', formatTime(lastLapTime));
-      //   //   Dom.addClassName('fast_lap_time', 'fastest');
-      //   //   Dom.addClassName('last_lap_time', 'fastest');
-      //   // }
-      //   // else {
-      //   //   Dom.removeClassName('fast_lap_time', 'fastest');
-      //   //   Dom.removeClassName('last_lap_time', 'fastest');
-      //   // }
-      //   // updateHud('last_lap_time', formatTime(lastLapTime));
-      //   // Dom.show('last_lap_time');
-      // } else {
-        this.setValue('currentLapTime',  currentLapTime + dt);
-      // }
+      this.setValue('currentLapTime',  currentLapTime + dt);
     }
 
     this.updateHud('speed', 5 * Math.round(speed/500));
     this.updateHud('current_lap_time', this.formatTime(currentLapTime));
 
-    // const segmentsTotal = segments.length;
-
     console.log('playerZ: ', playerZ, segments[0].p2.world.z);
-
     let currSegment;
     for (let i = 0; i < segments.length; i += 1) {
       currSegment = segments[i];
 
       // console.log('BLA: ', playerZ, currSegment.p1.world.z )
-      if (currSegment.p1.world.z < playerZ) {
+      if (currSegment.p2.world.z + 3*segmentLength < playerZ) {
         console.log('remove');
         segments.shift();
       } else {
