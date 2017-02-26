@@ -72,8 +72,8 @@ export default class Render {
     ctx.fillStyle = color.grass;
     ctx.fillRect(0, y2, width, y1 - y2);
     
-    // this.drawPolygon(x1-w1-r1, y1, x1-w1, y1, x2-w2, y2, x2-w2-r2, y2, color.rumble);
-    // this.drawPolygon(x1+w1+r1, y1, x1+w1, y1, x2+w2, y2, x2+w2+r2, y2, color.rumble);
+    this.drawPolygon(x1-w1-r1, y1, x1-w1, y1, x2-w2, y2, x2-w2-r2, y2, color.rumble);
+    this.drawPolygon(x1+w1+r1, y1, x1+w1, y1, x2+w2, y2, x2+w2+r2, y2, color.rumble);
     this.drawPolygon(x1-w1, y1, x1+w1, y1, x2+w2, y2, x2-w2, y2, color.road);
     
     if (color.lane) {
@@ -151,17 +151,34 @@ export default class Render {
     const player = props('driver');
     // const steer = speed * (keyLeft ? -1 : keyRight ? 1 : 0);
     const bounce = (1.5 * Math.random() * speedPercent * resolution) * Util.randomChoice([-1,1]);
+
+    const keyLeft = props('keyLeft');
+    const keyRight = props('keyRight');
     let sprite;
 
-    if (steer < 0) {
+    // const steer = speed * (keyLeft ? -1 : keyRight ? 1 : 0);
+
+
+    // if (steer < 0) {
+    //   // sprite = (updown > 0) ? SPRITES.[`PLAYER_UPHILL_LEFT`] : SPRITES.PLAYER_LEFT;
+    //   sprite = SPRITES[`PLAYER_${player}_LEFT`];
+    // } else if (steer > 0) {
+    //   // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
+    //   sprite = SPRITES[`PLAYER_${player}_RIGHT`];
+    // } else {
+    //   // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
+    //   sprite = SPRITES[`PLAYER_${player}_STRAIGHT`];
+    // }
+
+    if ((keyLeft && keyRight) || (!keyLeft && !keyRight)) {
       // sprite = (updown > 0) ? SPRITES.[`PLAYER_UPHILL_LEFT`] : SPRITES.PLAYER_LEFT;
-      sprite = SPRITES[`PLAYER_${player}_LEFT`];
-    } else if (steer > 0) {
-      // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
-      sprite = SPRITES[`PLAYER_${player}_RIGHT`];
-    } else {
-      // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
       sprite = SPRITES[`PLAYER_${player}_STRAIGHT`];
+    } else if (keyLeft && !keyRight) {
+      // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_RIGHT : SPRITES.PLAYER_RIGHT;
+      sprite = SPRITES[`PLAYER_${player}_LEFT`];
+    } else if (keyRight && !keyLeft){
+      // sprite = (updown > 0) ? SPRITES.PLAYER_UPHILL_STRAIGHT : SPRITES.PLAYER_STRAIGHT;
+      sprite = SPRITES[`PLAYER_${player}_RIGHT`];
     }
 
     this.drawSprite(width, height, roadWidth, sprite, scale, destX, destY + bounce, -0.5, -1);
@@ -191,8 +208,8 @@ export default class Render {
   //=========================================================================
   renderGame() {
     const props = this.game.getValue;
-    const keyLeft = props('keyLeft');
-    const keyRight = props('keyRight');
+    // const keyLeft = props('keyLeft');
+    // const keyRight = props('keyRight');
     const segments = props('segments');
     const segmentLength = props('segmentLength');
     const position = props('position');
@@ -296,7 +313,7 @@ export default class Render {
           speed / maxSpeed,
           cameraDepth / playerZ, width / 2,
           (height / 2) - (cameraDepth / playerZ * Util.interpolate(playerSegment.p1.camera.y, playerSegment.p2.camera.y, playerPercent) * height / 2),
-          speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+          // speed * (keyLeft ? -1 : keyRight ? 1 : 0),
           // playerSegment.p2.world.y - playerSegment.p1.world.y
         );
       }
@@ -555,9 +572,6 @@ export default class Render {
       // this.game.rTouchFont.drawText(TEXTS.turnR, [30, 210], 'white', 3);
       // this.game.rTouchFont.drawText(TEXTS.brake, [30, 400], colorRS, 3);
 
-      if (!props('leftTouchHeight')) {
-        this.game.setTouchCanvasHeights(() => {
-          console.log('DRAAAAW ');
           const localePL = props('player.locale') === 'pl_PL';
           const TEXTS = {
             accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
@@ -590,6 +604,48 @@ export default class Render {
           this.game.rTouchFont.drawText(TEXTS.accelerate, [30, 20], colorRA, 3);
           this.game.rTouchFont.drawText(TEXTS.turnR, [30, 210], 'white', 3);
           this.game.rTouchFont.drawText(TEXTS.brake, [30, 400], colorRS, 3); 
+
+      if (!props('leftTouchHeight')) {
+        this.game.setTouchCanvasHeights(() => {
+          // console.log('DRAAAAW ', this.game.internals.leftTouch.height);
+          // const localePL = props('player.locale') === 'pl_PL';
+          // const TEXTS = {
+          //   accelerate: localePL ? 'PRZYSPIESZ' : 'ACCELERATE',
+          //   brake: localePL ? 'HAMUJ' : 'BRAKE',
+          //   turnL: localePL ? 'LEWO' : 'LEFT',
+          //   turnR: localePL ? 'PRAWO' : 'RIGHT',
+          // }
+
+          // let colorLA = 'white';
+          // let colorRA = 'white';
+          // let colorLS = 'white';
+          // let colorRS = 'white';
+          // if (props('keyFaster.left')) {
+          //   colorLA = 'red';
+          // }
+          // if (props('keyFaster.right')) {
+          //   colorRA = 'red';
+          // }
+          // if (props('keySlower.left')) {
+          //   colorLS = 'red';
+          // }
+          // if (props('keySlower.right')) {
+          //   colorRS = 'red';
+          // }
+
+          // this.game.lTouchFont.drawText(TEXTS.accelerate, [30, 20], colorLA, 3);
+          // this.game.lTouchFont.drawText(TEXTS.turnL, [30, 210], 'white', 3);
+          // this.game.lTouchFont.drawText(TEXTS.brake, [30, 400], colorLS, 3);
+
+          // this.game.lTouchFont.drawText('brake', [10, 10], 'red', 2);
+
+          // // const lctx = this.game.internals.leftTouch.getContext('2d');
+          // // lctx.fillStyle = '#BADA55';
+          // // lctx.fillRect(0, 0, this.game.internals.leftTouch.width, this.game.internals.leftTouch.height);
+
+          // this.game.rTouchFont.drawText(TEXTS.accelerate, [-30, 20], colorRA, 3);
+          // this.game.rTouchFont.drawText(TEXTS.turnR, [30, 210], 'white', 3);
+          // this.game.rTouchFont.drawText(TEXTS.brake, [30, 400], colorRS, 3); 
         });
       }
     // }

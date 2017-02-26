@@ -204,19 +204,9 @@ export default class Reset {
   }
 
   resetRoad() {
-    // const props = this.gameInstance.getValue;
-    // const segments = props('segments');
-    // const segmentLength = props('segmentLength');
-
     this.randomRoad();
-
-    // console.log('LENGTh ! :', segments.length);
-
     this.resetSprites();
     this.resetCars();
-
-    // this.gameInstance.setValue('segments', [...segments]);
-    // this.gameInstance.setValue('trackLength', (segments.length * segmentLength));
   }
 
   resetSprites() {
@@ -261,7 +251,6 @@ export default class Reset {
     sV('cameraDepth', 1 / Math.tan((gV('fieldOfView') / 2) * Math.PI / 180));
     sV('playerZ', gV('cameraHeight') * gV('cameraDepth'));
     sV('resolution', gV('height') / 480);
-    // refreshTweakUI();
 
     if (gV('gameState') === 'game' && (gV('segments').length === 0) ||
       gV('segmentLength') || gV('rumbleLength')) {
