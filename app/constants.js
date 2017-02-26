@@ -16,9 +16,9 @@ const GAME_SETTINGS = {
   roadWidth   : 2000,                    // actually half the roads width, easier math if the road spans from -roadWidth to +roadWidth
   segmentLength: 200,                     // length of a single segment
   rumbleLength: 3,                       // number of segments per red/white rumble strip
-  drawDistance: 100,                     // number of segments to draw
-  segmentsLimit: 1500,
-  segmentsLowerLimit: 500,
+  drawDistance: 120,                     // number of segments to draw
+  segmentsLimit: 1000,
+  segmentsLowerLimit: 300,
   lanes       : 3,                       // number of lanes
   fieldOfView : 100,                     // angle (degrees) for field of view
   cameraHeight: 1000,                    // z height of camera
@@ -37,7 +37,7 @@ GAME_SETTINGS.accel = GAME_SETTINGS.maxSpeed / 5;
 GAME_SETTINGS.breaking = -GAME_SETTINGS.maxSpeed;
 GAME_SETTINGS.decel = -GAME_SETTINGS.maxSpeed / 4;
 GAME_SETTINGS.offRoadDecel = -GAME_SETTINGS.maxSpeed * 1.2;
-GAME_SETTINGS.offRoadLimit = 0;
+GAME_SETTINGS.offRoadLimit = 5;
 
 const ROAD = {
   LENGTH: { NONE: 0, SHORT:  25, MEDIUM:   50, LONG:  100 },
