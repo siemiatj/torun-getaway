@@ -20,18 +20,13 @@ export default class Game {
       cars: [], // array of cars on the road
       assets: {},
       resolution: null, // scaling factor to provide resolution independence (computed)
-
       trackLength: null,  // z length of entire track (computed)
-
       cameraDepth: null, // z distance camera is from screen (computed)
       playerX: 0, // player x offset from center of road (-1 to 1 to stay independent of roadWidth)
       playerZ: null, // player relative z distance from camera (computed)
       position: 0, // current camera Z position (add playerZ to get player's absolute Z position)
       speed: (opts.maxSpeed / 2), // current speed
       currentLapTime: 0, // current lap time
-
-      // lastLapTime: null, // last lap time
-
       driver: null,
       startCounter: 3,
       keyLeft: null,
@@ -228,7 +223,6 @@ export default class Game {
     position = Util.increase(position, dt * speed, trackLength);
 
     if (keyLeft && keyRight) {
-      // console.log('BOTH ', keyFaster.right, keyFaster.left, keySlower.left, keySlower.right);
     } else if (keyLeft && !keyRight) {
       playerX = playerX - dx;
     } else if (keyRight && !keyLeft) {
@@ -255,7 +249,7 @@ export default class Game {
         spriteW = sprite.source.w * SPRITES.SCALE;
 
         if (Util.overlap(playerX, playerW, sprite.offset + spriteW / 2 * (sprite.offset > 0 ? 1 : -1), spriteW)) {
-          speed = maxSpeed/5;
+          speed = maxSpeed / 5;
           position = Util.increase(playerSegment.p1.world.z, -playerZ, trackLength); // stop in front of sprite (at front of segment)
           break;
         }
@@ -315,6 +309,23 @@ export default class Game {
 
     this.updateHud('speed', 5 * Math.round(speed/500));
     this.updateHud('current_lap_time', this.formatTime(currentLapTime));
+
+    // const segmentsTotal = segments.length;
+
+    console.log('playerZ: ', playerZ, segments[0].p2.world.z);
+
+    let currSegment;
+    for (let i = 0; i < segments.length; i += 1) {
+      currSegment = segments[i];
+
+      // console.log('BLA: ', playerZ, currSegment.p1.world.z )
+      if (currSegment.p1.world.z < playerZ) {
+        console.log('remove');
+        segments.shift();
+      } else {
+        break;
+      }
+    }
 
     if (segments.length <= segmentsLowerLimit) {
       this.resetter.randomRoad();
@@ -449,7 +460,8 @@ export default class Game {
 
     this.gameFont = new PNGFont();
     this.gameFont.setup(this.getValue('canvas').getContext('2d'), this.getValue('assets.unifont'));
-    
+      
+    // console.log('SETUP: ', this.getValue('leftTouch').getContext('2d'));
     this.lTouchFont = new PNGFont();
     this.lTouchFont.setup(this.getValue('leftTouch').getContext('2d'), this.getValue('assets.unifont'));
 
