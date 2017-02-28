@@ -34,8 +34,8 @@ const hud = {
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
 }
 // const orientationListener = Listener;
-console.log('GYRONORM ?: ', GN, GyroNorm);
-const orientationListener = GN;
+// console.log('GYRONORM ?: ', GN, GyroNorm, new GN());
+const orientationListener = new GN();
 
 
 //=========================================================================

@@ -55,9 +55,28 @@ export default class Game {
     // this.orientationChangeListener.on('change', this.orientationChanged);
     console.log('ORIENT: ', opts.orientationListener);
 
-    this.orientationListener = new opts.orientationListener();
-    this.orientationListener().then(() => this.orientationListener(this.orientationChanged)
-    ).catch(function(e){
+    this.orientationListener = opts.orientationListener;
+    this.orientationListener.init().then(() => {
+        var isAvailable = gn.isAvailable();
+        if(!isAvailable.deviceOrientationAvailable) {
+          console.log('Device orientation is not available.');
+        }
+
+        if(!isAvailable.accelerationAvailable) {
+          console.log('Device acceleration is not available.');
+        }
+
+        if(!isAvailable.accelerationIncludingGravityAvailable) {
+          console.log('Device acceleration incl. gravity is not available.');
+        } 
+
+        if(!isAvailable.rotationRateAvailable) {
+          console.log('Device rotation rate is not available.');
+        }
+
+      this.orientationListener.start(this.orientationChanged);
+    }).catch(function(e){
+      console.log('SOMETHING NOT AVAILABLE: ', e);
       // Catch if the DeviceOrientation or DeviceMotion is not supported by the browser or device
     });
   }
