@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import Game from 'game';
 import Dom from 'dom';
 // import Listener from 'orientation-listener';
-import { GyroNorm } from 'gyronorm';
+import GN, { GyroNorm } from 'gyronorm';
 import { GAME_SETTINGS } from 'constants';
 
 //=========================================================================
@@ -34,8 +34,8 @@ const hud = {
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
 }
 // const orientationListener = Listener;
-console.log('GYRONORM ?: ', GyroNorm);
-const orientationListener = GyroNorm;
+console.log('GYRONORM ?: ', GN, GyroNorm);
+const orientationListener = GN;
 
 
 //=========================================================================
