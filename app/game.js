@@ -8,6 +8,8 @@ import round from 'lodash.round';
 import * as Util from 'util';
 import { SPRITES } from 'constants';
 import PNGFont from 'pngfont';
+import Listener from 'orientation-listener';
+import GN, { GyroNorm } from 'gyronorm';
 
 export default class Game {
   constructor(opts) {
@@ -45,19 +47,20 @@ export default class Game {
     this.setValue = this.setValue.bind(this);
     this.update = this.update.bind(this);
     this.updateCountdown = this.updateCountdown.bind(this);
-    this.orientationChanged = this.orientationChanged.bind(this);
+    this.browserOrientationChanged = this.browserOrientationChanged.bind(this);
+    this.deviceOrientationChanged = this.orientationChanged.bind(this);
     this.handleLeftTouch = this.handleLeftTouch.bind(this);
     this.handleRightTouch = this.handleRightTouch.bind(this);
     this.setTouchListeners = this.setTouchListeners.bind(this);
 
     // mobile sorcery
-    // this.orientationChangeListener = new opts.orientationListener();
-    // this.orientationChangeListener.on('change', this.orientationChanged);
-    console.log('ORIENT: ', opts.orientationListener);
+    this.browserOrientation = new Listener(); //opts.browserOrientation;
+    this.browserOrientation.on('change', this.orientationChanged);
+    // console.log('ORIENT: ', opts.orientationListener);
 
-    this.orientationListener = opts.orientationListener;
-    this.orientationListener.init().then(() => {
-        var isAvailable = gn.isAvailable();
+    this.deviceOrientation = new GN(); //opts.orientationListener;
+    this.deviceOrientation.init().then(() => {
+        var isAvailable = this.deviceOrientation.isAvailable();
         if(!isAvailable.deviceOrientationAvailable) {
           console.log('Device orientation is not available.');
         }
@@ -74,7 +77,7 @@ export default class Game {
           console.log('Device rotation rate is not available.');
         }
 
-      this.orientationListener.start(this.orientationChanged);
+      this.deviceOrientation.start(this.deviceOrientationChanged);
     }).catch(function(e){
       console.log('SOMETHING NOT AVAILABLE: ', e);
       // Catch if the DeviceOrientation or DeviceMotion is not supported by the browser or device
@@ -89,14 +92,18 @@ export default class Game {
     return _get(this.internals, name);
   }
 
-  orientationChanged(orientation) {
+  deviceOrientationChanged(data) {
+    console.log('ORIENTATION DATA: ', data);
+  }
+
+  browserOrientationChanged(orientation) {
     const view = Dom.get('racer');
     const canvas = this.internals.canvas;
     const leftTouch = this.internals.leftTouch;
     const rightTouch = this.internals.rightTouch;
     // const orientationValue = this.orientationChangeListener.orientationValue();
 
-    console.log('ORIENTATION: ', orientation);
+    // console.log('ORIENTATION: ', orientation);
 
     if (orientation === 'portrait') {
       Dom.addClassName(view, 'portrait');
@@ -116,7 +123,7 @@ export default class Game {
       this.internals.orientation = 'landscape';
       this.internalsCopy.orientation = 'landscape';
 
-      console.log('ORIENTATION: ', orientationValue);
+      // console.log('ORIENTATION: ', orientationValue);
 
       // this.internals.keyLeft = orientationValue 
     }

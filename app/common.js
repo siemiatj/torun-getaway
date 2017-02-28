@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import Game from 'game';
 import Dom from 'dom';
 // import Listener from 'orientation-listener';
-import GN, { GyroNorm } from 'gyronorm';
+// import GN, { GyroNorm } from 'gyronorm';
 import { GAME_SETTINGS } from 'constants';
 
 //=========================================================================
@@ -32,14 +32,13 @@ const rightTouch = Dom.get('right-touch');
 const hud = {
   speed:            { value: null, dom: Dom.get('speed_value')            },
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
-}
-// const orientationListener = Listener;
-// console.log('GYRONORM ?: ', GN, GyroNorm, new GN());
-const orientationListener = new GN();
+};
+// const browserOrientation = new Listener();
+// const deviceOrientation = new GN();
 
 
 //=========================================================================
-// THE GAME LOOP
+THE GAME LOOP
 //=========================================================================
 
 const newGame = new Game({
@@ -47,7 +46,8 @@ const newGame = new Game({
   canvas,
   leftTouch,
   rightTouch,
-  orientationListener, 
+  // browserOrientation,
+  // deviceOrientation, 
   hud,
   gameStep: 'intro',
   gameRunning: false,
