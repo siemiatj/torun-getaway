@@ -1,7 +1,8 @@
 import 'babel-polyfill';
 import Game from 'game';
 import Dom from 'dom';
-import Listener from 'orientation-listener';
+// import Listener from 'orientation-listener';
+import { GyroNorm } from 'gyronorm';
 import { GAME_SETTINGS } from 'constants';
 
 //=========================================================================
@@ -32,7 +33,9 @@ const hud = {
   speed:            { value: null, dom: Dom.get('speed_value')            },
   current_lap_time: { value: null, dom: Dom.get('current_lap_time_value') },
 }
-const orientationListener = Listener;
+// const orientationListener = Listener;
+console.log('GYRONORM ?: ', GyroNorm);
+const orientationListener = GyroNorm;
 
 
 //=========================================================================

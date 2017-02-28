@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "babel-loader": "^6.2.10",
+    "gyronorm": "^2.0.4",
     "hammerjs": "^2.0.8",
     "lodash.get": "^4.4.2",
     "lodash.round": "^4.0.4",

@@ -51,8 +51,15 @@ export default class Game {
     this.setTouchListeners = this.setTouchListeners.bind(this);
 
     // mobile sorcery
-    this.orientationChangeListener = new opts.orientationListener();
-    this.orientationChangeListener.on('change', this.orientationChanged);
+    // this.orientationChangeListener = new opts.orientationListener();
+    // this.orientationChangeListener.on('change', this.orientationChanged);
+    console.log('ORIENT: ', opts.orientationListener);
+
+    this.orientationListener = new opts.orientationListener();
+    this.orientationListener().then(() => this.orientationListener(this.orientationChanged)
+    ).catch(function(e){
+      // Catch if the DeviceOrientation or DeviceMotion is not supported by the browser or device
+    });
   }
 
   setValue(name, value) {
@@ -68,6 +75,9 @@ export default class Game {
     const canvas = this.internals.canvas;
     const leftTouch = this.internals.leftTouch;
     const rightTouch = this.internals.rightTouch;
+    // const orientationValue = this.orientationChangeListener.orientationValue();
+
+    console.log('ORIENTATION: ', orientation);
 
     if (orientation === 'portrait') {
       Dom.addClassName(view, 'portrait');
@@ -78,6 +88,7 @@ export default class Game {
       this.internals.orientation = 'portrait';
       this.internalsCopy.orientation = 'portrait';
     } else {
+      // const orientationValue = this.orientationChangeListener.orientationValue();
       Dom.removeClassName(view, 'portrait');
       Dom.removeClassName(canvas, 'portrait');
       Dom.removeClassName(leftTouch, 'portrait');
@@ -85,6 +96,10 @@ export default class Game {
 
       this.internals.orientation = 'landscape';
       this.internalsCopy.orientation = 'landscape';
+
+      console.log('ORIENTATION: ', orientationValue);
+
+      // this.internals.keyLeft = orientationValue 
     }
   }
 
@@ -117,7 +132,7 @@ export default class Game {
     if (event.type === 'pressup') {
       this.setValue('keyFaster.left', null)
       this.setValue('keySlower.left', null);
-      this.internals.keyLeft = false;
+      // this.internals.keyLeft = false;
     } else {
       const leftTouchHeight = this.internals.leftTouchHeight;
 
@@ -129,7 +144,7 @@ export default class Game {
         this.setValue('keySlower.left', event.center.y);
       }
 
-      this.internals.keyLeft = true;
+      // this.internals.keyLeft = true;
     }
   }
 
@@ -137,7 +152,7 @@ export default class Game {
     if (event.type === 'pressup') {
       this.setValue('keyFaster.right', null)
       this.setValue('keySlower.right', null);
-      this.internals.keyRight = false;
+      // this.internals.keyRight = false;
     } else {
       const rightTouchHeight = this.internals.rightTouchHeight;
 
@@ -149,7 +164,7 @@ export default class Game {
         this.setValue('keySlower.right', event.center.y);
       }
 
-      this.internals.keyRight = true;
+      // this.internals.keyRight = true;
     }
   }
 
