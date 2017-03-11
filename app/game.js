@@ -48,7 +48,8 @@ export default class Game {
     this.update = this.update.bind(this);
     this.updateCountdown = this.updateCountdown.bind(this);
     this.browserOrientationChanged = this.browserOrientationChanged.bind(this);
-    this.deviceOrientationChanged = this.orientationChanged.bind(this);
+    this.deviceOrientationChanged = this.deviceOrientationChanged.bind(this);
+
     this.handleLeftTouch = this.handleLeftTouch.bind(this);
     this.handleRightTouch = this.handleRightTouch.bind(this);
     this.setTouchListeners = this.setTouchListeners.bind(this);
